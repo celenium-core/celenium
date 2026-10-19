@@ -1,0 +1,28 @@
+# Cargo configuration for musl builds
+# This configures linker flags to handle mimalloc conflicts with libstdc++
+# Since kaspa-alloc uses mimalloc with 'override' feature (which conflicts with
+# libstdc++'s operator new/delete in musl static builds), we use linker flags
+# to allow multiple definitions. The linker will use the first definition it encounters.
+
+[target.x86_64-unknown-linux-musl]
+rustflags = [
+    "-C", "link-arg=-Wl,--allow-multiple-definition",
+]
+
+# Static link CRT on Windows to avoid VCRedist dependency
+# (similar to how we use musl on Linux for portable binaries)
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "target-feature=+crt-static"]
+
+# wasm32-unknown-unknown rustflags:
+#  * getrandom 0.3+ (pulled in transitively, e.g. via newer ahash) requires an
+#    explicit backend; the `wasm_js` feature alone is no longer sufficient.
+#    Select the wasm_js (browser crypto) backend.
+#  * -Ctarget-cpu=mvp pins the W3C MVP feature set for maximum runtime
+#    compatibility (rustc >= 1.87 otherwise enables reference-types, multivalue,
+#    sign-ext, nontrapping-fptoint, ... by default, which old consumers and the
+#    MVP wasm-opt allow-list reject). +reference-types is then added back on its
+#    own because wasm-bindgen's externref table -- used by `--weak-refs` (see the
+#    __wbindgen_externref_table_alloc function) -- requires it.
+[target.wasm32-unknown-unknown]
+rustflags = ["--cfg", 'getrandom_backend="wasm_js"', "-Ctarget-cpu=mvp", "-Ctarget-feature=+reference-types"]
