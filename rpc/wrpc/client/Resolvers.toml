@@ -1,13 +1,16 @@
 # Celenium (CEN) network resolvers — private network
-# Public Kaspa resolver groups removed; add CEN resolvers here when the
-# network goes public. The local resolver entry below is disabled by default.
+# The public Kaspa resolver groups have been removed. Add CEN resolver
+# groups here when the network goes public. The local resolver entry
+# below is disabled by default.
+#
+# NOTE: at least one [[group]] entry must exist (parser requirement).
 
 [[resolver]]
 enable = false
 address = "http://127.0.0.1:8888"
 
-# Example for a future public CEN resolver group:
-# [[group]]
-# enable = false
-# template = "https://*.celenium.network"
-# nodes = ["node1", "node2", "node3", "node4"]
+# Placeholder group (disabled) — replace with real CEN resolvers later.
+[[group]]
+enable = false
+template = "https://*.celenium.network"
+nodes = ["node1", "node2", "node3", "node4"]
