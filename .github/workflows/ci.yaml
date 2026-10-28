@@ -105,11 +105,11 @@ jobs:
       - name: Run cargo doc tests
         run: cargo test --doc --workspace
 
-      - name: Run cargo test on kaspa-hashes without asm
-        run: cargo nextest run -p kaspa-hashes --features=no-asm --benches
+      - name: Run cargo test on celenium-hashes without asm
+        run: cargo nextest run -p celenium-hashes --features=no-asm --benches
 
-      - name: Run cargo doc tests with features=no-asm on kaspa-hashes
-        run: cargo test --doc -p kaspa-hashes --features=no-asm
+      - name: Run cargo doc tests with features=no-asm on celenium-hashes
+        run: cargo test --doc -p celenium-hashes --features=no-asm
 
       - name: Run cargo doc
         run: cargo doc --no-deps --workspace
@@ -214,16 +214,16 @@ jobs:
       - name: Run no_std cargo clippy
         run: >
           cargo clippy --target thumbv7em-none-eabi --no-default-features
-          -p kaspa-addresses
-          -p kaspa-hashes
-          -p kaspa-merkle
-          -p kaspa-smt
-          -p kaspa-seq-commit
-          -p kaspa-utils
-          -p kaspa-txscript-errors
-          -p kaspa-math
-          -p kaspa-muhash
-          -p kaspa-consensus-core
+          -p celenium-addresses
+          -p celenium-hashes
+          -p celenium-merkle
+          -p celenium-smt
+          -p celenium-seq-commit
+          -p celenium-utils
+          -p celenium-txscript-errors
+          -p celenium-math
+          -p celenium-muhash
+          -p celenium-consensus-core
           -- -D warnings
 
 
@@ -273,14 +273,14 @@ jobs:
 
       # append here any new wasm32 crate not already covered by the existing checks
 
-      - name: Run cargo check of kaspa-wrpc-wasm for wasm32 target
-        run: cargo clippy -p kaspa-wrpc-wasm --target wasm32-unknown-unknown
+      - name: Run cargo check of celenium-wrpc-wasm for wasm32 target
+        run: cargo clippy -p celenium-wrpc-wasm --target wasm32-unknown-unknown
 
       - name: Run cargo check of celenium-wallet-cli-wasm for wasm32 target
         run: cargo clippy -p celenium-wallet-cli-wasm --target wasm32-unknown-unknown
 
-      - name: Run cargo check of kaspa-wasm for wasm32 target
-        run: cargo clippy -p kaspa-wasm --target wasm32-unknown-unknown
+      - name: Run cargo check of celenium-wasm for wasm32 target
+        run: cargo clippy -p celenium-wasm --target wasm32-unknown-unknown
   
   test-wasm32:
     name: Test WASM32
@@ -432,7 +432,7 @@ jobs:
       - name: Upload WASM build to GitHub 
         uses: actions/upload-artifact@v4
         with: 
-          name: kaspa-wasm32-sdk-${{ env.SHORT_SHA }}
+          name: celenium-wasm32-sdk-${{ env.SHORT_SHA }}
           path: wasm/release/
   build-release:
     name: Build Linux Release
@@ -458,7 +458,7 @@ jobs:
           # Run build script for musl toolchain
           source musl-toolchain/build.sh
           # Build bridge with allow-multiple-definition flag to handle mimalloc conflicts with libstdc++ in musl builds
-          # This flag is only needed for kaspa-stratum-bridge due to its dual mimalloc dependency structure
+          # This flag is only needed for celenium-stratum-bridge due to its dual mimalloc dependency structure
           export RUSTFLAGS="$RUSTFLAGS -C link-arg=-Wl,--allow-multiple-definition"
           
           # Build other binaries first (without the allow-multiple-definition flag)

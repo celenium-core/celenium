@@ -85,7 +85,7 @@ cargo run --bin stratum-bridge --release
 Run in-process with explicit config and celeniumd args:
 
 ```bash
-cargo run -p kaspa-stratum-bridge --release --bin stratum-bridge -- --config bridge/config.yaml --node-mode inprocess -- --utxoindex --rpclisten=127.0.0.1:16110
+cargo run -p celenium-stratum-bridge --release --bin stratum-bridge -- --config bridge/config.yaml --node-mode inprocess -- --utxoindex --rpclisten=127.0.0.1:16110
 ```
 
 **Important:** Use `--` separator before celeniumd arguments. Arguments starting with hyphens must come after the `--` separator.
@@ -119,7 +119,7 @@ cargo run --release --bin celeniumd -- --utxoindex --rpclisten=127.0.0.1:16110
 Terminal B (bridge):
 
 ```bash
-cargo run -p kaspa-stratum-bridge --release --bin stratum-bridge -- --config bridge/config.yaml --node-mode external
+cargo run -p celenium-stratum-bridge --release --bin stratum-bridge -- --config bridge/config.yaml --node-mode external
 ```
 
 ### Running two bridges at once (two dashboards)
@@ -137,7 +137,7 @@ Recommended setup:
 Example (external bridge on `:3031` + Stratum `:16120`):
 
 ```bash
-cargo run -p kaspa-stratum-bridge --release --features rkstratum_cpu_miner --bin stratum-bridge -- --config config.yaml --web-dashboard-port :3031 --node-mode external --celeniumd-address 127.0.0.1:16210 --instance "port=:16120,diff=1" --internal-cpu-miner --internal-cpu-miner-address "kaspatest:address" --internal-cpu-miner-threads 1
+cargo run -p celenium-stratum-bridge --release --features rkstratum_cpu_miner --bin stratum-bridge -- --config config.yaml --web-dashboard-port :3031 --node-mode external --celeniumd-address 127.0.0.1:16210 --instance "port=:16120,diff=1" --internal-cpu-miner --internal-cpu-miner-address "celeniumtest:address" --internal-cpu-miner-threads 1
 ```
 
 Open:
@@ -147,7 +147,7 @@ Open:
 ### Miner / ASIC connection
 
 - **Pool URL:** `<your_pc_IPv4>:<stratum_port>` (e.g. `192.168.1.10:5555`)
-- **Username / wallet:** `kaspa:YOUR_WALLET_ADDRESS.WORKERNAME`
+- **Username / wallet:** `celenium:YOUR_WALLET_ADDRESS.WORKERNAME`
 
 #### Supported Miners
 
@@ -171,7 +171,7 @@ netstat -ano | findstr :5555
 To see detailed miner connection / job logs:
 
 ```powershell
-$env:RUST_LOG="info,kaspa_stratum_bridge=debug"
+$env:RUST_LOG="info,celenium_stratum_bridge=debug"
 ```
 
 On Windows, Ctrl+C may show `STATUS_CONTROL_C_EXIT` which is expected.
@@ -231,13 +231,13 @@ The internal CPU miner is a **compile-time feature**.
 Build:
 
 ```bash
-cargo build -p kaspa-stratum-bridge --release --features rkstratum_cpu_miner
+cargo build -p celenium-stratum-bridge --release --features rkstratum_cpu_miner
 ```
 
 Run (external node mode + internal CPU miner enabled):
 
 ```bash
-cargo run -p kaspa-stratum-bridge --release --features rkstratum_cpu_miner --bin stratum-bridge -- --config bridge/config.yaml --node-mode external --internal-cpu-miner --internal-cpu-miner-address kaspa:YOUR_WALLET_ADDRESS --internal-cpu-miner-threads 1
+cargo run -p celenium-stratum-bridge --release --features rkstratum_cpu_miner --bin stratum-bridge -- --config bridge/config.yaml --node-mode external --internal-cpu-miner --internal-cpu-miner-address celenium:YOUR_WALLET_ADDRESS --internal-cpu-miner-threads 1
 ```
 
 ### Testing
@@ -245,13 +245,13 @@ cargo run -p kaspa-stratum-bridge --release --features rkstratum_cpu_miner --bin
 Run all bridge tests (including CPU miner tests when feature is enabled):
 
 ```bash
-cargo test -p kaspa-stratum-bridge --features rkstratum_cpu_miner --bin stratum-bridge
+cargo test -p celenium-stratum-bridge --features rkstratum_cpu_miner --bin stratum-bridge
 ```
 
 Run tests without the CPU miner feature:
 
 ```bash
-cargo test -p kaspa-stratum-bridge --bin stratum-bridge
+cargo test -p celenium-stratum-bridge --bin stratum-bridge
 ```
 
 The test suite includes:
