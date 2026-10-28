@@ -1,6 +1,6 @@
-# Running Kaspa Archive Nodes
+# Running Celenium Archive Nodes
 
-This guide explains how to run a Kaspa archive node with HDD-optimized RocksDB configuration.
+This guide explains how to run a Celenium archive node with HDD-optimized RocksDB configuration.
 
 ## What is an Archive Node?
 
@@ -12,7 +12,7 @@ An **archive node** stores the complete blockchain history, including all pruned
 
 **Important**: Running archive nodes is resource-intensive and usually requires specific system optimization beyond standard node setup. Archive functionality is provided as-is for advanced users with specific requirements. Most users should run standard pruned nodes instead.
 
-Normal Kaspa nodes are **pruned** and only keep recent blocks (determined by pruning depth).
+Normal Celenium nodes are **pruned** and only keep recent blocks (determined by pruning depth).
 
 ## Storage Requirements
 
@@ -24,13 +24,13 @@ Normal Kaspa nodes are **pruned** and only keep recent blocks (determined by pru
 
 ## RocksDB Presets
 
-Kaspad provides two RocksDB configuration presets optimized for different storage types:
+Celeniumd provides two RocksDB configuration presets optimized for different storage types:
 
 ### Default Preset (SSD/NVMe)
 ```bash
-kaspad --archival
+celeniumd --archival
 # or explicitly:
-kaspad --archival --rocksdb-preset=default
+celeniumd --archival --rocksdb-preset=default
 ```
 
 **Configuration:**
@@ -43,7 +43,7 @@ kaspad --archival --rocksdb-preset=default
 
 ### HDD Preset
 ```bash
-kaspad --archival --rocksdb-preset=hdd
+celeniumd --archival --rocksdb-preset=hdd
 ```
 
 **Configuration:**
@@ -68,7 +68,7 @@ kaspad --archival --rocksdb-preset=hdd
 ### Basic Archive Node (SSD/NVMe)
 ```bash
 # Default preset, suitable for SSD
-kaspad --archival \
+celeniumd --archival \
   --rpclisten-borsh=0.0.0.0:17110 \
   --rpclisten-json=0.0.0.0:18110
 ```
@@ -76,7 +76,7 @@ kaspad --archival \
 ### HDD-Optimized Archive Node
 ```bash
 # HDD preset with HDD optimizations
-kaspad --archival \
+celeniumd --archival \
   --rocksdb-preset=hdd \
   --ram-scale=1.0 \
   --rpclisten-borsh=0.0.0.0:17110 \
@@ -90,7 +90,7 @@ kaspad --archival \
 For optimal HDD performance, tune kernel parameters:
 
 ```bash
-# /etc/sysctl.d/90-kaspad-archive.conf
+# /etc/sysctl.d/90-celeniumd-archive.conf
 vm.dirty_ratio = 40
 vm.dirty_background_ratio = 20
 vm.dirty_expire_centisecs = 12000
@@ -99,7 +99,7 @@ vm.swappiness = 10
 vm.vfs_cache_pressure = 50
 ```
 
-Apply with: `sudo sysctl -p /etc/sysctl.d/90-kaspad-archive.conf`
+Apply with: `sudo sysctl -p /etc/sysctl.d/90-celeniumd-archive.conf`
 
 Configure I/O scheduler for HDD (mq-deadline):
 ```bash
@@ -113,13 +113,13 @@ Adjust memory allocation based on available RAM:
 
 ```bash
 # Limited RAM (4GB system)
-kaspad --archival --rocksdb-preset=hdd --ram-scale=0.2
+celeniumd --archival --rocksdb-preset=hdd --ram-scale=0.2
 
 # Normal RAM (8GB system)
-kaspad --archival --rocksdb-preset=hdd --ram-scale=0.5
+celeniumd --archival --rocksdb-preset=hdd --ram-scale=0.5
 
 # High RAM (16GB+ system)
-kaspad --archival --rocksdb-preset=hdd --ram-scale=1.0
+celeniumd --archival --rocksdb-preset=hdd --ram-scale=1.0
 ```
 
 **Note:** HDD preset requires ~4GB minimum even with `--ram-scale=0.2`. The cache size scales with `--ram-scale` (minimum 64MB).
@@ -130,13 +130,13 @@ The HDD preset uses a 256MB block cache by default, which automatically scales w
 
 ```bash
 # Default cache (256MB)
-kaspad --archival --rocksdb-preset=hdd
+celeniumd --archival --rocksdb-preset=hdd
 
 # Scaled cache with ram-scale=0.2 (~51MB cache)
-kaspad --archival --rocksdb-preset=hdd --ram-scale=0.2
+celeniumd --archival --rocksdb-preset=hdd --ram-scale=0.2
 
 # Custom cache size (useful for public RPC nodes)
-kaspad --archival --rocksdb-preset=hdd --rocksdb-cache-size=2048  # 2GB cache
+celeniumd --archival --rocksdb-preset=hdd --rocksdb-cache-size=2048  # 2GB cache
 ```
 
 **Cache Sizing Guidelines:**
@@ -150,7 +150,7 @@ kaspad --archival --rocksdb-preset=hdd --rocksdb-cache-size=2048  # 2GB cache
 
 **Memory Budget Example (8GB system):**
 - System: ~1GB
-- Kaspad core: ~2GB
+- Celeniumd core: ~2GB
 - RocksDB cache: 256MB (default)
 - RocksDB write buffers: 512MB (2x256MB)
 - Remaining: ~4GB (file cache, network buffers, etc.)
@@ -163,7 +163,7 @@ kaspad --archival --rocksdb-preset=hdd --rocksdb-cache-size=2048  # 2GB cache
 kaspa-cli getinfo
 
 # Check logs
-journalctl -u kaspad -f
+journalctl -u celeniumd -f
 
 # Check disk usage
 du -sh ~/.kaspa/kaspa-mainnet/datadir/
@@ -172,7 +172,7 @@ du -sh ~/.kaspa/kaspa-mainnet/datadir/
 ### Performance Metrics
 ```bash
 # Enable performance metrics
-kaspad --archival --rocksdb-preset=hdd --perf-metrics --perf-metrics-interval-sec=60
+celeniumd --archival --rocksdb-preset=hdd --perf-metrics --perf-metrics-interval-sec=60
 ```
 
 ### Disk I/O Monitoring
@@ -193,9 +193,9 @@ iotop -o
 version: '3.8'
 
 services:
-  kaspad-archive:
-    image: kaspanet/kaspad:latest
-    container_name: kaspad-archive
+  celeniumd-archive:
+    image: kaspanet/celeniumd:latest
+    container_name: celeniumd-archive
     restart: unless-stopped
     command:
       - --archival
@@ -234,13 +234,13 @@ echo "mq-deadline" | sudo tee /sys/block/sda/queue/scheduler
 
 # Run container
 docker run -d \
-  --name kaspad-archive \
+  --name celeniumd-archive \
   --restart unless-stopped \
   -v /mnt/hdd/kaspa-archive:/app/data \
   -p 16111:16111 \
   -p 17110:17110 \
   -p 18110:18110 \
-  kaspanet/kaspad:latest \
+  kaspanet/celeniumd:latest \
     --archival \
     --rocksdb-preset=hdd \
     --ram-scale=1.0 \
@@ -253,17 +253,17 @@ docker run -d \
 
 **Example systemd service for HDD archive node:**
 
-**/etc/systemd/system/kaspad-archive.service:**
+**/etc/systemd/system/celeniumd-archive.service:**
 ```ini
 [Unit]
-Description=Kaspa Archive Node (HDD-optimized)
+Description=Celenium Archive Node (HDD-optimized)
 After=network.target
 
 [Service]
 Type=simple
 User=kaspa
 Group=kaspa
-ExecStart=/usr/local/bin/kaspad \
+ExecStart=/usr/local/bin/celeniumd \
   --archival \
   --rocksdb-preset=hdd \
   --ram-scale=1.0 \
@@ -282,9 +282,9 @@ WantedBy=multi-user.target
 Enable and start:
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable kaspad-archive
-sudo systemctl start kaspad-archive
-sudo systemctl status kaspad-archive
+sudo systemctl enable celeniumd-archive
+sudo systemctl start celeniumd-archive
+sudo systemctl status celeniumd-archive
 ```
 
 ## Troubleshooting
@@ -295,7 +295,7 @@ sudo systemctl status kaspad-archive
 **Solutions:**
 1. Verify HDD preset is active:
    ```bash
-   journalctl -u kaspad-archive | grep "RocksDB preset"
+   journalctl -u celeniumd-archive | grep "RocksDB preset"
    # Should show: "Using RocksDB preset: hdd"
    ```
 2. Check I/O scheduler: `cat /sys/block/sda/queue/scheduler` (should be `mq-deadline`)
@@ -310,13 +310,13 @@ sudo systemctl status kaspad-archive
 2. Reduce `--ram-scale` and cache size:
    ```bash
    # 4GB system
-   kaspad --archival --rocksdb-preset=hdd --ram-scale=0.2
+   celeniumd --archival --rocksdb-preset=hdd --ram-scale=0.2
 
    # 8GB system
-   kaspad --archival --rocksdb-preset=hdd --ram-scale=0.5
+   celeniumd --archival --rocksdb-preset=hdd --ram-scale=0.5
 
    # Custom cache reduction (if needed)
-   kaspad --archival --rocksdb-preset=hdd --rocksdb-cache-size=64
+   celeniumd --archival --rocksdb-preset=hdd --rocksdb-cache-size=64
    ```
 3. Check swap: `free -h` (4GB+ swap recommended for low-RAM systems)
 4. Consider default preset on SSD instead
@@ -336,10 +336,10 @@ sudo systemctl status kaspad-archive
 **Check:**
 ```bash
 # Verify flag in service config
-systemctl cat kaspad-archive | grep rocksdb-preset
+systemctl cat celeniumd-archive | grep rocksdb-preset
 
 # Check startup logs
-journalctl -u kaspad-archive -n 100 | grep -i rocksdb
+journalctl -u celeniumd-archive -n 100 | grep -i rocksdb
 
 # Should see:
 # "Using RocksDB preset: hdd - HDD preset - optimized for HDD"
@@ -396,7 +396,7 @@ Based on real-world testing:
 
 For **HDD-based archive nodes**, use:
 ```bash
-kaspad --archival --rocksdb-preset=hdd
+celeniumd --archival --rocksdb-preset=hdd
 ```
 
 This enables HDD-optimized RocksDB configuration, providing:
@@ -413,4 +413,4 @@ For **SSD/NVMe**, the default preset is optimal.
 ---
 
 **Last updated:** January 2026
-**Applies to:** Kaspad v1.0.0+
+**Applies to:** Celeniumd v1.0.0+

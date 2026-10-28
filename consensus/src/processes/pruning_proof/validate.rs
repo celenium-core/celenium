@@ -5,20 +5,20 @@ use std::{
 
 use crate::errors::{ProofWeakness, PruningImportError, PruningImportResult};
 use itertools::Itertools;
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     BlockLevel, BlueWorkType,
     blockhash::{BlockHashExtensions, BlockHashes, ORIGIN},
     header::Header,
     pruning::{PruningPointProof, PruningProofMetadata},
 };
-use kaspa_core::info;
-use kaspa_database::{
+use celenium_core::info;
+use celenium_database::{
     prelude::{CachePolicy, ConnBuilder, StoreResultUnitExt},
     utils::DbLifetime,
 };
-use kaspa_hashes::Hash;
-use kaspa_pow::{calc_block_level, calc_block_level_check_pow};
-use kaspa_utils::vec::VecExtensions;
+use celenium_hashes::Hash;
+use celenium_pow::{calc_block_level, calc_block_level_check_pow};
+use celenium_utils::vec::VecExtensions;
 use parking_lot::RwLock;
 use rocksdb::WriteBatch;
 
@@ -117,7 +117,7 @@ impl ProofContext {
         // Initialize stores
         //
 
-        let (db_lifetime, db) = kaspa_database::create_temp_db!(ConnBuilder::default().with_files_limit(10));
+        let (db_lifetime, db) = celenium_database::create_temp_db!(ConnBuilder::default().with_files_limit(10));
         let cache_policy = CachePolicy::Count(2 * ppm.pruning_proof_m as usize);
         let headers_store =
             Arc::new(DbHeadersStore::new(db.clone(), CachePolicy::Count(headers_estimate), CachePolicy::Count(headers_estimate)));

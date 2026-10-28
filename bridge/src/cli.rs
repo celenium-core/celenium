@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use std::path::PathBuf;
 use std::time::Duration;
 
-use kaspa_stratum_bridge::{BridgeConfig, InstanceConfig, net_utils::normalize_port};
+use celenium_stratum_bridge::{BridgeConfig, InstanceConfig, net_utils::normalize_port};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
 pub enum NodeMode {
@@ -118,11 +118,11 @@ pub struct Cli {
     #[arg(long)]
     pub appdir: Option<PathBuf>,
 
-    #[arg(last = true, help = "Kaspad arguments (use '--' separator if kaspad args start with hyphens)")]
-    pub kaspad_args: Vec<String>,
+    #[arg(last = true, help = "Celeniumd arguments (use '--' separator if celeniumd args start with hyphens)")]
+    pub celeniumd_args: Vec<String>,
 
     #[arg(long)]
-    pub kaspad_address: Option<String>,
+    pub celeniumd_address: Option<String>,
 
     #[arg(long)]
     pub block_wait_time: Option<u64>,
@@ -221,8 +221,8 @@ impl Cli {
 }
 
 pub fn apply_cli_overrides(config: &mut BridgeConfig, cli: &Cli) -> Result<(), anyhow::Error> {
-    if let Some(addr) = cli.kaspad_address.as_deref() {
-        config.global.kaspad_address = addr.to_string();
+    if let Some(addr) = cli.celeniumd_address.as_deref() {
+        config.global.celeniumd_address = addr.to_string();
     }
     if let Some(dur) = cli.block_wait_duration() {
         config.global.block_wait_time = dur;

@@ -1,10 +1,10 @@
 use std::sync::Arc;
 
-use kaspa_p2p_lib::{
+use celenium_p2p_lib::{
     IncomingRoute, Router,
     common::ProtocolError,
     dequeue_with_request_id, make_response,
-    pb::{PruningPointProofChunkMessage, PruningPointProofChunksEndMessage, PruningPointProofMessage, kaspad_message::Payload},
+    pb::{PruningPointProofChunkMessage, PruningPointProofChunksEndMessage, PruningPointProofMessage, celeniumd_message::Payload},
 };
 use log::debug;
 
@@ -76,8 +76,8 @@ impl RequestPruningPointProofFlow {
 #[allow(clippy::arithmetic_side_effects)]
 mod tests {
     use super::*;
-    use kaspa_consensus_core::header::{CompressedParents, Header};
-    use kaspa_hashes::Hash;
+    use celenium_consensus_core::header::{CompressedParents, Header};
+    use celenium_hashes::Hash;
 
     fn header_with_parents(levels: u8, parents_per_level: usize, nonce: u64) -> Arc<Header> {
         let mut header = Header::from_precomputed_hash(Default::default(), vec![]);

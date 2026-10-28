@@ -1,11 +1,11 @@
 use crate::pskt::{Input, PSKT as Native};
 use crate::role::*;
-use kaspa_consensus_core::network::NetworkType;
-use kaspa_consensus_core::tx::TransactionId;
+use celenium_consensus_core::network::NetworkType;
+use celenium_consensus_core::tx::TransactionId;
 use wasm_bindgen::prelude::*;
 // use js_sys::Object;
 use crate::pskt::Inner;
-use kaspa_consensus_client::{Transaction, TransactionInput, TransactionInputT, TransactionOutput, TransactionOutputT};
+use celenium_consensus_client::{Transaction, TransactionInput, TransactionInputT, TransactionOutput, TransactionOutputT};
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use std::sync::MutexGuard;

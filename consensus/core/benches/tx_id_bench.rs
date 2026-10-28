@@ -1,12 +1,12 @@
 #![allow(clippy::arithmetic_side_effects)]
 
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
-use kaspa_consensus_core::hashing::tx::{id_v0, id_v1};
-use kaspa_consensus_core::{
+use celenium_consensus_core::hashing::tx::{id_v0, id_v1};
+use celenium_consensus_core::{
     subnets::SUBNETWORK_ID_NATIVE,
     tx::{ScriptPublicKey, Transaction, TransactionInput, TransactionOutpoint, TransactionOutput},
 };
-use kaspa_hashes::Hash;
+use celenium_hashes::Hash;
 use smallvec::SmallVec;
 
 fn create_test_transaction(version: u16) -> Transaction {

@@ -1,5 +1,5 @@
-use kaspa_database::prelude::CachePolicy;
-use kaspa_utils::mem_size::MemMode;
+use celenium_database::prelude::CachePolicy;
+use celenium_utils::mem_size::MemMode;
 use rand::Rng;
 
 /// Adds stochastic noise to cache sizes to avoid predictable and equal sizes across all network nodes

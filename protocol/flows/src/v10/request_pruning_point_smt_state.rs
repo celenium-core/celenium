@@ -3,17 +3,17 @@ use crate::{
     flow_trait::Flow,
     ibd::{SMT_CHUNK_SIZE, SMT_FLOW_CONTROL_WINDOW},
 };
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     api::{ImportLane, SmtExportMetadata},
     errors::consensus::ConsensusError,
 };
-use kaspa_core::{debug, info};
-use kaspa_hashes::Hash;
-use kaspa_p2p_lib::{
+use celenium_core::{debug, info};
+use celenium_hashes::Hash;
+use celenium_p2p_lib::{
     IncomingRoute, Router,
     common::ProtocolError,
     dequeue, make_message,
-    pb::{SmtLaneChunkMessage, SmtLaneEntry, SmtMetadataMessage, UnexpectedPruningPointMessage, kaspad_message::Payload},
+    pb::{SmtLaneChunkMessage, SmtLaneEntry, SmtMetadataMessage, UnexpectedPruningPointMessage, celeniumd_message::Payload},
 };
 use std::sync::Arc;
 

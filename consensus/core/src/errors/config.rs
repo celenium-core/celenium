@@ -17,11 +17,6 @@ pub enum ConfigError {
     #[error("Configuration: --max-tracked-addresses cannot be set above {0}")]
     MaxTrackedAddressesTooHigh(usize),
 
-    #[cfg(feature = "devnet-prealloc")]
-    #[error("Cannot preallocate UTXOs on any network except devnet")]
-    PreallocUtxosOnNonDevnet,
-
-    #[cfg(feature = "devnet-prealloc")]
     #[error("--num-prealloc-utxos has to appear with --prealloc-address and vice versa")]
     MissingPreallocNumOrAddress,
 }

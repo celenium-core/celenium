@@ -3,8 +3,8 @@
 //!
 
 use crate::imports::*;
-use kaspa_consensus_client::{CovenantBinding as ClientCovenantBinding, TransactionOutput, TransactionOutputInner};
-use kaspa_txscript::pay_to_address_script;
+use celenium_consensus_client::{CovenantBinding as ClientCovenantBinding, TransactionOutput, TransactionOutputInner};
+use celenium_txscript::pay_to_address_script;
 
 #[wasm_bindgen(typescript_custom_section)]
 const TS_PAYMENT_OUTPUTS: &'static str = r#"
@@ -18,7 +18,7 @@ const TS_PAYMENT_OUTPUTS: &'static str = r#"
 export interface IPaymentOutput {
     /**
      * Destination address. The address prefix must match the network
-     * you are transacting on (e.g. `kaspa:` for mainnet, `kaspatest:` for testnet, etc).
+     * you are transacting on (e.g. `celenium:` for mainnet, `celeniumtest:` for testnet, etc).
      */
     address: Address | string;
     /**
@@ -89,7 +89,7 @@ impl TryCastFromJs for PaymentOutput {
                 let amount = object.get_u64("amount")?;
                 let covenant = object
                     .try_get_value("covenant")?
-                    .map(|v| v.try_into_owned().map_err(|err| kaspa_consensus_client::error::Error::convert("covenant", err)))
+                    .map(|v| v.try_into_owned().map_err(|err| celenium_consensus_client::error::Error::convert("covenant", err)))
                     .transpose()?;
                 Ok(Self { address, amount, covenant })
             } else {
@@ -227,12 +227,12 @@ impl From<&[(&Address, u64)]> for PaymentOutputs {
 #[cfg(all(test, target_arch = "wasm32"))]
 mod tests {
     use super::*;
-    use kaspa_hashes::Hash;
+    use celenium_hashes::Hash;
     use wasm_bindgen_test::wasm_bindgen_test;
 
     #[wasm_bindgen_test]
     fn test_payment_output_try_cast_from_plain_object_with_covenant() {
-        let address = Address::try_from("kaspatest:qqz22l98sf8jun72rwh5rqe2tm8lhwtdxdmynrz4ypwak427qed5juktjt7ju").unwrap();
+        let address = Address::try_from("celeniumtest:qqz22l98sf8jun72rwh5rqe2tm8lhwtdxdmynrz4ypwak427qed5juktjt7ju").unwrap();
         let amount = 1234;
         let covenant_id = Hash::from_bytes([0xab; 32]);
 
@@ -256,7 +256,7 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn test_payment_outputs_try_cast_from_single_and_array_objects() {
-        let address = Address::try_from("kaspatest:qqz22l98sf8jun72rwh5rqe2tm8lhwtdxdmynrz4ypwak427qed5juktjt7ju").unwrap();
+        let address = Address::try_from("celeniumtest:qqz22l98sf8jun72rwh5rqe2tm8lhwtdxdmynrz4ypwak427qed5juktjt7ju").unwrap();
 
         let output = Object::new();
         output.set("address", &JsValue::from_str(&address.to_string())).unwrap();

@@ -1,13 +1,13 @@
 use crate::{adaptor::Adaptor, manager::Manager};
-use kaspa_consensus_core::config::Config;
-use kaspa_core::{
+use celenium_consensus_core::config::Config;
+use celenium_core::{
     debug,
     task::service::{AsyncService, AsyncServiceFuture},
     trace, warn,
 };
-use kaspa_rpc_service::service::RpcCoreService;
-use kaspa_utils::{networking::NetAddress, triggers::SingleTrigger};
-use kaspa_utils_tower::counters::TowerConnectionCounters;
+use celenium_rpc_service::service::RpcCoreService;
+use celenium_utils::{networking::NetAddress, triggers::SingleTrigger};
+use celenium_utils_tower::counters::TowerConnectionCounters;
 use std::sync::Arc;
 use triggered::Listener;
 

@@ -1,5 +1,5 @@
-use kaspa_consensus_core::blockhash::{BlockHashExtensions, ORIGIN};
-use kaspa_hashes::Hash;
+use celenium_consensus_core::blockhash::{BlockHashExtensions, ORIGIN};
+use celenium_hashes::Hash;
 use std::sync::Arc;
 
 use crate::model::{

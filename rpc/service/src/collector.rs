@@ -1,5 +1,5 @@
 use crate::converter::{consensus::ConsensusConverter, index::IndexConverter};
-use kaspa_notify::collector::CollectorFrom;
+use celenium_notify::collector::CollectorFrom;
 
 pub(crate) type CollectorFromConsensus = CollectorFrom<ConsensusConverter>;
 

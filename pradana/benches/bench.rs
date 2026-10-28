@@ -4,7 +4,7 @@
 use criterion::{Criterion, criterion_group, criterion_main};
 use rayon::prelude::*;
 
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     Hash,
     constants::TX_VERSION,
     subnets::SUBNETWORK_ID_NATIVE,

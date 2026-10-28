@@ -1,6 +1,6 @@
 [package]
-name = "kaspa-wrpc-client"
-description = "Kaspa wRPC client"
+name = "celenium-wrpc-client"
+description = "Celenium wRPC client"
 rust-version.workspace = true
 version.workspace = true
 edition.workspace = true
@@ -34,7 +34,7 @@ native-tls-vendored = ["workflow-rpc/native-tls-vendored"]
 # internal: pull rustls(ring) and let ensure_crypto_provider() install it as the
 # process-default provider. Not meant to be enabled directly.
 rustls-ring = ["dep:rustls"]
-wasm32-sdk = ["kaspa-consensus-wasm/wasm32-sdk","kaspa-rpc-core/wasm32-sdk","workflow-rpc/wasm32-sdk"]
+wasm32-sdk = ["celenium-consensus-wasm/wasm32-sdk","celenium-rpc-core/wasm32-sdk","workflow-rpc/wasm32-sdk"]
 
 [lib]
 crate-type = ["cdylib", "lib"]
@@ -46,12 +46,12 @@ borsh.workspace = true
 cfg-if.workspace = true
 futures.workspace = true
 js-sys.workspace = true
-kaspa-addresses.workspace = true
-kaspa-consensus-core.workspace = true
-kaspa-consensus-wasm.workspace = true
-kaspa-notify.workspace = true
-kaspa-rpc-core.workspace = true
-kaspa-rpc-macros.workspace = true
+celenium-addresses.workspace = true
+celenium-consensus-core.workspace = true
+celenium-consensus-wasm.workspace = true
+celenium-notify.workspace = true
+celenium-rpc-core.workspace = true
+celenium-rpc-macros.workspace = true
 paste.workspace = true
 rand.workspace = true
 regex.workspace = true

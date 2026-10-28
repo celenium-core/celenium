@@ -1,13 +1,13 @@
 use std::sync::Arc;
 
-use kaspa_database::prelude::{DB, DbWriter, StoreError, StoreResult};
-use kaspa_database::registry::DatabaseStorePrefixes;
-use kaspa_hashes::Hash;
+use celenium_database::prelude::{DB, DbWriter, StoreError, StoreResult};
+use celenium_database::registry::DatabaseStorePrefixes;
+use celenium_hashes::Hash;
 use zerocopy::FromBytes;
 
 use crate::keys::BranchVersionKey;
 use crate::maybe_fork::{MaybeFork, Verified};
-use kaspa_smt::store::Node;
+use celenium_smt::store::Node;
 
 /// Branch Versions.
 ///
@@ -24,7 +24,7 @@ impl DbBranchVersionStore {
     }
 
     pub fn delete_all(&self) {
-        use kaspa_database::prelude::DirectDbWriter;
+        use celenium_database::prelude::DirectDbWriter;
         DirectDbWriter::new(&self.db).delete_range(vec![self.prefix], vec![self.prefix + 1]).unwrap();
     }
 
@@ -193,10 +193,10 @@ impl DbBranchVersionStore {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use kaspa_database::create_temp_db;
-    use kaspa_database::prelude::{ConnBuilder, DirectDbWriter};
+    use celenium_database::create_temp_db;
+    use celenium_database::prelude::{ConnBuilder, DirectDbWriter};
 
-    fn make_store() -> (kaspa_database::utils::DbLifetime, DbBranchVersionStore) {
+    fn make_store() -> (celenium_database::utils::DbLifetime, DbBranchVersionStore) {
         let (lifetime, db) = create_temp_db!(ConnBuilder::default().with_files_limit(10));
         (lifetime, DbBranchVersionStore::new(db))
     }

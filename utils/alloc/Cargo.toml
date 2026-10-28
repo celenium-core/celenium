@@ -1,6 +1,6 @@
 [package]
-name = "kaspa-alloc"
-description = "Kaspa allocator wrapper"
+name = "celenium-alloc"
+description = "Celenium allocator wrapper"
 rust-version.workspace = true
 version.workspace = true
 authors.workspace = true

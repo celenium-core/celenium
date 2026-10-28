@@ -1,6 +1,6 @@
 use crate::ELEMENT_BYTE_SIZE;
 use core::ops::{DivAssign, MulAssign};
-use kaspa_math::Uint3072;
+use celenium_math::Uint3072;
 use serde::{Deserialize, Serialize};
 
 // TODO: Add u32 support for optimization on 32 bit machines.

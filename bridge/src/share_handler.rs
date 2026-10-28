@@ -1,7 +1,7 @@
 use crate::{
     errors::*,
     jsonrpc_event::{JsonRpcEvent, JsonRpcResponse},
-    kaspaapi::NODE_STATUS,
+    celeniumapi::NODE_STATUS,
     log_colors::LogColors,
     mining_state::GetMiningState,
     prom::*,
@@ -10,8 +10,8 @@ use crate::{
 
 #[cfg(feature = "rkstratum_cpu_miner")]
 use crate::rkstratum_cpu_miner::InternalMinerMetrics;
-use kaspa_consensus_core::block::Block;
-// kaspa_pow used inline for PoW validation
+use celenium_consensus_core::block::Block;
+// celenium_pow used inline for PoW validation
 use num_bigint::BigUint;
 use num_traits::{ToPrimitive, Zero};
 use once_cell::sync::Lazy;
@@ -314,7 +314,7 @@ impl ShareHandler {
         &self,
         ctx: Arc<StratumContext>,
         event: JsonRpcEvent,
-        kaspa_api: Arc<dyn KaspaApiTrait + Send + Sync>,
+        celenium_api: Arc<dyn CeleniumApiTrait + Send + Sync>,
     ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         let prefix = self.log_prefix();
         debug!("{} [SUBMIT] ===== SHARE SUBMISSION FROM {} =====", prefix, ctx.remote_addr);
@@ -357,8 +357,8 @@ impl ShareHandler {
             let submitted_address = parts[0];
 
             // Check if submitted address matches authorized address (case-insensitive, ignore prefix)
-            let submitted_clean = submitted_address.trim_start_matches("kaspa:").trim_start_matches("kaspatest:");
-            let authorized_clean = wallet_addr.trim_start_matches("kaspa:").trim_start_matches("kaspatest:");
+            let submitted_clean = submitted_address.trim_start_matches("celenium:").trim_start_matches("celeniumtest:");
+            let authorized_clean = wallet_addr.trim_start_matches("celenium:").trim_start_matches("celeniumtest:");
 
             if submitted_clean.to_lowercase() != authorized_clean.to_lowercase() {
                 debug!(
@@ -575,8 +575,8 @@ impl ShareHandler {
                 format!("timestamp={}, nonce=0x{:x}, bits=0x{:08x}", header_clone.timestamp, header_clone.nonce, header_clone.bits)
             );
 
-            // Use kaspa_pow::State for PoW validation against the header's compact bits target.
-            use kaspa_pow::State as PowState;
+            // Use celenium_pow::State for PoW validation against the header's compact bits target.
+            use celenium_pow::State as PowState;
             let pow_state = PowState::new(&header_clone);
             let (check_passed, pow_value_uint256) = pow_state.check_pow(nonce_val);
 
@@ -596,7 +596,7 @@ impl ShareHandler {
 
             // Check if pow_value meets network target (lower hash is better)
             let meets_network_target = pow_value <= network_target;
-            // IMPORTANT: Use kaspa_pow's own compact-target handling as the source of truth.
+            // IMPORTANT: Use celenium_pow's own compact-target handling as the source of truth.
             // This avoids any potential mismatch in our BigUint conversion/comparison path.
             pow_passed = check_passed;
 
@@ -607,7 +607,7 @@ impl ShareHandler {
             debug!("[SUBMIT]   - pow_value: {:x} ({} bytes)", pow_value, pow_value_bytes.len());
             debug!("[SUBMIT]   - network_target: {:x} ({} bytes)", network_target, network_target_bytes.len());
             debug!("[SUBMIT]   - meets_network_target(BigUint): {}", meets_network_target);
-            debug!("[SUBMIT]   - check_passed(kaspa_pow): {}", check_passed);
+            debug!("[SUBMIT]   - check_passed(celenium_pow): {}", check_passed);
 
             debug!(
                 "[SUBMIT] PoW check result: passed={}, pow_value={:x}, network_target={:x}, header.bits={}",
@@ -700,12 +700,12 @@ impl ShareHandler {
 
                 // Block found - submit it
                 // Only set the nonce - keep all other header fields from the real block template
-                // The header comes directly from the Kaspa node via get_block_template_call()
+                // The header comes directly from the Celenium node via get_block_template_call()
                 // We preserve: version, bits, timestamp, all hash fields, parents, scores, etc.
                 header_clone.nonce = nonce_val;
 
                 // Verify timestamp is still valid (not too old)
-                // Kaspa typically accepts blocks with timestamps within a reasonable window
+                // Celenium typically accepts blocks with timestamps within a reasonable window
                 // Block templates are fetched frequently, so the timestamp should be recent
                 let current_time_ms =
                     std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_millis() as u64;
@@ -717,7 +717,7 @@ impl ShareHandler {
                     "{} {} {}",
                     LogColors::block("[BLOCK]"),
                     LogColors::label("Header Verification:"),
-                    "Using REAL header from Kaspa node block template"
+                    "Using REAL header from Celenium node block template"
                 );
                 debug!("{} {} {}", LogColors::block("[BLOCK]"), LogColors::label("  - Header Version:"), header_version);
                 debug!(
@@ -756,9 +756,9 @@ impl ShareHandler {
                 let blue_score = block.header.blue_score;
 
                 // Calculate block hash immediately after block creation
-                // Use kaspa_consensus_core::hashing::header::hash() for block hash calculation
-                // In Kaspa, the block hash is the header hash (transactions are represented by hash_merkle_root in header)
-                use kaspa_consensus_core::hashing::header;
+                // Use celenium_consensus_core::hashing::header::hash() for block hash calculation
+                // In Celenium, the block hash is the header hash (transactions are represented by hash_merkle_root in header)
+                use celenium_consensus_core::hashing::header;
                 let block_hash = header::hash(&block.header).to_string();
 
                 // Log prominent "Block Found" message with hash
@@ -795,10 +795,10 @@ impl ShareHandler {
                     format!("{}:{}", ctx.remote_addr(), ctx.remote_port())
                 );
                 debug!("{} {} {}", LogColors::block("[BLOCK]"), LogColors::label("Block Hash:"), block_hash);
-                debug!("{} {}", LogColors::block("[BLOCK]"), "Calling kaspa_api.submit_block()...");
+                debug!("{} {}", LogColors::block("[BLOCK]"), "Calling celenium_api.submit_block()...");
 
                 // Submit block to node
-                let block_submit_result = kaspa_api.submit_block(block.clone()).await;
+                let block_submit_result = celenium_api.submit_block(block.clone()).await;
 
                 match block_submit_result {
                     Ok(response) => {
@@ -846,12 +846,12 @@ impl ShareHandler {
 
                         record_block_accepted_by_node(&prom_worker);
 
-                        let kaspa_api = Arc::clone(&kaspa_api);
+                        let celenium_api = Arc::clone(&celenium_api);
                         let block_hash_for_confirm = block_hash.clone();
 
                         tokio::spawn(async move {
                             for _ in 0..BLOCK_CONFIRM_MAX_ATTEMPTS {
-                                match kaspa_api.get_current_block_color(&block_hash_for_confirm).await {
+                                match celenium_api.get_current_block_color(&block_hash_for_confirm).await {
                                     Ok(true) => {
                                         #[allow(clippy::arithmetic_side_effects, reason = "ARITH-SAFETY(COUNTER)")]
                                         {
@@ -1727,9 +1727,9 @@ fn format_hashrate(ghs: f64) -> String {
     }
 }
 
-// Trait for kaspa API operations
+// Trait for celenium API operations
 #[async_trait::async_trait]
-pub trait KaspaApiTrait: Send + Sync {
+pub trait CeleniumApiTrait: Send + Sync {
     async fn get_block_template(
         &self,
         wallet_addr: &str,
@@ -1740,7 +1740,7 @@ pub trait KaspaApiTrait: Send + Sync {
     async fn submit_block(
         &self,
         block: Block,
-    ) -> Result<kaspa_rpc_core::SubmitBlockResponse, Box<dyn std::error::Error + Send + Sync>>;
+    ) -> Result<celenium_rpc_core::SubmitBlockResponse, Box<dyn std::error::Error + Send + Sync>>;
 
     /// Get balances by addresses (for Prometheus metrics)
     /// Get balances for addresses
@@ -1778,7 +1778,7 @@ mod retention_tests {
         let handler = ShareHandler::new("test-instance".to_string());
         let ctx = test_ctx();
         *ctx.worker_name.lock() = "ghost".to_string();
-        *ctx.wallet_addr.lock() = "kaspatest:ghost".to_string();
+        *ctx.wallet_addr.lock() = "celeniumtest:ghost".to_string();
 
         handler.get_create_stats(&ctx);
         assert_eq!(handler.stats.lock().len(), 1);

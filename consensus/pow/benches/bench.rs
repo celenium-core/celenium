@@ -2,8 +2,8 @@
 
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
 
-use kaspa_hashes::Hash;
-use kaspa_pow::{matrix::Matrix, xoshiro::XoShiRo256PlusPlus};
+use celenium_hashes::Hash;
+use celenium_pow::{matrix::Matrix, xoshiro::XoShiRo256PlusPlus};
 
 // Big enough to make the cache not very useful
 const ITERS: usize = 1024;

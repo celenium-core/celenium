@@ -4,12 +4,12 @@ use crate::model::{
     stores::{children::ChildrenStore, relations::RelationsStore},
 };
 use itertools::Itertools;
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     BlockHashSet,
     blockhash::{BlockHashIteratorExtensions, BlockHashes, ORIGIN},
 };
-use kaspa_database::prelude::{BatchDbWriter, DbWriter, DirectWriter, StoreError};
-use kaspa_hashes::Hash;
+use celenium_database::prelude::{BatchDbWriter, DbWriter, DirectWriter, StoreError};
+use celenium_hashes::Hash;
 use rocksdb::WriteBatch;
 
 /// Initializes this relations store with an `origin` root
@@ -152,9 +152,9 @@ impl<S: RelationsStore + ChildrenStore + ?Sized> RelationsStoreExtensions for S 
 mod tests {
     use super::*;
     use crate::model::stores::relations::{DbRelationsStore, RelationsStoreReader, StagingRelationsStore};
-    use kaspa_core::assert_match;
-    use kaspa_database::prelude::{CachePolicy, ConnBuilder};
-    use kaspa_database::{create_temp_db, prelude::MemoryWriter};
+    use celenium_core::assert_match;
+    use celenium_database::prelude::{CachePolicy, ConnBuilder};
+    use celenium_database::{create_temp_db, prelude::MemoryWriter};
     use std::sync::Arc;
 
     #[test]

@@ -1,4 +1,4 @@
-use kaspa_database::prelude::DB;
+use celenium_database::prelude::DB;
 use rocksdb::{DBRawIteratorWithThreadMode, DBWithThreadMode, MultiThreaded};
 use std::time::{Duration, Instant};
 
@@ -115,8 +115,8 @@ impl<'a> ReacquiringRawIterator<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use kaspa_database::create_temp_db;
-    use kaspa_database::prelude::ConnBuilder;
+    use celenium_database::create_temp_db;
+    use celenium_database::prelude::ConnBuilder;
 
     trait TestCursor {
         fn valid(&self) -> bool;

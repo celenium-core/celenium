@@ -1,6 +1,6 @@
 use super::error::ConversionError;
 use crate::pb as protowire;
-use kaspa_consensus_core::{block::Block, tx::Transaction};
+use celenium_consensus_core::{block::Block, tx::Transaction};
 type BlockBody = Vec<Transaction>;
 use prost::Message;
 
@@ -57,7 +57,7 @@ impl TryFrom<protowire::BlockBodyMessage> for BlockBody {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use kaspa_consensus_core::header::Header;
+    use celenium_consensus_core::header::Header;
 
     #[test]
     fn test_block_message_oversized_rejected() {
@@ -117,14 +117,14 @@ mod tests {
 
     #[test]
     fn test_p2p_max_block_body_size_larger_than_consensus() {
-        use kaspa_consensus_core::{
+        use celenium_consensus_core::{
             config::params::{DEVNET_PARAMS, MAINNET_PARAMS, SIMNET_PARAMS, TESTNET_PARAMS},
             constants::TRANSIENT_BYTE_TO_MASS_FACTOR,
             mass::transaction_estimated_serialized_size,
             subnets::{SUBNETWORK_ID_COINBASE, SUBNETWORK_ID_SIZE},
             tx::{CovenantBinding, ScriptPublicKey, TransactionOutput},
         };
-        use kaspa_hashes::{HASH_SIZE, Hash};
+        use celenium_hashes::{HASH_SIZE, Hash};
 
         for (name, params) in
             [("mainnet", &MAINNET_PARAMS), ("testnet", &TESTNET_PARAMS), ("devnet", &DEVNET_PARAMS), ("simnet", &SIMNET_PARAMS)]

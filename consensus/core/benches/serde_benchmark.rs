@@ -1,8 +1,8 @@
 #![allow(clippy::arithmetic_side_effects)]
 
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
-use kaspa_consensus_core::subnets::SUBNETWORK_ID_COINBASE;
-use kaspa_consensus_core::tx::{
+use celenium_consensus_core::subnets::SUBNETWORK_ID_COINBASE;
+use celenium_consensus_core::tx::{
     ComputeCommit, ScriptPublicKey, Transaction, TransactionId, TransactionInput, TransactionOutpoint, TransactionOutput,
 };
 use smallvec::smallvec;

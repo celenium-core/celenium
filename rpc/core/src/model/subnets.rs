@@ -1,1 +1,1 @@
-pub type RpcSubnetworkId = kaspa_consensus_core::subnets::SubnetworkId;
+pub type RpcSubnetworkId = celenium_consensus_core::subnets::SubnetworkId;

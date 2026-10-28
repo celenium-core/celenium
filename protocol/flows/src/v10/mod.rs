@@ -30,8 +30,8 @@ pub(crate) mod txrelay;
 use request_pruning_point_smt_state::RequestPruningPointSmtStateFlow;
 
 use crate::{flow_context::FlowContext, flow_trait::Flow, ibd::IbdFlow};
-use kaspa_p2p_lib::{KaspadMessagePayloadType, Router, SharedIncomingRoute};
-use kaspa_utils::channel;
+use celenium_p2p_lib::{CeleniumdMessagePayloadType, Router, SharedIncomingRoute};
+use celenium_utils::channel;
 use std::sync::Arc;
 
 pub fn register(ctx: FlowContext, router: Arc<Router>) -> Vec<Box<dyn Flow>> {
@@ -45,26 +45,26 @@ pub(crate) fn register_flows(ctx: FlowContext, router: Arc<Router>, use_ibd_chun
             ctx.clone(),
             router.clone(),
             router.subscribe(vec![
-                KaspadMessagePayloadType::BlockHeaders,
-                KaspadMessagePayloadType::DoneHeaders,
-                KaspadMessagePayloadType::IbdBlockLocatorHighestHash,
-                KaspadMessagePayloadType::IbdBlockLocatorHighestHashNotFound,
-                KaspadMessagePayloadType::BlockWithTrustedDataV4,
-                KaspadMessagePayloadType::DoneBlocksWithTrustedData,
-                KaspadMessagePayloadType::IbdChainBlockLocator,
-                KaspadMessagePayloadType::BlockBody,
-                KaspadMessagePayloadType::TrustedData,
-                KaspadMessagePayloadType::TrustedDataChunk,
-                KaspadMessagePayloadType::TrustedDataChunksEnd,
-                KaspadMessagePayloadType::PruningPoints,
-                KaspadMessagePayloadType::PruningPointProof,
-                KaspadMessagePayloadType::PruningPointProofChunk,
-                KaspadMessagePayloadType::PruningPointProofChunksEnd,
-                KaspadMessagePayloadType::UnexpectedPruningPoint,
-                KaspadMessagePayloadType::PruningPointUtxoSetChunk,
-                KaspadMessagePayloadType::DonePruningPointUtxoSetChunks,
-                KaspadMessagePayloadType::SmtMetadata,
-                KaspadMessagePayloadType::SmtLaneChunk,
+                CeleniumdMessagePayloadType::BlockHeaders,
+                CeleniumdMessagePayloadType::DoneHeaders,
+                CeleniumdMessagePayloadType::IbdBlockLocatorHighestHash,
+                CeleniumdMessagePayloadType::IbdBlockLocatorHighestHashNotFound,
+                CeleniumdMessagePayloadType::BlockWithTrustedDataV4,
+                CeleniumdMessagePayloadType::DoneBlocksWithTrustedData,
+                CeleniumdMessagePayloadType::IbdChainBlockLocator,
+                CeleniumdMessagePayloadType::BlockBody,
+                CeleniumdMessagePayloadType::TrustedData,
+                CeleniumdMessagePayloadType::TrustedDataChunk,
+                CeleniumdMessagePayloadType::TrustedDataChunksEnd,
+                CeleniumdMessagePayloadType::PruningPoints,
+                CeleniumdMessagePayloadType::PruningPointProof,
+                CeleniumdMessagePayloadType::PruningPointProofChunk,
+                CeleniumdMessagePayloadType::PruningPointProofChunksEnd,
+                CeleniumdMessagePayloadType::UnexpectedPruningPoint,
+                CeleniumdMessagePayloadType::PruningPointUtxoSetChunk,
+                CeleniumdMessagePayloadType::DonePruningPointUtxoSetChunks,
+                CeleniumdMessagePayloadType::SmtMetadata,
+                CeleniumdMessagePayloadType::SmtLaneChunk,
             ]),
             relay_receiver,
             use_ibd_chunks,
@@ -72,32 +72,32 @@ pub(crate) fn register_flows(ctx: FlowContext, router: Arc<Router>, use_ibd_chun
         Box::new(HandleRelayBlockRequests::new(
             ctx.clone(),
             router.clone(),
-            router.subscribe(vec![KaspadMessagePayloadType::RequestRelayBlocks]),
+            router.subscribe(vec![CeleniumdMessagePayloadType::RequestRelayBlocks]),
         )),
-        Box::new(ReceivePingsFlow::new(ctx.clone(), router.clone(), router.subscribe(vec![KaspadMessagePayloadType::Ping]))),
-        Box::new(SendPingsFlow::new(ctx.clone(), router.clone(), router.subscribe(vec![KaspadMessagePayloadType::Pong]))),
+        Box::new(ReceivePingsFlow::new(ctx.clone(), router.clone(), router.subscribe(vec![CeleniumdMessagePayloadType::Ping]))),
+        Box::new(SendPingsFlow::new(ctx.clone(), router.clone(), router.subscribe(vec![CeleniumdMessagePayloadType::Pong]))),
         Box::new(RequestHeadersFlow::new(
             ctx.clone(),
             router.clone(),
-            router.subscribe(vec![KaspadMessagePayloadType::RequestHeaders, KaspadMessagePayloadType::RequestNextHeaders]),
+            router.subscribe(vec![CeleniumdMessagePayloadType::RequestHeaders, CeleniumdMessagePayloadType::RequestNextHeaders]),
         )),
         Box::new(RequestPruningPointProofFlow::new(
             ctx.clone(),
             router.clone(),
-            router.subscribe(vec![KaspadMessagePayloadType::RequestPruningPointProof]),
+            router.subscribe(vec![CeleniumdMessagePayloadType::RequestPruningPointProof]),
             use_ibd_chunks,
         )),
         Box::new(RequestIbdChainBlockLocatorFlow::new(
             ctx.clone(),
             router.clone(),
-            router.subscribe(vec![KaspadMessagePayloadType::RequestIbdChainBlockLocator]),
+            router.subscribe(vec![CeleniumdMessagePayloadType::RequestIbdChainBlockLocator]),
         )),
         Box::new(PruningPointAndItsAnticoneRequestsFlow::new(
             ctx.clone(),
             router.clone(),
             router.subscribe(vec![
-                KaspadMessagePayloadType::RequestPruningPointAndItsAnticone,
-                KaspadMessagePayloadType::RequestNextPruningPointAndItsAnticoneBlocks,
+                CeleniumdMessagePayloadType::RequestPruningPointAndItsAnticone,
+                CeleniumdMessagePayloadType::RequestNextPruningPointAndItsAnticoneBlocks,
             ]),
             use_ibd_chunks,
         )),
@@ -105,16 +105,16 @@ pub(crate) fn register_flows(ctx: FlowContext, router: Arc<Router>, use_ibd_chun
             ctx.clone(),
             router.clone(),
             router.subscribe(vec![
-                KaspadMessagePayloadType::RequestPruningPointUtxoSet,
-                KaspadMessagePayloadType::RequestNextPruningPointUtxoSetChunk,
+                CeleniumdMessagePayloadType::RequestPruningPointUtxoSet,
+                CeleniumdMessagePayloadType::RequestNextPruningPointUtxoSetChunk,
             ]),
         )),
         Box::new(RequestPruningPointSmtStateFlow::new(
             ctx.clone(),
             router.clone(),
             router.subscribe(vec![
-                KaspadMessagePayloadType::RequestPruningPointSmtState,
-                KaspadMessagePayloadType::RequestNextPruningPointSmtChunk,
+                CeleniumdMessagePayloadType::RequestPruningPointSmtState,
+                CeleniumdMessagePayloadType::RequestNextPruningPointSmtChunk,
             ]),
         )),
         // The IBD client flow currently requests block bodies only. Keep serving full-block
@@ -122,47 +122,47 @@ pub(crate) fn register_flows(ctx: FlowContext, router: Arc<Router>, use_ibd_chun
         Box::new(HandleIbdBlockRequests::new(
             ctx.clone(),
             router.clone(),
-            router.subscribe(vec![KaspadMessagePayloadType::RequestIbdBlocks]),
+            router.subscribe(vec![CeleniumdMessagePayloadType::RequestIbdBlocks]),
         )),
         Box::new(HandleBlockBodyRequests::new(
             ctx.clone(),
             router.clone(),
-            router.subscribe(vec![KaspadMessagePayloadType::RequestBlockBodies]),
+            router.subscribe(vec![CeleniumdMessagePayloadType::RequestBlockBodies]),
         )),
         Box::new(HandleAntipastRequests::new(
             ctx.clone(),
             router.clone(),
-            router.subscribe(vec![KaspadMessagePayloadType::RequestAntipast]),
+            router.subscribe(vec![CeleniumdMessagePayloadType::RequestAntipast]),
         )),
         Box::new(RelayTransactionsFlow::new(
             ctx.clone(),
             router.clone(),
             router
-                .subscribe_with_capacity(vec![KaspadMessagePayloadType::InvTransactions], RelayTransactionsFlow::invs_channel_size()),
+                .subscribe_with_capacity(vec![CeleniumdMessagePayloadType::InvTransactions], RelayTransactionsFlow::invs_channel_size()),
             router.subscribe_with_capacity(
-                vec![KaspadMessagePayloadType::Transaction, KaspadMessagePayloadType::TransactionNotFound],
+                vec![CeleniumdMessagePayloadType::Transaction, CeleniumdMessagePayloadType::TransactionNotFound],
                 RelayTransactionsFlow::txs_channel_size(),
             ),
         )),
         Box::new(RequestTransactionsFlow::new(
             ctx.clone(),
             router.clone(),
-            router.subscribe(vec![KaspadMessagePayloadType::RequestTransactions]),
+            router.subscribe(vec![CeleniumdMessagePayloadType::RequestTransactions]),
         )),
-        Box::new(ReceiveAddressesFlow::new(ctx.clone(), router.clone(), router.subscribe(vec![KaspadMessagePayloadType::Addresses]))),
+        Box::new(ReceiveAddressesFlow::new(ctx.clone(), router.clone(), router.subscribe(vec![CeleniumdMessagePayloadType::Addresses]))),
         Box::new(SendAddressesFlow::new(
             ctx.clone(),
             router.clone(),
-            router.subscribe(vec![KaspadMessagePayloadType::RequestAddresses]),
+            router.subscribe(vec![CeleniumdMessagePayloadType::RequestAddresses]),
         )),
         Box::new(RequestBlockLocatorFlow::new(
             ctx.clone(),
             router.clone(),
-            router.subscribe(vec![KaspadMessagePayloadType::RequestBlockLocator]),
+            router.subscribe(vec![CeleniumdMessagePayloadType::RequestBlockLocator]),
         )),
     ];
 
-    let invs_route = router.subscribe_with_capacity(vec![KaspadMessagePayloadType::InvRelayBlock], ctx.block_invs_channel_size());
+    let invs_route = router.subscribe_with_capacity(vec![CeleniumdMessagePayloadType::InvRelayBlock], ctx.block_invs_channel_size());
     let shared_invs_route = SharedIncomingRoute::new(invs_route);
 
     let num_relay_flows = (ctx.config.bps() as usize / 2).max(1);

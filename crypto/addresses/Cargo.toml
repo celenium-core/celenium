@@ -1,6 +1,6 @@
 [package]
-name = "kaspa-addresses"
-description = "Kaspa address"
+name = "celenium-addresses"
+description = "Celenium address"
 categories = ["no-std"]
 rust-version.workspace = true
 version.workspace = true

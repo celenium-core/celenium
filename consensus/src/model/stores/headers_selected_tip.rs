@@ -1,8 +1,8 @@
 use crate::processes::ghostdag::ordering::SortableBlock;
-use kaspa_database::prelude::DB;
-use kaspa_database::prelude::StoreResult;
-use kaspa_database::prelude::{BatchDbWriter, CachedDbItem, DirectDbWriter};
-use kaspa_database::registry::DatabaseStorePrefixes;
+use celenium_database::prelude::DB;
+use celenium_database::prelude::StoreResult;
+use celenium_database::prelude::{BatchDbWriter, CachedDbItem, DirectDbWriter};
+use celenium_database::registry::DatabaseStorePrefixes;
 use rocksdb::WriteBatch;
 use std::sync::Arc;
 

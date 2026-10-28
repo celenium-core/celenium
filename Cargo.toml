@@ -19,7 +19,7 @@ members = [
     "consensus/seq-commit",
     "consensus/smt-store",
     "consensus/wasm",
-    "kaspad",
+    "celeniumd",
     "simpa",
     "wasm",
     "wasm/core",
@@ -65,7 +65,7 @@ members = [
     "utils/tower",
     "system-info",
     "build-info",
-    "rothschild",
+    "pradana",
     "metrics/core",
     "metrics/perf_monitor",
     "utils/alloc",
@@ -74,9 +74,9 @@ members = [
 [workspace.package]
 rust-version = "1.95.0"
 version = "2.1.0"
-authors = ["Kaspa developers"]
+authors = ["Celenium developers"]
 license = "ISC"
-repository = "https://github.com/kaspanet/rusty-kaspa"
+repository = "https://github.com/celeniumnet/rusty-celenium"
 edition = "2024"
 include = [
     "src/**/*.rs",
@@ -93,68 +93,68 @@ include = [
 ]
 
 [workspace.dependencies]
-kaspa-testing-integration = { version = "2.1.0", path = "testing/integration" }
-kaspa-addresses = { version = "2.1.0", path = "crypto/addresses", default-features = false }
-kaspa-addressmanager = { version = "2.1.0", path = "components/addressmanager" }
-kaspa-bip32 = { version = "2.1.0", path = "wallet/bip32" }
-kaspa-cli = { version = "2.1.0", path = "cli" }
-kaspa-connectionmanager = { version = "2.1.0", path = "components/connectionmanager" }
-kaspa-consensus = { version = "2.1.0", path = "consensus" }
-kaspa-consensus-core = { version = "2.1.0", path = "consensus/core" }
-kaspa-consensus-client = { version = "2.1.0", path = "consensus/client" }
-kaspa-consensus-notify = { version = "2.1.0", path = "consensus/notify" }
-kaspa-consensus-wasm = { version = "2.1.0", path = "consensus/wasm" }
-kaspa-consensusmanager = { version = "2.1.0", path = "components/consensusmanager" }
-kaspa-core = { version = "2.1.0", path = "core" }
-kaspa-daemon = { version = "2.1.0", path = "daemon" }
-kaspa-database = { version = "2.1.0", path = "database" }
-kaspa-grpc-client = { version = "2.1.0", path = "rpc/grpc/client" }
-kaspa-grpc-core = { version = "2.1.0", path = "rpc/grpc/core" }
-kaspa-grpc-server = { version = "2.1.0", path = "rpc/grpc/server" }
-kaspa-hashes = { version = "2.1.0", path = "crypto/hashes", default-features = false }
-kaspa-index-core = { version = "2.1.0", path = "indexes/core" }
-kaspa-index-processor = { version = "2.1.0", path = "indexes/processor" }
-kaspa-math = { version = "2.1.0", path = "math", default-features = false }
-kaspa-merkle = { version = "2.1.0", path = "crypto/merkle", default-features = false }
-kaspa-smt = { version = "2.1.0", path = "crypto/smt", default-features = false }
-kaspa-smt-store = { version = "2.1.0", path = "consensus/smt-store" }
-kaspa-metrics-core = { version = "2.1.0", path = "metrics/core" }
-kaspa-mining = { version = "2.1.0", path = "mining" }
-kaspa-mining-errors = { version = "2.1.0", path = "mining/errors" }
-kaspa-muhash = { version = "2.1.0", path = "crypto/muhash", default-features = false }
-kaspa-notify = { version = "2.1.0", path = "notify" }
-kaspa-p2p-flows = { version = "2.1.0", path = "protocol/flows" }
-kaspa-p2p-lib = { version = "2.1.0", path = "protocol/p2p" }
-kaspa-p2p-mining = { version = "2.1.0", path = "protocol/mining" }
-kaspa-perf-monitor = { version = "2.1.0", path = "metrics/perf_monitor" }
-kaspa-pow = { version = "2.1.0", path = "consensus/pow" }
-kaspa-rpc-core = { version = "2.1.0", path = "rpc/core" }
-kaspa-seq-commit = { version = "2.1.0", path = "consensus/seq-commit" }
-kaspa-rpc-macros = { version = "2.1.0", path = "rpc/macros" }
-kaspa-rpc-service = { version = "2.1.0", path = "rpc/service" }
-kaspa-txscript = { version = "2.1.0", path = "crypto/txscript" }
-kaspa-txscript-errors = { version = "2.1.0", path = "crypto/txscript/errors", default-features = false }
-kaspa-txscript-zk-sdk = { version = "2.1.0", path = "crypto/txscript/zk-sdk" }
-kaspa-utils = { version = "2.1.0", path = "utils", default-features = false }
-kaspa-utils-tower = { version = "2.1.0", path = "utils/tower" }
-kaspa-system-info = { version = "2.1.0", path = "system-info" }
-kaspa-build-info = { version = "2.1.0", path = "build-info" }
-kaspa-utxoindex = { version = "2.1.0", path = "indexes/utxoindex" }
-kaspa-wallet = { version = "2.1.0", path = "wallet/native" }
-kaspa-wallet-cli-wasm = { version = "2.1.0", path = "wallet/wasm" }
-kaspa-wallet-keys = { version = "2.1.0", path = "wallet/keys" }
-kaspa-wallet-pskt = { version = "2.1.0", path = "wallet/pskt" }
-kaspa-wallet-core = { version = "2.1.0", path = "wallet/core" }
-kaspa-wallet-macros = { version = "2.1.0", path = "wallet/macros" }
-kaspa-wasm = { version = "2.1.0", path = "wasm" }
-kaspa-wasm-core = { version = "2.1.0", path = "wasm/core" }
-kaspa-wrpc-client = { version = "2.1.0", path = "rpc/wrpc/client" }
-kaspa-wrpc-proxy = { version = "2.1.0", path = "rpc/wrpc/proxy" }
-kaspa-wrpc-server = { version = "2.1.0", path = "rpc/wrpc/server" }
-kaspa-wrpc-wasm = { version = "2.1.0", path = "rpc/wrpc/wasm" }
-kaspa-wrpc-example-subscriber = { version = "2.1.0", path = "rpc/wrpc/examples/subscriber" }
-kaspad = { version = "2.1.0", path = "kaspad" }
-kaspa-alloc = { version = "2.1.0", path = "utils/alloc" }
+celenium-testing-integration = { version = "2.1.0", path = "testing/integration" }
+celenium-addresses = { version = "2.1.0", path = "crypto/addresses", default-features = false }
+celenium-addressmanager = { version = "2.1.0", path = "components/addressmanager" }
+celenium-bip32 = { version = "2.1.0", path = "wallet/bip32" }
+celenium-cli = { version = "2.1.0", path = "cli" }
+celenium-connectionmanager = { version = "2.1.0", path = "components/connectionmanager" }
+celenium-consensus = { version = "2.1.0", path = "consensus" }
+celenium-consensus-core = { version = "2.1.0", path = "consensus/core" }
+celenium-consensus-client = { version = "2.1.0", path = "consensus/client" }
+celenium-consensus-notify = { version = "2.1.0", path = "consensus/notify" }
+celenium-consensus-wasm = { version = "2.1.0", path = "consensus/wasm" }
+celenium-consensusmanager = { version = "2.1.0", path = "components/consensusmanager" }
+celenium-core = { version = "2.1.0", path = "core" }
+celenium-daemon = { version = "2.1.0", path = "daemon" }
+celenium-database = { version = "2.1.0", path = "database" }
+celenium-grpc-client = { version = "2.1.0", path = "rpc/grpc/client" }
+celenium-grpc-core = { version = "2.1.0", path = "rpc/grpc/core" }
+celenium-grpc-server = { version = "2.1.0", path = "rpc/grpc/server" }
+celenium-hashes = { version = "2.1.0", path = "crypto/hashes", default-features = false }
+celenium-index-core = { version = "2.1.0", path = "indexes/core" }
+celenium-index-processor = { version = "2.1.0", path = "indexes/processor" }
+celenium-math = { version = "2.1.0", path = "math", default-features = false }
+celenium-merkle = { version = "2.1.0", path = "crypto/merkle", default-features = false }
+celenium-smt = { version = "2.1.0", path = "crypto/smt", default-features = false }
+celenium-smt-store = { version = "2.1.0", path = "consensus/smt-store" }
+celenium-metrics-core = { version = "2.1.0", path = "metrics/core" }
+celenium-mining = { version = "2.1.0", path = "mining" }
+celenium-mining-errors = { version = "2.1.0", path = "mining/errors" }
+celenium-muhash = { version = "2.1.0", path = "crypto/muhash", default-features = false }
+celenium-notify = { version = "2.1.0", path = "notify" }
+celenium-p2p-flows = { version = "2.1.0", path = "protocol/flows" }
+celenium-p2p-lib = { version = "2.1.0", path = "protocol/p2p" }
+celenium-p2p-mining = { version = "2.1.0", path = "protocol/mining" }
+celenium-perf-monitor = { version = "2.1.0", path = "metrics/perf_monitor" }
+celenium-pow = { version = "2.1.0", path = "consensus/pow" }
+celenium-rpc-core = { version = "2.1.0", path = "rpc/core" }
+celenium-seq-commit = { version = "2.1.0", path = "consensus/seq-commit" }
+celenium-rpc-macros = { version = "2.1.0", path = "rpc/macros" }
+celenium-rpc-service = { version = "2.1.0", path = "rpc/service" }
+celenium-txscript = { version = "2.1.0", path = "crypto/txscript" }
+celenium-txscript-errors = { version = "2.1.0", path = "crypto/txscript/errors", default-features = false }
+celenium-txscript-zk-sdk = { version = "2.1.0", path = "crypto/txscript/zk-sdk" }
+celenium-utils = { version = "2.1.0", path = "utils", default-features = false }
+celenium-utils-tower = { version = "2.1.0", path = "utils/tower" }
+celenium-system-info = { version = "2.1.0", path = "system-info" }
+celenium-build-info = { version = "2.1.0", path = "build-info" }
+celenium-utxoindex = { version = "2.1.0", path = "indexes/utxoindex" }
+celenium-wallet = { version = "2.1.0", path = "wallet/native" }
+celenium-wallet-cli-wasm = { version = "2.1.0", path = "wallet/wasm" }
+celenium-wallet-keys = { version = "2.1.0", path = "wallet/keys" }
+celenium-wallet-pskt = { version = "2.1.0", path = "wallet/pskt" }
+celenium-wallet-core = { version = "2.1.0", path = "wallet/core" }
+celenium-wallet-macros = { version = "2.1.0", path = "wallet/macros" }
+celenium-wasm = { version = "2.1.0", path = "wasm" }
+celenium-wasm-core = { version = "2.1.0", path = "wasm/core" }
+celenium-wrpc-client = { version = "2.1.0", path = "rpc/wrpc/client" }
+celenium-wrpc-proxy = { version = "2.1.0", path = "rpc/wrpc/proxy" }
+celenium-wrpc-server = { version = "2.1.0", path = "rpc/wrpc/server" }
+celenium-wrpc-wasm = { version = "2.1.0", path = "rpc/wrpc/wasm" }
+celenium-wrpc-example-subscriber = { version = "2.1.0", path = "rpc/wrpc/examples/subscriber" }
+celeniumd = { version = "2.1.0", path = "celeniumd" }
+celenium-alloc = { version = "2.1.0", path = "utils/alloc" }
 
 # external
 aes = "0.8.3"
@@ -319,7 +319,7 @@ risc0-zkvm-platform = "=2.2.2"
 # workflow dependencies that are not a part of core libraries
 
 # workflow-perf-monitor = { path = "../../../workflow-perf-monitor-rs" }
-workflow-perf-monitor = { package = "kaspa-workflow-perf-monitor", version = "0.0.3" }
+workflow-perf-monitor = { package = "celenium-workflow-perf-monitor", version = "0.0.3" }
 nw-sys = "0.1.6"
 rustls = { version = "0.23.18", default-features = false, features = ["ring"] }
 
@@ -331,7 +331,7 @@ workflow-log = { version = "0.19.0" }
 workflow-node = { version = "0.19.0" }
 workflow-nw = { version = "0.19.0" }
 # TLS provider/roots are NOT selected here (workspace-wide) so they cannot be
-# forced on SDK consumers. The selection is forwarded by kaspa-wrpc-client's own
+# forced on SDK consumers. The selection is forwarded by celenium-wrpc-client's own
 # `rustls-tls-*` / `native-tls*` features (default: rustls-tls-webpki-roots),
 # letting a consumer pass `default-features = false` to drop ring. `workflow-rpc`
 # itself defaults to `native-tls`, so default-features must stay disabled here.
@@ -343,7 +343,7 @@ workflow-wasm = { version = "0.19.0" }
 # rustls-based TLS via the OS platform verifier; cross-platform system proxy.
 # `rustls-no-provider` keeps reqwest from pulling the aws-lc-rs crypto provider
 # (which needs a C/cmake toolchain); the wRPC client installs the pure-Rust
-# `ring` provider at startup (see kaspa-wrpc-client::ensure_crypto_provider).
+# `ring` provider at startup (see celenium-wrpc-client::ensure_crypto_provider).
 workflow-http = { version = "0.19.0", default-features = false, features = ["rustls-no-provider", "http2", "charset", "system-proxy"] }
 
 # if below is enabled, this means that there is an ongoing work
@@ -392,25 +392,25 @@ strip = false
 # CI optimization: Keep debug fast to compile, but optimize hot-path crates
 # so tests run at reasonable speed without full release builds.
 
-[profile.dev.package.kaspa-consensus]
+[profile.dev.package.celenium-consensus]
 opt-level = 2
 
-[profile.dev.package.kaspa-consensus-core]
+[profile.dev.package.celenium-consensus-core]
 opt-level = 2
 
-[profile.dev.package.kaspa-hashes]
+[profile.dev.package.celenium-hashes]
 opt-level = 2
 
-[profile.dev.package.kaspa-math]
+[profile.dev.package.celenium-math]
 opt-level = 2
 
-[profile.dev.package.kaspa-muhash]
+[profile.dev.package.celenium-muhash]
 opt-level = 2
 
-[profile.dev.package.kaspa-pow]
+[profile.dev.package.celenium-pow]
 opt-level = 2
 
-[profile.dev.package.kaspa-txscript]
+[profile.dev.package.celenium-txscript]
 opt-level = 2
 
 # External crates used heavily by consensus/crypto

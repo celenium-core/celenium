@@ -1,6 +1,6 @@
-use crate::kaspaapi::KaspaApi;
+use crate::celeniumapi::CeleniumApi;
 use crate::prom;
-use kaspa_consensus_core::block::Block;
+use celenium_consensus_core::block::Block;
 use parking_lot::{Condvar, Mutex};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
@@ -37,7 +37,7 @@ pub struct InternalCpuMinerConfig {
 struct Work {
     id: u64,
     block: Block,
-    pow_state: Arc<kaspa_pow::State>,
+    pow_state: Arc<celenium_pow::State>,
 }
 
 struct WorkSlot {
@@ -79,7 +79,7 @@ impl SharedWork {
 }
 
 pub fn spawn_internal_cpu_miner(
-    kaspa_api: Arc<KaspaApi>,
+    celenium_api: Arc<CeleniumApi>,
     cfg: InternalCpuMinerConfig,
     shutdown_rx: watch::Receiver<bool>,
 ) -> Result<Arc<InternalMinerMetrics>, anyhow::Error> {
@@ -107,7 +107,7 @@ pub fn spawn_internal_cpu_miner(
     let metrics_submit = Arc::clone(&metrics);
 
     let (submit_tx, mut submit_rx) = mpsc::unbounded_channel::<Block>();
-    let kaspa_api_submit = Arc::clone(&kaspa_api);
+    let celenium_api_submit = Arc::clone(&celenium_api);
     let shutdown_flag_submit = Arc::clone(&shutdown_flag);
     tokio::spawn(async move {
         while let Some(block) = submit_rx.recv().await {
@@ -118,23 +118,23 @@ pub fn spawn_internal_cpu_miner(
 
             // Capture details for dashboard before moving the block into submit_block.
             let (hash_str, nonce, bluescore) = {
-                use kaspa_consensus_core::hashing::header;
+                use celenium_consensus_core::hashing::header;
                 let hash = header::hash(&block.header).to_string();
                 (hash, block.header.nonce, block.header.blue_score)
             };
 
-            let res = kaspa_api_submit.submit_block(block).await;
+            let res = celenium_api_submit.submit_block(block).await;
             match res {
                 Ok(response) => {
                     if response.report.is_success() {
                         tracing::info!("[InternalMiner] block accepted by node");
 
                         // Confirm BLUE in DAG (same semantics as Stratum workers "Blocks").
-                        let kaspa_api_confirm = Arc::clone(&kaspa_api_submit);
+                        let celenium_api_confirm = Arc::clone(&celenium_api_submit);
                         let metrics_confirm = Arc::clone(&metrics_submit);
                         tokio::spawn(async move {
                             for _ in 0..INTERNAL_BLOCK_CONFIRM_MAX_ATTEMPTS {
-                                match kaspa_api_confirm.get_current_block_color(&hash_str).await {
+                                match celenium_api_confirm.get_current_block_color(&hash_str).await {
                                     Ok(true) => {
                                         metrics_confirm.blocks_accepted.fetch_add(1, Ordering::Relaxed);
                                         prom::record_internal_cpu_recent_block(hash_str, nonce, bluescore);
@@ -166,7 +166,7 @@ pub fn spawn_internal_cpu_miner(
     });
 
     let work_publisher = Arc::clone(&work);
-    let kaspa_api_templates = Arc::clone(&kaspa_api);
+    let celenium_api_templates = Arc::clone(&celenium_api);
     let mining_address = cfg.mining_address.clone();
     let poll = cfg.template_poll_interval;
     let shutdown_flag_templates = Arc::clone(&shutdown_flag);
@@ -184,11 +184,11 @@ pub fn spawn_internal_cpu_miner(
                 break;
             }
 
-            match kaspa_api_templates.get_block_template(&mining_address, "internal", "").await {
+            match celenium_api_templates.get_block_template(&mining_address, "internal", "").await {
                 Ok(block) => {
                     let id = next_id_templates.fetch_add(1, Ordering::Relaxed);
                     let header = block.header.clone();
-                    let pow_state = Arc::new(kaspa_pow::State::new(&header));
+                    let pow_state = Arc::new(celenium_pow::State::new(&header));
                     work_publisher.publish(Work { id, block, pow_state });
                 }
                 Err(e) => {

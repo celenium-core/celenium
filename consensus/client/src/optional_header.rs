@@ -7,9 +7,9 @@ use crate::error::Error;
 use crate::imports::*;
 use crate::parents::CompressedParents as WasmCompressedParents;
 use js_sys::Object;
-use kaspa_consensus_core::BlueWorkType;
-use kaspa_hashes::Hash;
-use kaspa_utils::hex::ToHex;
+use celenium_consensus_core::BlueWorkType;
+use celenium_hashes::Hash;
+use celenium_utils::hex::ToHex;
 use workflow_wasm::extensions::{JsValueExtension, ObjectExtension};
 
 #[wasm_bindgen(typescript_custom_section)]

@@ -1,11 +1,11 @@
 #![allow(clippy::arithmetic_side_effects)]
 use ark_snark::SNARK;
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     hashing::sighash::{SigHashReusedValuesSync, SigHashReusedValuesUnsync},
     tx::PopulatedTransaction,
 };
-use kaspa_txscript::{
+use celenium_txscript::{
     TxScriptEngine,
     caches::Cache,
     zk_precompiles::tests::helpers::{build_groth_script, build_stark_script, execute_zk_script},

@@ -8,7 +8,7 @@ use crate::TransactionOutpoint;
 use crate::UtxoEntryReference;
 use crate::imports::*;
 use crate::result::Result;
-use kaspa_utils::hex::*;
+use celenium_utils::hex::*;
 
 #[wasm_bindgen(typescript_custom_section)]
 const TS_TRANSACTION: &'static str = r#"
@@ -80,7 +80,7 @@ impl TransactionInputInner {
     }
 }
 
-/// Represents a Kaspa transaction input
+/// Represents a Celenium transaction input
 /// @category Consensus
 #[derive(Clone, Debug, Serialize, Deserialize, CastFromJs)]
 #[wasm_bindgen(inspectable)]

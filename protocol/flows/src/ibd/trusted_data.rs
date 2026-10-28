@@ -1,9 +1,9 @@
-use kaspa_p2p_lib::{
+use celenium_p2p_lib::{
     IncomingRoute,
     common::{DEFAULT_TIMEOUT, ProtocolError},
     convert::model::trusted::TrustedDataPackage,
     dequeue_with_timeout,
-    pb::kaspad_message::Payload,
+    pb::celeniumd_message::Payload,
 };
 use log::info;
 use prost::Message;
@@ -67,7 +67,7 @@ pub(crate) async fn receive_trusted_data(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use kaspa_p2p_lib::{make_message, pb};
+    use celenium_p2p_lib::{make_message, pb};
     use tokio::sync::mpsc;
 
     #[tokio::test]
@@ -131,8 +131,8 @@ mod tests {
     #[tokio::test]
     async fn legacy_trusted_data_preserves_standalone_ghostdag_without_end() {
         let ghostdag =
-            pb::GhostdagData { selected_parent: Some(kaspa_hashes::Hash::from(1u64).into()), blue_score: 123, ..Default::default() };
-        let pair = pb::BlockGhostdagDataHashPair { hash: Some(kaspa_hashes::Hash::from(2u64).into()), ghostdag_data: Some(ghostdag) };
+            pb::GhostdagData { selected_parent: Some(celenium_hashes::Hash::from(1u64).into()), blue_score: 123, ..Default::default() };
+        let pair = pb::BlockGhostdagDataHashPair { hash: Some(celenium_hashes::Hash::from(2u64).into()), ghostdag_data: Some(ghostdag) };
         let (tx, rx) = mpsc::channel(1);
         let mut route = IncomingRoute::new(rx);
         tx.send(make_message!(Payload::TrustedData, pb::TrustedDataMessage { daa_window: vec![], ghostdag_data: vec![pair.clone()] }))

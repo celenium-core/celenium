@@ -1,6 +1,6 @@
 [package]
-name = "kaspa-txscript-errors"
-description = "Kaspa txscript errors"
+name = "celenium-txscript-errors"
+description = "Celenium txscript errors"
 categories = ["no-std"]
 rust-version.workspace = true
 version.workspace = true
@@ -14,12 +14,12 @@ repository.workspace = true
 
 [features]
 default = ["std"]
-std = ["borsh/std", "thiserror/std", "kaspa-hashes/std"]
+std = ["borsh/std", "thiserror/std", "celenium-hashes/std"]
 
 [dependencies]
 thiserror.workspace = true
 borsh.workspace = true
-kaspa-hashes.workspace = true
+celenium-hashes.workspace = true
 
 [lints]
 workspace = true

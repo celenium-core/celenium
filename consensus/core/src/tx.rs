@@ -28,12 +28,12 @@ use core::{
     ops::Range,
     str::{self},
 };
-use kaspa_hashes::Hash;
-use kaspa_hashes::ZERO_HASH;
-use kaspa_utils::hex::ToHex;
+use celenium_hashes::Hash;
+use celenium_hashes::ZERO_HASH;
+use celenium_utils::hex::ToHex;
 #[cfg(feature = "mem_size")]
-use kaspa_utils::mem_size::MemSizeEstimator;
-use kaspa_utils::serde_bytes_fixed_ref;
+use celenium_utils::mem_size::MemSizeEstimator;
+use celenium_utils::serde_bytes_fixed_ref;
 #[cfg(feature = "wasm32-sdk")]
 pub use script_public_key::ScriptPublicKeyT;
 pub use script_public_key::{SCRIPT_VECTOR_SIZE, ScriptPublicKey, ScriptPublicKeyVersion, ScriptPublicKeys, ScriptVec, scriptvec};
@@ -41,12 +41,12 @@ use serde::{Deserialize, Serialize};
 
 /// COINBASE_TRANSACTION_INDEX is the index of the coinbase transaction in every block
 pub const COINBASE_TRANSACTION_INDEX: usize = 0;
-/// A 32-byte Kaspa transaction identifier.
-pub type TransactionId = kaspa_hashes::Hash;
+/// A 32-byte Celenium transaction identifier.
+pub type TransactionId = celenium_hashes::Hash;
 
 pub type TransactionIndexType = u32;
 
-/// Represents a Kaspa transaction outpoint
+/// Represents a Celenium transaction outpoint
 #[derive(Eq, Default, Hash, PartialEq, Debug, Copy, Clone, Serialize, Deserialize, BorshSerialize, BorshDeserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TransactionOutpoint {
@@ -57,7 +57,7 @@ pub struct TransactionOutpoint {
 
 impl TransactionOutpoint {
     pub const EMPTY: Self = Self { transaction_id: ZERO_HASH, index: 0 };
-    pub const MAX: Self = Self { transaction_id: kaspa_hashes::MAX_HASH, index: u32::MAX };
+    pub const MAX: Self = Self { transaction_id: celenium_hashes::MAX_HASH, index: u32::MAX };
     pub fn new(transaction_id: TransactionId, index: u32) -> Self {
         Self { transaction_id, index }
     }
@@ -128,7 +128,7 @@ impl From<ComputeCommit> for ScriptUnits {
     }
 }
 
-/// Represents a Kaspa transaction input
+/// Represents a Celenium transaction input
 #[derive(Clone, PartialEq, Eq, BorshSerialize, BorshDeserialize)]
 pub struct TransactionInput {
     pub previous_outpoint: TransactionOutpoint,
@@ -173,7 +173,7 @@ impl core::fmt::Debug for TransactionInput {
     }
 }
 
-/// Represents a Kaspad transaction output
+/// Represents a Celeniumd transaction output
 #[derive(Debug, Clone, PartialEq, Eq, BorshSerialize, BorshDeserialize)]
 pub struct TransactionOutput {
     pub value: u64,
@@ -304,7 +304,7 @@ impl BorshSerialize for TransactionMass {
     }
 }
 
-/// Represents a Kaspa transaction
+/// Represents a Celenium transaction
 #[derive(Debug, Clone, PartialEq, Eq, Default, BorshSerialize, BorshDeserialize)]
 pub struct Transaction {
     pub version: u16,
@@ -1262,7 +1262,7 @@ version = 1
     // use wasm_bindgen_test::wasm_bindgen_test;
     // #[wasm_bindgen_test]
     // pub fn test_wasm_serde_spk_constructor() {
-    //     let str = "kaspa:qpauqsvk7yf9unexwmxsnmg547mhyga37csh0kj53q6xxgl24ydxjsgzthw5j";
+    //     let str = "celenium:qpauqsvk7yf9unexwmxsnmg547mhyga37csh0kj53q6xxgl24ydxjsgzthw5j";
     //     let a = Address::constructor(str);
     //     let value = to_value(&a).unwrap();
     //
@@ -1273,14 +1273,14 @@ version = 1
     //
     // #[wasm_bindgen_test]
     // pub fn test_wasm_js_serde_spk_object() {
-    //     let expected = Address::constructor("kaspa:qpauqsvk7yf9unexwmxsnmg547mhyga37csh0kj53q6xxgl24ydxjsgzthw5j");
+    //     let expected = Address::constructor("celenium:qpauqsvk7yf9unexwmxsnmg547mhyga37csh0kj53q6xxgl24ydxjsgzthw5j");
     //
     //     use web_sys::console;
     //     console::log_4(&"address: ".into(), &expected.version().into(), &expected.prefix().into(), &expected.payload().into());
     //
     //     let obj = Object::new();
     //     obj.set("version", &JsValue::from_str("PubKey")).unwrap();
-    //     obj.set("prefix", &JsValue::from_str("kaspa")).unwrap();
+    //     obj.set("prefix", &JsValue::from_str("celenium")).unwrap();
     //     obj.set("payload", &JsValue::from_str("qpauqsvk7yf9unexwmxsnmg547mhyga37csh0kj53q6xxgl24ydxjsgzthw5j")).unwrap();
     //
     //     assert_eq!(JsValue::from_str("object"), obj.js_typeof());
@@ -1294,7 +1294,7 @@ version = 1
     // pub fn test_wasm_serde_spk_object() {
     //     use wasm_bindgen::convert::IntoWasmAbi;
     //
-    //     let expected = Address::constructor("kaspa:qpauqsvk7yf9unexwmxsnmg547mhyga37csh0kj53q6xxgl24ydxjsgzthw5j");
+    //     let expected = Address::constructor("celenium:qpauqsvk7yf9unexwmxsnmg547mhyga37csh0kj53q6xxgl24ydxjsgzthw5j");
     //     let wasm_js_value: JsValue = expected.clone().into_abi().into();
     //
     //     // use web_sys::console;

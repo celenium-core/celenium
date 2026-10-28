@@ -1,11 +1,11 @@
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     BlockHashSet, HashMapCustomHasher,
     tx::{TransactionOutpoint, UtxoEntry},
     utxo::utxo_diff::UtxoDiff,
 };
-use kaspa_hashes::Hash;
-use kaspa_index_core::indexed_utxos::UtxoEntryKeySuffixRecord;
-use kaspa_utils::hashmap::NestedHashMapExtensions;
+use celenium_hashes::Hash;
+use celenium_index_core::indexed_utxos::UtxoEntryKeySuffixRecord;
+use celenium_utils::hashmap::NestedHashMapExtensions;
 
 use crate::model::{CirculatingSupplyDiff, CompactUtxoEntry, UtxoChanges, UtxoSetByScriptPublicKey};
 

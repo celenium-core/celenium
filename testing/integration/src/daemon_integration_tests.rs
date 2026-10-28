@@ -5,10 +5,10 @@ use crate::common::{
     fee,
     utils::{fetch_spendable_utxos, mine_block, wait_for},
 };
-use kaspa_addresses::Address;
-use kaspa_alloc::init_allocator_with_default_settings;
-use kaspa_consensus::params::{Params, SIMNET_GENESIS, SIMNET_PARAMS};
-use kaspa_consensus_core::{
+use celenium_addresses::Address;
+use celenium_alloc::init_allocator_with_default_settings;
+use celenium_consensus::params::{Params, SIMNET_GENESIS, SIMNET_PARAMS};
+use celenium_consensus_core::{
     config::params::OverrideParams,
     constants::{TX_VERSION, TX_VERSION_TOCCATA},
     header::Header,
@@ -17,24 +17,24 @@ use kaspa_consensus_core::{
     subnets::{SUBNETWORK_ID_NATIVE, SubnetworkId},
     tx::{MutableTransaction, Transaction, TransactionInput, TransactionOutpoint, TransactionOutput, UtxoEntry},
 };
-use kaspa_consensusmanager::ConsensusManager;
-use kaspa_core::{task::runtime::AsyncRuntime, trace};
-use kaspa_grpc_client::GrpcClient;
-use kaspa_hashes::Hash;
-use kaspa_notify::{
+use celenium_consensusmanager::ConsensusManager;
+use celenium_core::{task::runtime::AsyncRuntime, trace};
+use celenium_grpc_client::GrpcClient;
+use celenium_hashes::Hash;
+use celenium_notify::{
     events::EventType,
     scope::{BlockAddedScope, UtxosChangedScope, VirtualDaaScoreChangedScope},
 };
-use kaspa_rpc_core::{
+use celenium_rpc_core::{
     Notification, RpcTransaction, RpcTransactionId, api::rpc::RpcApi, model::BanRequest, model::GetPeerAddressesRequest,
     model::UnbanRequest,
 };
-use kaspa_txscript::{
+use celenium_txscript::{
     opcodes::codes, pay_to_address_script, pay_to_script_hash_script, pay_to_script_hash_signature_script,
     script_builder::ScriptBuilder,
 };
-use kaspa_utils::networking::ContextualNetAddress;
-use kaspad_lib::args::Args;
+use celenium_utils::networking::ContextualNetAddress;
+use celeniumd_lib::args::Args;
 use rand::thread_rng;
 use serde_json;
 use std::{fs, path::PathBuf, str::FromStr, sync::Arc, time::Duration};
@@ -72,32 +72,32 @@ async fn is_ancestor_in_selected_parent_chain(client: &GrpcClient, mut descendan
 #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
 async fn daemon_sanity_test() {
     init_allocator_with_default_settings();
-    kaspa_core::log::try_init_logger("INFO");
+    celenium_core::log::try_init_logger("INFO");
 
-    // let total_fd_limit =  kaspa_utils::fd_budget::get_limit() / 2 - 128;
+    // let total_fd_limit =  celenium_utils::fd_budget::get_limit() / 2 - 128;
     let total_fd_limit = 10;
-    let mut kaspad1 = Daemon::new_random(total_fd_limit);
-    let rpc_client1 = kaspad1.start().await;
+    let mut celeniumd1 = Daemon::new_random(total_fd_limit);
+    let rpc_client1 = celeniumd1.start().await;
     assert!(rpc_client1.handle_message_id() && rpc_client1.handle_stop_notify(), "the client failed to collect server features");
 
-    let mut kaspad2 = Daemon::new_random(total_fd_limit);
-    let rpc_client2 = kaspad2.start().await;
+    let mut celeniumd2 = Daemon::new_random(total_fd_limit);
+    let rpc_client2 = celeniumd2.start().await;
     assert!(rpc_client2.handle_message_id() && rpc_client2.handle_stop_notify(), "the client failed to collect server features");
 
     tokio::time::sleep(Duration::from_secs(1)).await;
     rpc_client1.disconnect().await.unwrap();
     drop(rpc_client1);
-    kaspad1.shutdown();
+    celeniumd1.shutdown();
 
     rpc_client2.disconnect().await.unwrap();
     drop(rpc_client2);
-    kaspad2.shutdown();
+    celeniumd2.shutdown();
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
 async fn daemon_mining_test() {
     init_allocator_with_default_settings();
-    kaspa_core::log::try_init_logger("INFO");
+    celenium_core::log::try_init_logger("INFO");
 
     let args = Args {
         simnet: true,
@@ -106,15 +106,15 @@ async fn daemon_mining_test() {
         disable_upnp: true, // UPnP registration might take some time and is not needed for this test
         ..Default::default()
     };
-    // let total_fd_limit = kaspa_utils::fd_budget::get_limit() / 2 - 128;
+    // let total_fd_limit = celenium_utils::fd_budget::get_limit() / 2 - 128;
     let total_fd_limit = 10;
 
-    let mut kaspad1 = Daemon::new_random_with_args(args.clone(), total_fd_limit);
-    let mut kaspad2 = Daemon::new_random_with_args(args, total_fd_limit);
-    let rpc_client1 = kaspad1.start().await;
-    let rpc_client2 = kaspad2.start().await;
+    let mut celeniumd1 = Daemon::new_random_with_args(args.clone(), total_fd_limit);
+    let mut celeniumd2 = Daemon::new_random_with_args(args, total_fd_limit);
+    let rpc_client1 = celeniumd1.start().await;
+    let rpc_client2 = celeniumd2.start().await;
 
-    rpc_client2.add_peer(format!("127.0.0.1:{}", kaspad1.p2p_port).try_into().unwrap(), true).await.unwrap();
+    rpc_client2.add_peer(format!("127.0.0.1:{}", celeniumd1.p2p_port).try_into().unwrap(), true).await.unwrap();
     tokio::time::sleep(Duration::from_secs(1)).await; // Let it connect
     assert_eq!(rpc_client2.get_connected_peer_info().await.unwrap().peer_info.len(), 1);
 
@@ -126,7 +126,7 @@ async fn daemon_mining_test() {
     let mut last_block_hash = None;
     for i in 0..10 {
         let template = rpc_client1
-            .get_block_template(Address::new(kaspad1.network.into(), kaspa_addresses::Version::PubKey, &[0; 32]), vec![])
+            .get_block_template(Address::new(celeniumd1.network.into(), celenium_addresses::Version::PubKey, &[0; 32]), vec![])
             .await
             .unwrap();
         let header: Header = (&template.block.header).try_into().unwrap();
@@ -173,14 +173,14 @@ async fn daemon_mining_test() {
     }
 }
 
-/// `cargo test --release --package kaspa-testing-integration --lib -- daemon_integration_tests::daemon_utxos_propagation_test`
+/// `cargo test --release --package celenium-testing-integration --lib -- daemon_integration_tests::daemon_utxos_propagation_test`
 #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
 async fn daemon_utxos_propagation_test() {
     #[cfg(feature = "heap")]
-    let _profiler = dhat::Profiler::builder().file_name("kaspa-testing-integration-heap.json").build();
+    let _profiler = dhat::Profiler::builder().file_name("celenium-testing-integration-heap.json").build();
 
-    kaspa_core::log::try_init_logger(
-        "INFO,kaspa_testing_integration=trace,kaspa_notify=debug,kaspa_rpc_core=debug,kaspa_grpc_client=debug",
+    celenium_core::log::try_init_logger(
+        "INFO,celenium_testing_integration=trace,celenium_notify=debug,celenium_rpc_core=debug,celenium_grpc_client=debug",
     );
 
     let args = Args {
@@ -194,18 +194,18 @@ async fn daemon_utxos_propagation_test() {
     let total_fd_limit = 10;
 
     let coinbase_maturity = SIMNET_PARAMS.coinbase_maturity();
-    let mut kaspad1 = Daemon::new_random_with_args(args.clone(), total_fd_limit);
-    let mut kaspad2 = Daemon::new_random_with_args(args, total_fd_limit);
-    let rpc_client1 = kaspad1.start().await;
-    let rpc_client2 = kaspad2.start().await;
+    let mut celeniumd1 = Daemon::new_random_with_args(args.clone(), total_fd_limit);
+    let mut celeniumd2 = Daemon::new_random_with_args(args, total_fd_limit);
+    let rpc_client1 = celeniumd1.start().await;
+    let rpc_client2 = celeniumd2.start().await;
 
     // Let rpc_client1 receive virtual DAA score changed notifications
     let (sender1, event_receiver1) = async_channel::unbounded();
     rpc_client1.start(Some(Arc::new(ChannelNotify::new(sender1)))).await;
     rpc_client1.start_notify(Default::default(), VirtualDaaScoreChangedScope {}.into()).await.unwrap();
 
-    // Connect kaspad2 to kaspad1
-    rpc_client2.add_peer(format!("127.0.0.1:{}", kaspad1.p2p_port).try_into().unwrap(), true).await.unwrap();
+    // Connect celeniumd2 to celeniumd1
+    rpc_client2.add_peer(format!("127.0.0.1:{}", celeniumd1.p2p_port).try_into().unwrap(), true).await.unwrap();
     let check_client = rpc_client2.clone();
     wait_for(
         50,
@@ -223,21 +223,21 @@ async fn daemon_utxos_propagation_test() {
     // Mining key and address
     let (miner_sk, miner_pk) = secp256k1::generate_keypair(&mut thread_rng());
     let miner_address =
-        Address::new(kaspad1.network.into(), kaspa_addresses::Version::PubKey, &miner_pk.x_only_public_key().0.serialize());
+        Address::new(celeniumd1.network.into(), celenium_addresses::Version::PubKey, &miner_pk.x_only_public_key().0.serialize());
     let miner_spk = pay_to_address_script(&miner_address);
 
     // User key and address
     let (_user_sk, user_pk) = secp256k1::generate_keypair(&mut thread_rng());
     let user_address =
-        Address::new(kaspad1.network.into(), kaspa_addresses::Version::PubKey, &user_pk.x_only_public_key().0.serialize());
+        Address::new(celeniumd1.network.into(), celenium_addresses::Version::PubKey, &user_pk.x_only_public_key().0.serialize());
 
     // Some dummy non-monitored address
-    let blank_address = Address::new(kaspad1.network.into(), kaspa_addresses::Version::PubKey, &[0; 32]);
+    let blank_address = Address::new(celeniumd1.network.into(), celenium_addresses::Version::PubKey, &[0; 32]);
 
     // Create a multi-listener RPC client on each node. Multi-listener subscriptions are propagated
     // upstream asynchronously, so subscribe to the streams used by mine_block before the long initial
     // mining run and later verify that notifications actually flowed through both listeners.
-    let mut clients = vec![ListeningClient::connect(&kaspad2).await, ListeningClient::connect(&kaspad1).await];
+    let mut clients = vec![ListeningClient::connect(&celeniumd2).await, ListeningClient::connect(&celeniumd1).await];
     for x in clients.iter_mut() {
         x.start_notify(BlockAddedScope {}.into()).await.unwrap();
         x.start_notify(VirtualDaaScoreChangedScope {}.into()).await.unwrap();
@@ -452,7 +452,7 @@ async fn daemon_utxos_propagation_test() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
 async fn daemon_compute_budget_relay_test() {
     init_allocator_with_default_settings();
-    kaspa_core::log::try_init_logger("INFO");
+    celenium_core::log::try_init_logger("INFO");
 
     let compute_budget_relay_test_params =
         PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("testdata/params/compute_budget_relay_test_params.json");
@@ -471,12 +471,12 @@ async fn daemon_compute_budget_relay_test() {
     let total_fd_limit = 10;
 
     let coinbase_maturity = 0;
-    let mut kaspad1 = Daemon::new_random_with_args(args.clone(), total_fd_limit);
-    let mut kaspad2 = Daemon::new_random_with_args(args, total_fd_limit);
-    let rpc_client1 = kaspad1.start().await;
-    let rpc_client2 = kaspad2.start().await;
+    let mut celeniumd1 = Daemon::new_random_with_args(args.clone(), total_fd_limit);
+    let mut celeniumd2 = Daemon::new_random_with_args(args, total_fd_limit);
+    let rpc_client1 = celeniumd1.start().await;
+    let rpc_client2 = celeniumd2.start().await;
 
-    rpc_client2.add_peer(format!("127.0.0.1:{}", kaspad1.p2p_port).try_into().unwrap(), true).await.unwrap();
+    rpc_client2.add_peer(format!("127.0.0.1:{}", celeniumd1.p2p_port).try_into().unwrap(), true).await.unwrap();
     let check_client = rpc_client2.clone();
     wait_for(
         50,
@@ -493,10 +493,10 @@ async fn daemon_compute_budget_relay_test() {
 
     let (miner_sk, miner_pk) = secp256k1::generate_keypair(&mut thread_rng());
     let miner_address =
-        Address::new(kaspad1.network.into(), kaspa_addresses::Version::PubKey, &miner_pk.x_only_public_key().0.serialize());
+        Address::new(celeniumd1.network.into(), celenium_addresses::Version::PubKey, &miner_pk.x_only_public_key().0.serialize());
     let (_user_sk, user_pk) = secp256k1::generate_keypair(&mut thread_rng());
     let user_address =
-        Address::new(kaspad1.network.into(), kaspa_addresses::Version::PubKey, &user_pk.x_only_public_key().0.serialize());
+        Address::new(celeniumd1.network.into(), celenium_addresses::Version::PubKey, &user_pk.x_only_public_key().0.serialize());
 
     let mut last_block_hash = None;
     for _ in 0..coinbase_maturity {
@@ -545,7 +545,7 @@ async fn daemon_compute_budget_relay_test() {
     .await;
 
     if rpc_client2.get_connected_peer_info().await.unwrap().peer_info.is_empty() {
-        rpc_client2.add_peer(format!("127.0.0.1:{}", kaspad1.p2p_port).try_into().unwrap(), true).await.unwrap();
+        rpc_client2.add_peer(format!("127.0.0.1:{}", celeniumd1.p2p_port).try_into().unwrap(), true).await.unwrap();
         let check_client = rpc_client2.clone();
         wait_for(
             50,
@@ -682,14 +682,14 @@ async fn daemon_compute_budget_relay_test() {
 
     rpc_client1.disconnect().await.unwrap();
     rpc_client2.disconnect().await.unwrap();
-    kaspad1.shutdown();
-    kaspad2.shutdown();
+    celeniumd1.shutdown();
+    celeniumd2.shutdown();
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
 async fn daemon_rejects_transactions_with_inconsistent_input_mass_and_version() {
     init_allocator_with_default_settings();
-    kaspa_core::log::try_init_logger("INFO");
+    celenium_core::log::try_init_logger("INFO");
 
     let compute_budget_relay_test_params =
         PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("testdata/params/compute_budget_relay_test_params.json");
@@ -705,12 +705,12 @@ async fn daemon_rejects_transactions_with_inconsistent_input_mass_and_version() 
         ..Default::default()
     };
 
-    let mut kaspad = Daemon::new_random_with_args(args, 10);
-    let rpc_client = kaspad.start().await;
+    let mut celeniumd = Daemon::new_random_with_args(args, 10);
+    let rpc_client = celeniumd.start().await;
 
     let (miner_sk, miner_pk) = secp256k1::generate_keypair(&mut thread_rng());
     let miner_address =
-        Address::new(kaspad.network.into(), kaspa_addresses::Version::PubKey, &miner_pk.x_only_public_key().0.serialize());
+        Address::new(celeniumd.network.into(), celenium_addresses::Version::PubKey, &miner_pk.x_only_public_key().0.serialize());
     let pay_spk = pay_to_address_script(&miner_address);
     let miner_schnorr_key = secp256k1::Keypair::from_secret_key(secp256k1::SECP256K1, &miner_sk);
 
@@ -760,13 +760,13 @@ async fn daemon_rejects_transactions_with_inconsistent_input_mass_and_version() 
     rpc_client.submit_transaction(valid_v0_rpc_tx, false).await.expect("expected the valid v0 transaction to be accepted");
 
     rpc_client.disconnect().await.unwrap();
-    kaspad.shutdown();
+    celeniumd.shutdown();
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
 async fn daemon_pruning_seqcommit_sync_test() {
     init_allocator_with_default_settings();
-    kaspa_core::log::try_init_logger("INFO,kaspa_testing_integration=trace,kaspa_rpc_core=debug");
+    celenium_core::log::try_init_logger("INFO,celenium_testing_integration=trace,celenium_rpc_core=debug");
 
     let override_params_path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("testdata/params/seqcommit_sync_test_params.json");
     let params = load_override_params(&override_params_path);
@@ -782,12 +782,12 @@ async fn daemon_pruning_seqcommit_sync_test() {
     };
 
     let total_fd_limit = 10;
-    let mut kaspad1 = Daemon::new_random_with_args(args.clone(), total_fd_limit);
-    let rpc_client1 = kaspad1.start().await;
+    let mut celeniumd1 = Daemon::new_random_with_args(args.clone(), total_fd_limit);
+    let rpc_client1 = celeniumd1.start().await;
 
     let (miner_sk, miner_pk) = secp256k1::generate_keypair(&mut thread_rng());
     let miner_address =
-        Address::new(kaspad1.network.into(), kaspa_addresses::Version::PubKey, &miner_pk.x_only_public_key().0.serialize());
+        Address::new(celeniumd1.network.into(), celenium_addresses::Version::PubKey, &miner_pk.x_only_public_key().0.serialize());
     let miner_schnorr_key = secp256k1::Keypair::from_secret_key(secp256k1::SECP256K1, &miner_sk);
 
     // Step 1: advance the chain to ~1.5 * finality depth from genesis.
@@ -904,10 +904,10 @@ async fn daemon_pruning_seqcommit_sync_test() {
     }
 
     // Step 3: only now start the syncee and let it sync and validate the seqcommit flow.
-    let mut kaspad2 = Daemon::new_random_with_args(args, total_fd_limit);
-    let rpc_client2 = kaspad2.start().await;
+    let mut celeniumd2 = Daemon::new_random_with_args(args, total_fd_limit);
+    let rpc_client2 = celeniumd2.start().await;
 
-    rpc_client2.add_peer(format!("127.0.0.1:{}", kaspad1.p2p_port).try_into().unwrap(), true).await.unwrap();
+    rpc_client2.add_peer(format!("127.0.0.1:{}", celeniumd1.p2p_port).try_into().unwrap(), true).await.unwrap();
     let check_client = rpc_client2.clone();
     wait_for(
         50,
@@ -951,8 +951,8 @@ async fn daemon_pruning_seqcommit_sync_test() {
 
     rpc_client1.disconnect().await.unwrap();
     rpc_client2.disconnect().await.unwrap();
-    kaspad1.shutdown();
-    kaspad2.shutdown();
+    celeniumd1.shutdown();
+    celeniumd2.shutdown();
 }
 
 // IBD test focused on `sync_new_smt_state` (protocol/flows/src/ibd/flow.rs:635).
@@ -969,7 +969,7 @@ async fn daemon_ibd_smt_state_sync_test() {
     const SMT_ANTICONE_COUNT: usize = 4;
 
     init_allocator_with_default_settings();
-    kaspa_core::log::try_init_logger("INFO,kaspa_testing_integration=trace,kaspa_rpc_core=debug");
+    celenium_core::log::try_init_logger("INFO,celenium_testing_integration=trace,celenium_rpc_core=debug");
 
     let override_params_path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("testdata/params/seqcommit_sync_test_params.json");
     let params = load_override_params(&override_params_path);
@@ -985,12 +985,12 @@ async fn daemon_ibd_smt_state_sync_test() {
     };
 
     let total_fd_limit = 10;
-    let mut kaspad1 = Daemon::new_random_with_args(args.clone(), total_fd_limit);
-    let rpc_client1 = kaspad1.start().await;
+    let mut celeniumd1 = Daemon::new_random_with_args(args.clone(), total_fd_limit);
+    let rpc_client1 = celeniumd1.start().await;
 
     let (miner_sk, miner_pk) = secp256k1::generate_keypair(&mut thread_rng());
     let miner_address =
-        Address::new(kaspad1.network.into(), kaspa_addresses::Version::PubKey, &miner_pk.x_only_public_key().0.serialize());
+        Address::new(celeniumd1.network.into(), celenium_addresses::Version::PubKey, &miner_pk.x_only_public_key().0.serialize());
     let miner_schnorr_key = secp256k1::Keypair::from_secret_key(secp256k1::SECP256K1, &miner_sk);
 
     // Phase 1: mine enough blocks to mature SMT_LANE_COUNT coinbase outputs.
@@ -1121,10 +1121,10 @@ async fn daemon_ibd_smt_state_sync_test() {
     let target_pruning_point = dag_info.pruning_point_hash;
 
     // Phase 4: bring up the syncee and connect it to the syncer.
-    let mut kaspad2 = Daemon::new_random_with_args(args, total_fd_limit);
-    let rpc_client2 = kaspad2.start().await;
+    let mut celeniumd2 = Daemon::new_random_with_args(args, total_fd_limit);
+    let rpc_client2 = celeniumd2.start().await;
 
-    rpc_client2.add_peer(format!("127.0.0.1:{}", kaspad1.p2p_port).try_into().unwrap(), true).await.unwrap();
+    rpc_client2.add_peer(format!("127.0.0.1:{}", celeniumd1.p2p_port).try_into().unwrap(), true).await.unwrap();
     let check_client = rpc_client2.clone();
     wait_for(
         50,
@@ -1187,32 +1187,32 @@ async fn daemon_ibd_smt_state_sync_test() {
 
     rpc_client1.disconnect().await.unwrap();
     rpc_client2.disconnect().await.unwrap();
-    kaspad1.shutdown();
-    kaspad2.shutdown();
+    celeniumd1.shutdown();
+    celeniumd2.shutdown();
 }
 
 // The following test runtime parameters are required for a graceful shutdown of the gRPC server
 #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
 async fn daemon_cleaning_test() {
     init_allocator_with_default_settings();
-    kaspa_core::log::try_init_logger("info,kaspa_grpc_core=trace,kaspa_grpc_server=trace,kaspa_grpc_client=trace,kaspa_core=trace");
+    celenium_core::log::try_init_logger("info,celenium_grpc_core=trace,celenium_grpc_server=trace,celenium_grpc_client=trace,celenium_core=trace");
     let args = Args { devnet: true, ..Default::default() };
     let consensus_manager;
     let async_runtime;
     let core;
     {
         let total_fd_limit = 10;
-        let mut kaspad1 = Daemon::new_random_with_args(args, total_fd_limit);
-        let dyn_consensus_manager = kaspad1.core.find(ConsensusManager::IDENT).unwrap();
-        let dyn_async_runtime = kaspad1.core.find(AsyncRuntime::IDENT).unwrap();
+        let mut celeniumd1 = Daemon::new_random_with_args(args, total_fd_limit);
+        let dyn_consensus_manager = celeniumd1.core.find(ConsensusManager::IDENT).unwrap();
+        let dyn_async_runtime = celeniumd1.core.find(AsyncRuntime::IDENT).unwrap();
         consensus_manager = Arc::downgrade(&Arc::downcast::<ConsensusManager>(dyn_consensus_manager.into_any_arc()).unwrap());
         async_runtime = Arc::downgrade(&Arc::downcast::<AsyncRuntime>(dyn_async_runtime.into_any_arc()).unwrap());
-        core = Arc::downgrade(&kaspad1.core);
+        core = Arc::downgrade(&celeniumd1.core);
 
-        let rpc_client1 = kaspad1.start().await;
+        let rpc_client1 = celeniumd1.start().await;
         rpc_client1.disconnect().await.unwrap();
         drop(rpc_client1);
-        kaspad1.shutdown();
+        celeniumd1.shutdown();
     }
     tokio::time::sleep(Duration::from_millis(200)).await;
 
@@ -1227,7 +1227,7 @@ async fn daemon_cleaning_test() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
 async fn daemon_banned_ip_inbound_rejection_test() {
     init_allocator_with_default_settings();
-    kaspa_core::log::try_init_logger("INFO");
+    celenium_core::log::try_init_logger("INFO");
 
     let args = Args {
         simnet: true,
@@ -1239,36 +1239,36 @@ async fn daemon_banned_ip_inbound_rejection_test() {
     };
     let total_fd_limit = 10;
 
-    let mut kaspad1 = Daemon::new_random_with_args(args.clone(), total_fd_limit);
-    let mut kaspad2 = Daemon::new_random_with_args(args, total_fd_limit);
-    let rpc_client1 = kaspad1.start().await;
-    let rpc_client2 = kaspad2.start().await;
+    let mut celeniumd1 = Daemon::new_random_with_args(args.clone(), total_fd_limit);
+    let mut celeniumd2 = Daemon::new_random_with_args(args, total_fd_limit);
+    let rpc_client1 = celeniumd1.start().await;
+    let rpc_client2 = celeniumd2.start().await;
 
-    // Both daemons listen on 127.0.0.1, so banning the loopback IP on kaspad1
+    // Both daemons listen on 127.0.0.1, so banning the loopback IP on celeniumd1
     // simulates banning the IP of the connecting (inbound) peer
     let ip = ContextualNetAddress::from_str("127.0.0.1").unwrap().normalize(1).ip;
 
-    // Ban the IP on kaspad1
+    // Ban the IP on celeniumd1
     rpc_client1.ban_call(None, BanRequest { ip }).await.unwrap();
 
     // Verify the ban was registered
     let response = rpc_client1.get_peer_addresses_call(None, GetPeerAddressesRequest {}).await.unwrap();
     assert!(response.banned_addresses.contains(&ip), "the IP should be listed as banned");
 
-    // Have kaspad2 connect to kaspad1. This is an outbound connection from kaspad2's
-    // perspective but an inbound connection from kaspad1's perspective
-    rpc_client2.add_peer(format!("127.0.0.1:{}", kaspad1.p2p_port).try_into().unwrap(), false).await.unwrap();
+    // Have celeniumd2 connect to celeniumd1. This is an outbound connection from celeniumd2's
+    // perspective but an inbound connection from celeniumd1's perspective
+    rpc_client2.add_peer(format!("127.0.0.1:{}", celeniumd1.p2p_port).try_into().unwrap(), false).await.unwrap();
 
-    // Give kaspad1 ample time to (attempt to) process the inbound connection
+    // Give celeniumd1 ample time to (attempt to) process the inbound connection
     tokio::time::sleep(Duration::from_secs(5)).await;
 
-    // kaspad1 must have rejected the inbound connection from the banned IP
+    // celeniumd1 must have rejected the inbound connection from the banned IP
     let peers1 = rpc_client1.get_connected_peer_info().await.unwrap().peer_info;
-    assert!(peers1.is_empty(), "kaspad1 accepted an inbound connection from a banned IP: {:?}", peers1);
+    assert!(peers1.is_empty(), "celeniumd1 accepted an inbound connection from a banned IP: {:?}", peers1);
 
-    // And consequently kaspad2 must not be connected either
+    // And consequently celeniumd2 must not be connected either
     let peers2 = rpc_client2.get_connected_peer_info().await.unwrap().peer_info;
-    assert!(peers2.is_empty(), "kaspad2 unexpectedly reports a connected peer: {:?}", peers2);
+    assert!(peers2.is_empty(), "celeniumd2 unexpectedly reports a connected peer: {:?}", peers2);
 
     // Unban the IP and verify a subsequent inbound connection is accepted
     rpc_client1.unban_call(None, UnbanRequest { ip }).await.unwrap();
@@ -1276,7 +1276,7 @@ async fn daemon_banned_ip_inbound_rejection_test() {
     let response = rpc_client1.get_peer_addresses_call(None, GetPeerAddressesRequest {}).await.unwrap();
     assert!(!response.banned_addresses.contains(&ip), "the IP should no longer be listed as banned");
 
-    rpc_client2.add_peer(format!("127.0.0.1:{}", kaspad1.p2p_port).try_into().unwrap(), false).await.unwrap();
+    rpc_client2.add_peer(format!("127.0.0.1:{}", celeniumd1.p2p_port).try_into().unwrap(), false).await.unwrap();
 
     let check_client = rpc_client1.clone();
     wait_for(
@@ -1288,12 +1288,12 @@ async fn daemon_banned_ip_inbound_rejection_test() {
             }
             Box::pin(peer_connected(check_client.clone()))
         },
-        "kaspad1 did not accept the inbound connection after the IP was unbanned",
+        "celeniumd1 did not accept the inbound connection after the IP was unbanned",
     )
     .await;
 
     rpc_client1.disconnect().await.unwrap();
     rpc_client2.disconnect().await.unwrap();
-    kaspad1.shutdown();
-    kaspad2.shutdown();
+    celeniumd1.shutdown();
+    celeniumd2.shutdown();
 }

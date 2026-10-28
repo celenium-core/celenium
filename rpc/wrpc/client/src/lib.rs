@@ -1,17 +1,17 @@
 //!
-//! # wRPC Client for Rusty Kaspa p2p Node
+//! # wRPC Client for Rusty Celenium p2p Node
 //!
-//! This crate provides a WebSocket RPC client for Rusty Kaspa p2p node. It is based on the
+//! This crate provides a WebSocket RPC client for Rusty Celenium p2p node. It is based on the
 //! [wRPC](https://docs.rs/workflow-rpc) crate that offers WebSocket RPC implementation
 //! for Rust based on Borsh and Serde JSON serialization. wRPC is a lightweight RPC framework
 //! meant to function as an IPC (Inter-Process Communication) mechanism for Rust applications.
 //!
 //! Rust examples on using wRPC client can be found in the
-//! [examples](https://github.com/kaspanet/rusty-kaspa/tree/master/rpc/wrpc/examples) folder.
+//! [examples](https://github.com/celeniumnet/rusty-celenium/tree/master/rpc/wrpc/examples) folder.
 //!
-//! WASM bindings for wRPC client can be found in the [`kaspa-wrpc-wasm`](https://docs.rs/kaspa-wrpc-wasm) crate.
+//! WASM bindings for wRPC client can be found in the [`celenium-wrpc-wasm`](https://docs.rs/celenium-wrpc-wasm) crate.
 //!
-//! The main struct managing Kaspa RPC client connections is the [`KaspaRpcClient`].
+//! The main struct managing Celenium RPC client connections is the [`CeleniumRpcClient`].
 //!
 //! ## TLS crypto provider (native)
 //!
@@ -22,7 +22,7 @@
 //!
 //! For zero-config use, the default `rustls-tls-webpki-roots` feature installs
 //! the pure-Rust `ring` provider automatically the first time a
-//! [`KaspaRpcClient`] or [`Resolver`] is constructed (see
+//! [`CeleniumRpcClient`] or [`Resolver`] is constructed (see
 //! [`ensure_crypto_provider`]). The install is idempotent and a no-op if a
 //! provider has already been installed, so to use a different provider (e.g.
 //! `aws-lc-rs`) install it yourself *before* constructing a client:
@@ -43,7 +43,7 @@ pub mod client;
 pub mod error;
 mod imports;
 pub mod result;
-pub use imports::{KaspaRpcClient, Resolver, WrpcEncoding};
+pub use imports::{CeleniumRpcClient, Resolver, WrpcEncoding};
 pub mod node;
 pub mod parse;
 pub mod prelude;

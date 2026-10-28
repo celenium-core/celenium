@@ -5,7 +5,7 @@ use crate::{
 };
 
 use super::prelude::{Cache, DbKey, DbWriter};
-use kaspa_utils::mem_size::MemSizeEstimator;
+use celenium_utils::mem_size::MemSizeEstimator;
 use rocksdb::{Direction, IterateBounds, IteratorMode, ReadOptions};
 use serde::{Serialize, de::DeserializeOwned};
 use std::{collections::hash_map::RandomState, error::Error, hash::BuildHasher, marker::PhantomData, ops::RangeInclusive, sync::Arc};
@@ -549,7 +549,7 @@ mod tests {
         create_temp_db,
         prelude::{BatchDbWriter, ConnBuilder, DirectDbWriter},
     };
-    use kaspa_hashes::Hash;
+    use celenium_hashes::Hash;
     use rocksdb::WriteBatch;
 
     #[test]

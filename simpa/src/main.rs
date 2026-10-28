@@ -3,8 +3,8 @@ use async_channel::unbounded;
 use clap::Parser;
 use futures::{Future, future::try_join_all};
 use itertools::Itertools;
-use kaspa_alloc::init_allocator_with_default_settings;
-use kaspa_consensus::{
+use celenium_alloc::init_allocator_with_default_settings;
+use celenium_consensus::{
     config::ConfigBuilder,
     consensus::Consensus,
     constants::perf::PerfParams,
@@ -16,28 +16,28 @@ use kaspa_consensus::{
     },
     params::{DEVNET_PARAMS, ForkActivation, NETWORK_DELAY_BOUND, OverrideParams, Params, SIMNET_PARAMS, TenBps},
 };
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     BlockHashSet, BlockLevel, HashMapCustomHasher, api::ConsensusApi, block::Block, blockstatus::BlockStatus,
     config::bps::calculate_ghostdag_k, errors::block::BlockProcessResult, mining_rules::MiningRules, tx::TransactionType,
 };
-use kaspa_consensus_notify::root::ConsensusNotificationRoot;
-use kaspa_core::{
+use celenium_consensus_notify::root::ConsensusNotificationRoot;
+use celenium_core::{
     info,
     task::{service::AsyncService, tick::TickService},
     time::unix_now,
     trace, warn,
 };
-use kaspa_database::prelude::ConnBuilder;
-use kaspa_database::{create_temp_db, load_existing_db};
-use kaspa_hashes::Hash;
-use kaspa_perf_monitor::{builder::Builder, counters::CountersSnapshot};
-use kaspa_utils::fd_budget;
-use simpa::simulator::network::KaspaNetworkSimulator;
+use celenium_database::prelude::ConnBuilder;
+use celenium_database::{create_temp_db, load_existing_db};
+use celenium_hashes::Hash;
+use celenium_perf_monitor::{builder::Builder, counters::CountersSnapshot};
+use celenium_utils::fd_budget;
+use simpa::simulator::network::CeleniumNetworkSimulator;
 use std::{collections::VecDeque, sync::Arc, time::Duration};
 
 mod blocks_json;
 
-/// Kaspa Network Simulator
+/// Celenium Network Simulator
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
@@ -151,15 +151,15 @@ fn main() {
     // Initialize the logger
     cfg_if::cfg_if! {
         if #[cfg(feature = "semaphore-trace")] {
-            kaspa_core::log::init_logger(None, &format!("{},{}=debug", args.log_level, kaspa_utils::sync::semaphore_module_path()));
+            celenium_core::log::init_logger(None, &format!("{},{}=debug", args.log_level, celenium_utils::sync::semaphore_module_path()));
         } else {
-            kaspa_core::log::init_logger(None, &args.log_level);
+            celenium_core::log::init_logger(None, &args.log_level);
         }
     };
 
     // Configure the panic behavior
     // As we log the panic, we want to set it up after the logger
-    kaspa_core::panic::configure_panic();
+    celenium_core::panic::configure_panic();
 
     // Print package name and version
     info!("{} v{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
@@ -174,8 +174,8 @@ fn main_impl(mut args: Args) {
         let ts = Arc::new(TickService::new());
 
         let cb = move |counters: CountersSnapshot| {
-            trace!("[{}] {}", kaspa_perf_monitor::SERVICE_NAME, counters.to_process_metrics_display());
-            trace!("[{}] {}", kaspa_perf_monitor::SERVICE_NAME, counters.to_io_metrics_display());
+            trace!("[{}] {}", celenium_perf_monitor::SERVICE_NAME, counters.to_process_metrics_display());
+            trace!("[{}] {}", celenium_perf_monitor::SERVICE_NAME, counters.to_io_metrics_display());
             #[cfg(feature = "heap")]
             trace!("heap stats: {:?}", dhat::HeapStats::get());
         };
@@ -259,7 +259,7 @@ fn main_impl(mut args: Args) {
         (consensus, lifetime)
     } else {
         let until = if args.target_blocks.is_none() { config.genesis.timestamp + args.sim_time * 1000 } else { u64::MAX }; // milliseconds
-        let mut sim = KaspaNetworkSimulator::new(args.delay, args.bps, args.target_blocks, config.clone(), args.output_dir);
+        let mut sim = CeleniumNetworkSimulator::new(args.delay, args.bps, args.target_blocks, config.clone(), args.output_dir);
         let (consensus, handles, lifetime) = sim
             .init(
                 args.miners,
@@ -357,7 +357,7 @@ fn apply_args_to_consensus_params(args: &Args, params: &mut Params) {
     // params.genesis.timestamp = 0;
     if args.testnet11 {
         info!(
-            "Using kaspa-testnet-11 configuration (GHOSTDAG K={}, DAA window size={}, Median time window size={})",
+            "Using celenium-testnet-11 configuration (GHOSTDAG K={}, DAA window size={}, Median time window size={})",
             params.ghostdag_k(),
             params.difficulty_window_size,
             params.past_median_time_window_size,
@@ -524,9 +524,9 @@ mod tests {
         args.tpb = 1;
         args.test_pruning = true;
 
-        kaspa_core::log::try_init_logger(&args.log_level);
+        celenium_core::log::try_init_logger(&args.log_level);
         // As we log the panic, we want to set it up after the logger
-        kaspa_core::panic::configure_panic();
+        celenium_core::panic::configure_panic();
         main_impl(args);
     }
 }

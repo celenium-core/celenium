@@ -1,10 +1,10 @@
 use async_trait::async_trait;
-use kaspa_consensus_core::config::Config;
-use kaspa_index_core::indexed_utxos::UtxoSetByScriptPublicKey;
-use kaspa_index_core::notification::{self as index_notify, Notification as IndexNotification};
-use kaspa_notify::converter::Converter;
-use kaspa_rpc_core::{Notification, RpcUtxosByAddressesEntry, UtxosChangedNotification, ordered_utxo_set_into_rpc, utxo_set_into_rpc};
-use kaspa_utxoindex::model::OrderedUtxoEntries;
+use celenium_consensus_core::config::Config;
+use celenium_index_core::indexed_utxos::UtxoSetByScriptPublicKey;
+use celenium_index_core::notification::{self as index_notify, Notification as IndexNotification};
+use celenium_notify::converter::Converter;
+use celenium_rpc_core::{Notification, RpcUtxosByAddressesEntry, UtxosChangedNotification, ordered_utxo_set_into_rpc, utxo_set_into_rpc};
+use celenium_utxoindex::model::OrderedUtxoEntries;
 use std::sync::Arc;
 
 /// Conversion of consensus_core to rpc_core structures

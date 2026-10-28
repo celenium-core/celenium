@@ -1,22 +1,22 @@
 #![allow(clippy::arithmetic_side_effects)]
-use kaspa_consensus_core::hashing;
-use kaspa_consensus_core::hashing::sighash::SigHashReusedValuesUnsync;
-use kaspa_consensus_core::subnets::SubnetworkId;
-use kaspa_consensus_core::tx::{
+use celenium_consensus_core::hashing;
+use celenium_consensus_core::hashing::sighash::SigHashReusedValuesUnsync;
+use celenium_consensus_core::subnets::SubnetworkId;
+use celenium_consensus_core::tx::{
     CovenantBinding, PopulatedTransaction, ScriptPublicKey, Transaction, TransactionInput, TransactionOutpoint, TransactionOutput,
     UtxoEntry,
 };
-use kaspa_hashes::Hash;
-use kaspa_txscript::caches::Cache;
-use kaspa_txscript::covenants::CovenantsContext;
-use kaspa_txscript::opcodes::codes::{
+use celenium_hashes::Hash;
+use celenium_txscript::caches::Cache;
+use celenium_txscript::covenants::CovenantsContext;
+use celenium_txscript::opcodes::codes::{
     Op1Add, OpAuthOutputCount, OpAuthOutputIdx, OpBlake2b, OpCat, OpData8, OpData62, OpEqual, OpEqualVerify, OpNum2Bin, OpSwap,
     OpTrue, OpTxInputIndex, OpTxInputScriptSigLen, OpTxInputScriptSigSubstr, OpTxOutputSpkLen, OpTxOutputSpkSubstr,
 };
-use kaspa_txscript::script_builder::{ScriptBuilder, ScriptBuilderResult};
-use kaspa_txscript::{EngineCtx, pay_to_script_hash_script};
-use kaspa_txscript::{EngineFlags, TxScriptEngine};
-use kaspa_txscript_errors::TxScriptError;
+use celenium_txscript::script_builder::{ScriptBuilder, ScriptBuilderResult};
+use celenium_txscript::{EngineCtx, pay_to_script_hash_script};
+use celenium_txscript::{EngineFlags, TxScriptEngine};
+use celenium_txscript_errors::TxScriptError;
 use rand::{Rng, RngCore, SeedableRng, seq::SliceRandom};
 
 fn main() -> ScriptBuilderResult<()> {
@@ -117,10 +117,10 @@ fn build_covenant_script() -> ScriptBuilderResult<Vec<u8>> {
     let p2sh_prefix = [
         0,
         0, // Script version 0 (two bytes)
-        kaspa_txscript::opcodes::codes::OpBlake2b,
-        kaspa_txscript::opcodes::codes::OpData32,
+        celenium_txscript::opcodes::codes::OpBlake2b,
+        celenium_txscript::opcodes::codes::OpData32,
     ];
-    let p2sh_suffix = [kaspa_txscript::opcodes::codes::OpEqual];
+    let p2sh_suffix = [celenium_txscript::opcodes::codes::OpEqual];
 
     Ok(ScriptBuilder::new()
         // Check that this is the first input.
@@ -229,7 +229,7 @@ fn build_spend_tx(state: &CovenantState, next_counter: u8, covenant_script: &[u8
 fn run_vm(
     tx: &Transaction,
     utxo_entry: &UtxoEntry,
-    sig_cache: &Cache<kaspa_txscript::SigCacheKey, bool>,
+    sig_cache: &Cache<celenium_txscript::SigCacheKey, bool>,
     reused_values: &SigHashReusedValuesUnsync,
     flags: EngineFlags,
 ) -> Result<(), TxScriptError> {

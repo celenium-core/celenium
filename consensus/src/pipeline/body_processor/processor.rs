@@ -23,7 +23,7 @@ use crate::{
     processes::{coinbase::CoinbaseManager, transaction_validator::TransactionValidator},
 };
 use crossbeam_channel::{Receiver, Sender};
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     KType,
     block::Block,
     blockstatus::BlockStatus::{self, StatusHeaderOnly, StatusInvalid},
@@ -31,13 +31,13 @@ use kaspa_consensus_core::{
     mass::{BlockLaneLimits, BlockMassLimits, Mass, MassCalculator},
     tx::Transaction,
 };
-use kaspa_consensus_notify::{
+use celenium_consensus_notify::{
     notification::{BlockAddedNotification, Notification},
     root::ConsensusNotificationRoot,
 };
-use kaspa_consensusmanager::SessionLock;
-use kaspa_hashes::Hash;
-use kaspa_notify::notifier::Notify;
+use celenium_consensusmanager::SessionLock;
+use celenium_hashes::Hash;
+use celenium_notify::notifier::Notify;
 use parking_lot::RwLock;
 use rayon::ThreadPool;
 use rocksdb::WriteBatch;

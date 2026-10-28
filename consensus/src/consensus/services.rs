@@ -16,8 +16,8 @@ use crate::{
         transaction_validator::TransactionValidator, traversal_manager::DagTraversalManager, window::SampledWindowManager,
     },
 };
-use kaspa_consensus_core::mass::MassCalculator;
-use kaspa_txscript::caches::TxScriptCacheCounters;
+use celenium_consensus_core::mass::MassCalculator;
+use celenium_txscript::caches::TxScriptCacheCounters;
 use std::sync::{Arc, atomic::AtomicBool};
 
 pub type DbGhostdagManager =

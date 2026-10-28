@@ -1,5 +1,5 @@
-use crate::{Peer, Router, common::ProtocolError, pb::KaspadMessage};
-use kaspa_core::{debug, info, warn};
+use crate::{Peer, Router, common::ProtocolError, pb::CeleniumdMessage};
+use celenium_core::{debug, info, warn};
 use parking_lot::RwLock;
 use std::{
     collections::{HashMap, hash_map::Entry::Occupied},
@@ -107,7 +107,7 @@ impl Hub {
     }
 
     /// Send a message to a specific peer
-    pub async fn send(&self, peer_key: PeerKey, msg: KaspadMessage) -> Result<bool, ProtocolError> {
+    pub async fn send(&self, peer_key: PeerKey, msg: CeleniumdMessage) -> Result<bool, ProtocolError> {
         let op = self.peers.read().get(&peer_key).cloned();
         if let Some(router) = op {
             router.enqueue(msg).await?;
@@ -118,7 +118,7 @@ impl Hub {
     }
 
     /// Broadcast a message to all peers (except an optional filtered peer)
-    pub async fn broadcast(&self, msg: KaspadMessage, filter_peer: Option<PeerKey>) {
+    pub async fn broadcast(&self, msg: CeleniumdMessage, filter_peer: Option<PeerKey>) {
         let peers = self
             .peers
             .read()
@@ -132,7 +132,7 @@ impl Hub {
     }
 
     /// Broadcast a message to only some number of peers
-    pub async fn broadcast_to_some_peers(&self, msg: KaspadMessage, num_peers: usize) {
+    pub async fn broadcast_to_some_peers(&self, msg: CeleniumdMessage, num_peers: usize) {
         assert!(num_peers > 0);
 
         let peers = self.select_some_peers(num_peers);
@@ -143,7 +143,7 @@ impl Hub {
     }
 
     /// Broadcast a vector of messages to all peers (except an optional filtered peer)
-    pub async fn broadcast_many(&self, msgs: Vec<KaspadMessage>, filter_peer: Option<PeerKey>) {
+    pub async fn broadcast_many(&self, msgs: Vec<CeleniumdMessage>, filter_peer: Option<PeerKey>) {
         if msgs.is_empty() {
             return;
         }

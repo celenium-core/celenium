@@ -5,15 +5,15 @@ use crate::{
     request_handler::{factory::Factory, interface::Interface},
 };
 use futures::{FutureExt, Stream};
-use kaspa_core::{debug, info, warn};
-use kaspa_grpc_core::{
+use celenium_core::{debug, info, warn};
+use celenium_grpc_core::{
     RPC_MAX_MESSAGE_SIZE,
     protowire::{
-        KaspadRequest, KaspadResponse,
+        CeleniumdRequest, CeleniumdResponse,
         rpc_server::{Rpc, RpcServer},
     },
 };
-use kaspa_notify::{
+use celenium_notify::{
     connection::ChannelType,
     events::EVENT_TYPE_ARRAY,
     listener::ListenerLifespan,
@@ -21,13 +21,13 @@ use kaspa_notify::{
     subscriber::Subscriber,
     subscription::{MutationPolicies, UtxosChangedMutationPolicy, context::SubscriptionContext},
 };
-use kaspa_rpc_core::{
+use celenium_rpc_core::{
     Notification, RpcResult,
     api::rpc::DynRpcService,
     notify::{channel::NotificationChannel, connection::ChannelConnection},
 };
-use kaspa_utils::networking::NetAddress;
-use kaspa_utils_tower::{
+use celenium_utils::networking::NetAddress;
+use celenium_utils_tower::{
     counters::TowerConnectionCounters,
     middleware::{CountBytesBody, MapRequestBodyLayer, MapResponseBodyLayer},
 };
@@ -237,12 +237,12 @@ impl Drop for ConnectionHandler {
 
 #[tonic::async_trait]
 impl Rpc for ConnectionHandler {
-    type MessageStreamStream = Pin<Box<dyn Stream<Item = Result<KaspadResponse, tonic::Status>> + Send + Sync + 'static>>;
+    type MessageStreamStream = Pin<Box<dyn Stream<Item = Result<CeleniumdResponse, tonic::Status>> + Send + Sync + 'static>>;
 
     /// Handle the new arriving client connection
     async fn message_stream(
         &self,
-        request: Request<tonic::Streaming<KaspadRequest>>,
+        request: Request<tonic::Streaming<CeleniumdRequest>>,
     ) -> Result<Response<Self::MessageStreamStream>, tonic::Status> {
         const SERVICE_IS_DOWN: &str = "The gRPC service is down";
 

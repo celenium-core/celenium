@@ -1,6 +1,6 @@
 [package]
-name = "kaspa-hashes"
-description = "Kaspa hashing functions"
+name = "celenium-hashes"
+description = "Celenium hashing functions"
 rust-version.workspace = true
 version.workspace = true
 edition.workspace = true
@@ -12,8 +12,8 @@ repository.workspace = true
 [features]
 default = ["keccak?/asm", "mem_size", "std", "workflow"]
 no-asm = ["keccak"]
-mem_size = ["kaspa-utils/mem_size"]
-std = ["blake2b_simd/std", "blake3/std", "borsh/std", "faster-hex/std", "js-sys?/std", "kaspa-utils/std", "serde/std", "sha2/std", "wasm-bindgen/std"]
+mem_size = ["celenium-utils/mem_size"]
+std = ["blake2b_simd/std", "blake3/std", "borsh/std", "faster-hex/std", "js-sys?/std", "celenium-utils/std", "serde/std", "sha2/std", "wasm-bindgen/std"]
 workflow = ["std", "dep:workflow-wasm", "dep:js-sys"]
 zerocopy = ["dep:zerocopy"]
 
@@ -23,7 +23,7 @@ blake3 = { workspace = true }
 borsh.workspace = true
 faster-hex.workspace = true
 js-sys = { workspace = true, optional = true }
-kaspa-utils = { workspace = true, default-features = false }
+celenium-utils = { workspace = true, default-features = false }
 keccak = { workspace = true, optional = true }
 serde.workspace = true
 sha2.workspace = true

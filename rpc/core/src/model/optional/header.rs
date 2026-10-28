@@ -1,6 +1,6 @@
 use borsh::{BorshDeserialize, BorshSerialize};
-use kaspa_consensus_core::{BlueWorkType, header::Header};
-use kaspa_hashes::Hash;
+use celenium_consensus_core::{BlueWorkType, header::Header};
+use celenium_hashes::Hash;
 use serde::{Deserialize, Serialize};
 use workflow_serializer::prelude::*;
 

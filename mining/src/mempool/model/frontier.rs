@@ -4,14 +4,14 @@ use crate::{
 };
 
 use feerate_key::FeerateTransactionKey;
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     block::TemplateTransactionSelector,
     config::constants::consensus::{DEFAULT_GAS_PER_LANE_LIMIT, DEFAULT_LANES_PER_BLOCK_LIMIT},
     mass::BlockLaneLimits,
     subnets::SubnetworkId,
     tx::{Transaction, TransactionId},
 };
-use kaspa_core::trace;
+use celenium_core::trace;
 use rand::{Rng, distributions::Uniform, prelude::Distribution};
 use search_tree::SearchTree;
 use selectors::{MutatingTreeSelector, SequenceSelector, SequenceSelectorInput, TakeAllSelector};
@@ -462,13 +462,13 @@ mod tests {
     use crate::mempool::config::{Config, DEFAULT_MAXIMUM_TRANSACTION_COUNT};
     use feerate_key::tests::build_feerate_key;
     use itertools::Itertools;
-    use kaspa_consensus_core::{
+    use celenium_consensus_core::{
         config::params::{DEVNET_PARAMS, MAINNET_PARAMS, SIMNET_PARAMS, TESTNET_PARAMS},
         mass::BlockMassLimits,
         subnets::SubnetworkId,
         tx::{Transaction, TransactionInput, TransactionOutpoint},
     };
-    use kaspa_hashes::{HasherBase, TransactionID};
+    use celenium_hashes::{HasherBase, TransactionID};
     use rand::{SeedableRng, rngs::StdRng, thread_rng};
     use std::collections::HashMap;
     use std::sync::Arc;

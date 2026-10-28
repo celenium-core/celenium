@@ -1,13 +1,13 @@
 //! Checks that `construct_uint!` expands cleanly in a downstream crate.
 //!
 //! This file compiles as its own crate with no `extern crate alloc`, no
-//! feature declarations of its own, and no dependencies beyond kaspa-math's
-//! public surface, so any unqualified `alloc::`/`kaspa_utils` path or
+//! feature declarations of its own, and no dependencies beyond celenium-math's
+//! public surface, so any unqualified `alloc::`/`celenium_utils` path or
 //! caller-side `cfg(feature)` emitted by the macro fails to build here.
 //! Not covered: paths that resolve from the std prelude (`String`,
 //! `format!`), since a test target always links std.
 
-use kaspa_math::{Uint256, construct_uint};
+use celenium_math::{Uint256, construct_uint};
 
 construct_uint!(Uint512, 8);
 
@@ -19,7 +19,7 @@ fn alloc_backed_api_is_caller_hygienic() {
 
 #[test]
 fn hex_impls_are_generated() {
-    use kaspa_utils::hex::ToHex;
+    use celenium_utils::hex::ToHex;
 
     let hex = Uint512::from_u64(0xff).to_hex();
     assert_eq!(Uint512::from_hex(&hex).unwrap(), Uint512::from_u64(0xff));
@@ -27,8 +27,8 @@ fn hex_impls_are_generated() {
 
 #[cfg(feature = "std")]
 #[test]
-fn memsize_impl_follows_kaspa_math_features() {
-    use kaspa_utils::mem_size::MemSizeEstimator;
+fn memsize_impl_follows_celenium_math_features() {
+    use celenium_utils::mem_size::MemSizeEstimator;
 
     assert_eq!(Uint256::from_u64(1).estimate_mem_units(), 1);
     assert_eq!(Uint512::from_u64(1).estimate_mem_units(), 1);

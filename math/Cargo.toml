@@ -1,6 +1,6 @@
 [package]
-name = "kaspa-math"
-description = "Kaspa misc math library"
+name = "celenium-math"
+description = "Celenium misc math library"
 categories = ["no-std"]
 rust-version.workspace = true
 version.workspace = true
@@ -15,8 +15,8 @@ default = ["std", "wasm32-sdk"]
 std = [
     "borsh/std",
     "faster-hex/std",
-    "kaspa-utils/std",
-    "kaspa-utils/mem_size",
+    "celenium-utils/std",
+    "celenium-utils/mem_size",
     "malachite-base/std",
     "malachite-nz/std",
     "serde/std",
@@ -35,7 +35,7 @@ wasm32-sdk = [
 [dependencies]
 borsh.workspace = true
 faster-hex.workspace = true
-kaspa-utils.workspace = true
+celenium-utils.workspace = true
 malachite-base.workspace = true
 malachite-nz.workspace = true
 serde.workspace = true

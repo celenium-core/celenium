@@ -1,13 +1,13 @@
 use crate::common::ProtocolError;
 use crate::core::hub::HubEvent;
 use crate::pb::{
-    KaspadMessage, p2p_client::P2pClient as ProtoP2pClient, p2p_server::P2p as ProtoP2p, p2p_server::P2pServer as ProtoP2pServer,
+    CeleniumdMessage, p2p_client::P2pClient as ProtoP2pClient, p2p_server::P2p as ProtoP2p, p2p_server::P2pServer as ProtoP2pServer,
 };
 use crate::{ConnectionInitializer, Router};
 use futures::FutureExt;
-use kaspa_core::{debug, info, warn};
-use kaspa_utils::networking::NetAddress;
-use kaspa_utils_tower::{
+use celenium_core::{debug, info, warn};
+use celenium_utils::networking::NetAddress;
+use celenium_utils_tower::{
     counters::TowerConnectionCounters,
     middleware::{CountBytesBody, MapRequestBodyLayer, MapResponseBodyLayer, ServiceBuilder},
 };
@@ -239,7 +239,7 @@ impl ConnectionHandler {
 
     // TODO: revisit the below constants
     fn outgoing_network_channel_size() -> usize {
-        // TODO: this number is taken from go-kaspad and should be re-evaluated
+        // TODO: this number is taken from go-celeniumd and should be re-evaluated
         (1 << 17) + 256
     }
 
@@ -258,12 +258,12 @@ impl ConnectionHandler {
 
 #[tonic::async_trait]
 impl ProtoP2p for ConnectionHandler {
-    type MessageStreamStream = Pin<Box<dyn futures::Stream<Item = Result<KaspadMessage, TonicStatus>> + Send + 'static>>;
+    type MessageStreamStream = Pin<Box<dyn futures::Stream<Item = Result<CeleniumdMessage, TonicStatus>> + Send + 'static>>;
 
     /// Handle the new arriving **server** connections
     async fn message_stream(
         &self,
-        request: Request<Streaming<KaspadMessage>>,
+        request: Request<Streaming<CeleniumdMessage>>,
     ) -> Result<Response<Self::MessageStreamStream>, TonicStatus> {
         let Some(remote_address) = request.remote_addr() else {
             return Err(TonicStatus::new(tonic::Code::InvalidArgument, "Incoming connection opening request has no remote address"));

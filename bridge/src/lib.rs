@@ -4,7 +4,7 @@ pub mod default_client;
 pub mod errors;
 pub mod hasher;
 pub mod jsonrpc_event;
-pub mod kaspaapi;
+pub mod celeniumapi;
 pub mod log_colors;
 pub mod mining_state;
 pub mod net_utils;
@@ -23,7 +23,7 @@ pub use default_client::*;
 pub use errors::*;
 pub use hasher::*;
 pub use jsonrpc_event::*;
-pub use kaspaapi::*;
+pub use celeniumapi::*;
 pub use mining_state::*;
 pub use prom::{WorkerContext, *};
 #[cfg(feature = "rkstratum_cpu_miner")]

@@ -1,12 +1,12 @@
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     BlockHashSet,
     tx::{ScriptPublicKey, ScriptPublicKeys, TransactionOutpoint},
     utxo::utxo_diff::UtxoDiff,
 };
-use kaspa_consensusmanager::spawn_blocking;
-use kaspa_database::prelude::StoreResult;
-use kaspa_hashes::Hash;
-use kaspa_index_core::indexed_utxos::{BalanceByScriptPublicKey, OrderedUtxoEntriesPage, UtxoPageCursor};
+use celenium_consensusmanager::spawn_blocking;
+use celenium_database::prelude::StoreResult;
+use celenium_hashes::Hash;
+use celenium_index_core::indexed_utxos::{BalanceByScriptPublicKey, OrderedUtxoEntriesPage, UtxoPageCursor};
 use parking_lot::RwLock;
 use std::{collections::HashSet, fmt::Debug, ops::RangeInclusive, sync::Arc};
 

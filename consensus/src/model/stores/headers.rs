@@ -1,12 +1,12 @@
 use std::sync::Arc;
 
-use kaspa_consensus_core::{BlockHasher, BlockLevel, header::Header};
-use kaspa_database::prelude::{BatchDbWriter, CachedDbAccess};
-use kaspa_database::prelude::{CachePolicy, DB};
-use kaspa_database::prelude::{StoreError, StoreResult};
-use kaspa_database::registry::DatabaseStorePrefixes;
-use kaspa_hashes::Hash;
-use kaspa_utils::mem_size::MemSizeEstimator;
+use celenium_consensus_core::{BlockHasher, BlockLevel, header::Header};
+use celenium_database::prelude::{BatchDbWriter, CachedDbAccess};
+use celenium_database::prelude::{CachePolicy, DB};
+use celenium_database::prelude::{StoreError, StoreResult};
+use celenium_database::registry::DatabaseStorePrefixes;
+use celenium_hashes::Hash;
+use celenium_utils::mem_size::MemSizeEstimator;
 use rocksdb::WriteBatch;
 use serde::{Deserialize, Serialize};
 
@@ -52,7 +52,7 @@ struct Header2 {
     pub bits: u32,
     pub nonce: u64,
     pub daa_score: u64,
-    pub blue_work: kaspa_consensus_core::BlueWorkType,
+    pub blue_work: celenium_consensus_core::BlueWorkType,
     pub blue_score: u64,
     pub pruning_point: Hash,
 }

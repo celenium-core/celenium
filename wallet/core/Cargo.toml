@@ -1,7 +1,7 @@
 [package]
-name = "kaspa-wallet-core"
-description = "Kaspa wallet library"
-keywords = ["kaspa", "wallet"]
+name = "celenium-wallet-core"
+description = "Celenium wallet library"
+keywords = ["celenium", "wallet"]
 rust-version.workspace = true
 version.workspace = true
 edition.workspace = true
@@ -13,19 +13,19 @@ repository.workspace = true
 [features]
 multi-user = []
 wasm32-keygen = [
-    # "kaspa-consensus-wasm/wasm32-types",
+    # "celenium-consensus-wasm/wasm32-types",
 ]
 wasm32-core = [
-    "kaspa-consensus-wasm/wasm32-sdk",
-    "kaspa-consensus-core/wasm32-sdk",
-    "kaspa-wrpc-client/wasm32-sdk",
-    "kaspa-wrpc-wasm/wasm32-sdk",
-    "kaspa-wasm-core/wasm32-sdk",
+    "celenium-consensus-wasm/wasm32-sdk",
+    "celenium-consensus-core/wasm32-sdk",
+    "celenium-wrpc-client/wasm32-sdk",
+    "celenium-wrpc-wasm/wasm32-sdk",
+    "celenium-wasm-core/wasm32-sdk",
 ]
 wasm32-sdk = [
     "wasm32-core"
 ]
-git-hash = ["dep:kaspa-build-info"]
+git-hash = ["dep:celenium-build-info"]
 default = ["wasm32-sdk"]
 # default = []
 
@@ -56,26 +56,26 @@ heapless.workspace = true
 hmac.workspace = true
 itertools.workspace = true
 js-sys.workspace = true
-kaspa-addresses.workspace = true
-kaspa-bip32.workspace = true
-kaspa-build-info = { workspace = true, optional = true }
-kaspa-consensus-client.workspace = true
-kaspa-consensus-core.workspace = true
-kaspa-consensus-wasm.workspace = true
-kaspa-core.workspace = true
-kaspa-hashes.workspace = true
-kaspa-metrics-core.workspace = true
-kaspa-notify.workspace = true
-kaspa-rpc-core.workspace = true
-kaspa-txscript-errors = { workspace = true, features = ["std"] }
-kaspa-txscript.workspace = true
-kaspa-utils = { workspace = true, features = ["hashmap"] }
-kaspa-wallet-keys.workspace = true
-kaspa-wallet-macros.workspace = true
-kaspa-wallet-pskt.workspace = true
-kaspa-wasm-core.workspace = true
-kaspa-wrpc-client.workspace = true
-kaspa-wrpc-wasm.workspace = true
+celenium-addresses.workspace = true
+celenium-bip32.workspace = true
+celenium-build-info = { workspace = true, optional = true }
+celenium-consensus-client.workspace = true
+celenium-consensus-core.workspace = true
+celenium-consensus-wasm.workspace = true
+celenium-core.workspace = true
+celenium-hashes.workspace = true
+celenium-metrics-core.workspace = true
+celenium-notify.workspace = true
+celenium-rpc-core.workspace = true
+celenium-txscript-errors = { workspace = true, features = ["std"] }
+celenium-txscript.workspace = true
+celenium-utils = { workspace = true, features = ["hashmap"] }
+celenium-wallet-keys.workspace = true
+celenium-wallet-macros.workspace = true
+celenium-wallet-pskt.workspace = true
+celenium-wasm-core.workspace = true
+celenium-wrpc-client.workspace = true
+celenium-wrpc-wasm.workspace = true
 md-5.workspace = true
 pad.workspace = true
 pbkdf2.workspace = true

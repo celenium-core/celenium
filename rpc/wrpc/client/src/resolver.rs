@@ -1,5 +1,5 @@
 //!
-//! Module implementing [`Resolver`] client for obtaining public Kaspa wRPC endpoints.
+//! Module implementing [`Resolver`] client for obtaining public Celenium wRPC endpoints.
 //!
 
 use std::sync::OnceLock;
@@ -82,12 +82,12 @@ impl Inner {
 }
 
 ///
-/// # Resolver - a client for obtaining public Kaspa wRPC endpoints.
+/// # Resolver - a client for obtaining public Celenium wRPC endpoints.
 ///
-/// This client operates against [Kaspa Resolver](https://github.com/aspectron/kaspa-resolver) service
-/// that provides load-balancing and failover capabilities for Kaspa wRPC endpoints. The default
-/// configuration allows access to public Kaspa nodes, while custom configurations can be supplied
-/// if you are running your own custom Kaspa node cluster.
+/// This client operates against [Celenium Resolver](https://github.com/aspectron/celenium-resolver) service
+/// that provides load-balancing and failover capabilities for Celenium wRPC endpoints. The default
+/// configuration allows access to public Celenium nodes, while custom configurations can be supplied
+/// if you are running your own custom Celenium node cluster.
 ///
 #[derive(Debug, Clone)]
 pub struct Resolver {
@@ -141,7 +141,7 @@ impl Resolver {
             }
         });
 
-        format!("{url}/v{CURRENT_VERSION}/kaspa/{network_id}/{tls}/wrpc/{encoding}")
+        format!("{url}/v{CURRENT_VERSION}/celenium/{network_id}/{tls}/wrpc/{encoding}")
     }
 
     // query a single resolver service
@@ -167,12 +167,12 @@ impl Resolver {
         Err(Error::Custom(format!("Failed to connect: {:?}", errors)))
     }
 
-    /// Obtain a Kaspa p2p [`NodeDescriptor`] from the resolver based on the supplied [`Encoding`] and [`NetworkId`].
+    /// Obtain a Celenium p2p [`NodeDescriptor`] from the resolver based on the supplied [`Encoding`] and [`NetworkId`].
     pub async fn get_node(&self, encoding: Encoding, network_id: NetworkId) -> Result<NodeDescriptor> {
         self.fetch(encoding, network_id).await
     }
 
-    /// Returns a Kaspa wRPC URL from the resolver based on the supplied [`Encoding`] and [`NetworkId`].
+    /// Returns a Celenium wRPC URL from the resolver based on the supplied [`Encoding`] and [`NetworkId`].
     pub async fn get_url(&self, encoding: Encoding, network_id: NetworkId) -> Result<String> {
         let nodes = self.fetch(encoding, network_id).await?;
         Ok(nodes.url.clone())

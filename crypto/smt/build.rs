@@ -35,7 +35,7 @@ fn compute_empty_hashes(domain: &[u8]) -> Vec<[u8; 32]> {
 
 fn format_hash(bytes: &[u8; 32]) -> String {
     let inner: Vec<String> = bytes.iter().map(|b| format!("0x{b:02x}")).collect();
-    format!("kaspa_hashes::Hash::from_bytes([{}])", inner.join(", "))
+    format!("celenium_hashes::Hash::from_bytes([{}])", inner.join(", "))
 }
 
 fn main() {
@@ -47,9 +47,9 @@ fn main() {
 
     for &(name, domain, collapsed) in KNOWN_HASHERS {
         let hashes = compute_empty_hashes(domain);
-        code.push_str(&format!("impl SmtHasher for kaspa_hashes::{name} {{\n"));
-        code.push_str(&format!("    type CollapsedHasher = kaspa_hashes::{collapsed};\n"));
-        code.push_str("    const EMPTY_HASHES: [kaspa_hashes::Hash; DEPTH + 1] = [\n");
+        code.push_str(&format!("impl SmtHasher for celenium_hashes::{name} {{\n"));
+        code.push_str(&format!("    type CollapsedHasher = celenium_hashes::{collapsed};\n"));
+        code.push_str("    const EMPTY_HASHES: [celenium_hashes::Hash; DEPTH + 1] = [\n");
         for h in &hashes {
             code.push_str(&format!("        {},\n", format_hash(h)));
         }

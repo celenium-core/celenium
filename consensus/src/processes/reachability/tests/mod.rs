@@ -16,12 +16,12 @@ use crate::{
 };
 use hashbrown::hash_map::Entry::{Occupied, Vacant};
 use itertools::Itertools;
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     BlockHashMap, BlockHashSet,
     blockhash::{BlockHashExtensions, BlockHashes, ORIGIN},
 };
-use kaspa_database::prelude::{DirectWriter, StoreError};
-use kaspa_hashes::Hash;
+use celenium_database::prelude::{DirectWriter, StoreError};
+use celenium_hashes::Hash;
 use std::collections::VecDeque;
 use thiserror::Error;
 

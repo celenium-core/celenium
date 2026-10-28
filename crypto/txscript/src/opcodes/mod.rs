@@ -8,13 +8,13 @@ use crate::{
     data_stack::{OpcodeData, StackEntry, serialize_i64},
 };
 use blake2b_simd::Params;
-use kaspa_consensus_core::hashing::sighash::SigHashReusedValues;
-use kaspa_consensus_core::hashing::sighash_type::SigHashType;
-use kaspa_consensus_core::mass::ScriptUnits;
-use kaspa_consensus_core::tx::VerifiableTransaction;
-use kaspa_hashes::Hash;
-use kaspa_hashes::ZERO_HASH;
-use kaspa_utils::hex::FromHex;
+use celenium_consensus_core::hashing::sighash::SigHashReusedValues;
+use celenium_consensus_core::hashing::sighash_type::SigHashType;
+use celenium_consensus_core::mass::ScriptUnits;
+use celenium_consensus_core::tx::VerifiableTransaction;
+use celenium_hashes::Hash;
+use celenium_hashes::ZERO_HASH;
+use celenium_utils::hex::FromHex;
 use sha2::{Digest, Sha256};
 use std::{
     fmt::{Debug, Formatter},
@@ -1534,11 +1534,11 @@ mod test {
     use crate::{
         EngineContext, EngineFlags, LOCK_TIME_THRESHOLD, TxScriptEngine, TxScriptError, opcodes, pay_to_address_script, script_to_str,
     };
-    use kaspa_addresses::{Address, Prefix, Version};
-    use kaspa_consensus_core::constants::{SOMPI_PER_KASPA, TX_VERSION};
-    use kaspa_consensus_core::hashing::sighash::SigHashReusedValuesUnsync;
-    use kaspa_consensus_core::subnets::SUBNETWORK_ID_NATIVE;
-    use kaspa_consensus_core::tx::{
+    use celenium_addresses::{Address, Prefix, Version};
+    use celenium_consensus_core::constants::{SOMPI_PER_CELENIUM, TX_VERSION};
+    use celenium_consensus_core::hashing::sighash::SigHashReusedValuesUnsync;
+    use celenium_consensus_core::subnets::SUBNETWORK_ID_NATIVE;
+    use celenium_consensus_core::tx::{
         PopulatedTransaction, ScriptPublicKey, Transaction, TransactionInput, TransactionOutpoint, TransactionOutput, UtxoEntry,
         VerifiableTransaction,
     };
@@ -1719,7 +1719,7 @@ mod test {
             .unwrap()
             .add_op(OpBlake2b)
             .unwrap()
-            .add_data(b"kaspa")
+            .add_data(b"celenium")
             .unwrap()
             .add_op(OpEqualVerify)
             .unwrap()
@@ -3289,14 +3289,14 @@ mod test {
     }
 
     fn make_mock_transaction(lock_time: u64) -> (VerifiableTransactionMock, TransactionInput, UtxoEntry) {
-        let dummy_prev_out = TransactionOutpoint::new(kaspa_hashes::Hash::from_u64_word(1), 1);
+        let dummy_prev_out = TransactionOutpoint::new(celenium_hashes::Hash::from_u64_word(1), 1);
         let dummy_sig_script = vec![0u8; 65];
         let dummy_tx_input = TransactionInput::new(dummy_prev_out, dummy_sig_script, 10, 1);
         let addr_hash = vec![1u8; 32];
 
         let addr = Address::new(Prefix::Testnet, Version::PubKey, &addr_hash);
         let dummy_script_public_key = pay_to_address_script(&addr);
-        let dummy_tx_out = TransactionOutput::new(SOMPI_PER_KASPA, dummy_script_public_key);
+        let dummy_tx_out = TransactionOutput::new(SOMPI_PER_CELENIUM, dummy_script_public_key);
 
         let tx = VerifiableTransactionMock(Transaction::new(
             TX_VERSION + 1,
@@ -3485,7 +3485,7 @@ mod test {
             pay_to_script_hash_script,
             script_builder::ScriptBuilder,
         };
-        use kaspa_consensus_core::tx::MutableTransaction;
+        use celenium_consensus_core::tx::MutableTransaction;
 
         #[derive(Clone, Debug)]
         struct Kip10Mock {
@@ -3500,7 +3500,7 @@ mod test {
         }
 
         fn kip_10_tx_mock(inputs: Vec<Kip10Mock>, outputs: Vec<Kip10Mock>) -> (Transaction, Vec<UtxoEntry>) {
-            let dummy_prev_out = TransactionOutpoint::new(kaspa_hashes::Hash::from_u64_word(1), 1);
+            let dummy_prev_out = TransactionOutpoint::new(celenium_hashes::Hash::from_u64_word(1), 1);
             let dummy_sig_script = vec![0u8; 65];
             let (utxos, tx_inputs) = inputs
                 .into_iter()
@@ -3756,7 +3756,7 @@ mod test {
             }
         }
         fn create_mock_tx(input_count: usize, output_count: usize) -> (Transaction, Vec<UtxoEntry>) {
-            let dummy_prev_out = TransactionOutpoint::new(kaspa_hashes::Hash::from_u64_word(1), 1);
+            let dummy_prev_out = TransactionOutpoint::new(celenium_hashes::Hash::from_u64_word(1), 1);
             let dummy_sig_script = vec![0u8; 65];
 
             // Create inputs with different SPKs and amounts
@@ -4213,14 +4213,14 @@ mod test {
         use crate::script_builder::{ScriptBuilder, ScriptBuilderResult};
         use crate::{EngineCtx, MAX_SCRIPT_ELEMENT_SIZE, pay_to_script_hash_script};
         use crate::{SpkEncoding, opcodes::codes};
-        use kaspa_consensus_core::hashing::sighash::SigHashReusedValuesUnsync;
-        use kaspa_consensus_core::subnets::SubnetworkId;
-        use kaspa_consensus_core::tx::{
+        use celenium_consensus_core::hashing::sighash::SigHashReusedValuesUnsync;
+        use celenium_consensus_core::subnets::SubnetworkId;
+        use celenium_consensus_core::tx::{
             CovenantBinding, MutableTransaction, PopulatedTransaction, ScriptPublicKey, Transaction, TransactionInput,
             TransactionOutpoint, TransactionOutput, UtxoEntry,
         };
-        use kaspa_hashes::{Hash, ZERO_HASH};
-        use kaspa_txscript_errors::CovenantsError;
+        use celenium_hashes::{Hash, ZERO_HASH};
+        use celenium_txscript_errors::CovenantsError;
 
         fn payload_bytes(len: usize) -> Vec<u8> {
             (0..len).map(|i| (i % 256) as u8).collect()

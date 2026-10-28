@@ -2,7 +2,7 @@ mod error;
 use ark_bn254::{Bn254, G1Affine, G2Affine};
 use ark_groth16::{Groth16, Proof, VerifyingKey};
 use ark_serialize::{CanonicalDeserialize, Compress, Valid, Validate};
-use kaspa_consensus_core::mass::ScriptUnits;
+use celenium_consensus_core::mass::ScriptUnits;
 
 pub use error::Groth16Error;
 
@@ -131,8 +131,8 @@ mod tests {
     use ark_bn254::{Bn254, G1Affine, G2Affine};
     use ark_groth16::VerifyingKey;
     use ark_serialize::{CanonicalDeserialize, CanonicalSerialize, Compress};
-    use kaspa_consensus_core::mass::ScriptUnits;
-    use kaspa_txscript_errors::TxScriptError;
+    use celenium_consensus_core::mass::ScriptUnits;
+    use celenium_txscript_errors::TxScriptError;
 
     fn stack_with_groth_fields(vk: Vec<u8>, proof: Vec<u8>, inputs: Vec<Vec<u8>>) -> Stack {
         let mut stack = Stack::new(Vec::new());

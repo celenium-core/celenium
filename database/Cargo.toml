@@ -1,6 +1,6 @@
 [package]
-name = "kaspa-database"
-description = "Kaspa database"
+name = "celenium-database"
+description = "Celenium database"
 rust-version.workspace = true
 version.workspace = true
 edition.workspace = true
@@ -16,8 +16,8 @@ faster-hex.workspace = true
 hashbrown.workspace = true
 indexmap.workspace = true
 itertools.workspace = true
-kaspa-hashes.workspace = true
-kaspa-utils = { workspace = true, features = ["mem_size", "fd_budget"]}
+celenium-hashes.workspace = true
+celenium-utils = { workspace = true, features = ["mem_size", "fd_budget"]}
 num_cpus.workspace = true
 num-traits.workspace = true
 parking_lot.workspace = true

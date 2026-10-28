@@ -1,8 +1,8 @@
 use clap::Parser;
 use futures_util::future::try_join_all;
-use kaspa_alloc::init_allocator_with_default_settings;
-use kaspa_stratum_bridge::log_colors::LogColors;
-use kaspa_stratum_bridge::{KaspaApi, StratumServerBridgeConfig as StratumBridgeConfig, listen_and_serve_with_shutdown, prom};
+use celenium_alloc::init_allocator_with_default_settings;
+use celenium_stratum_bridge::log_colors::LogColors;
+use celenium_stratum_bridge::{CeleniumApi, StratumServerBridgeConfig as StratumBridgeConfig, listen_and_serve_with_shutdown, prom};
 use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 #[cfg(windows)]
@@ -16,7 +16,7 @@ use tracing_subscriber::EnvFilter;
 #[cfg(windows)]
 use windows_sys::Win32::System::Console::{CTRL_C_EVENT, SetConsoleCtrlHandler};
 
-use kaspad_lib::args as kaspad_args;
+use celeniumd_lib::args as celeniumd_args;
 
 mod app_dirs;
 mod cli;
@@ -29,7 +29,7 @@ mod tests;
 
 use cli::{Cli, NodeMode, apply_cli_overrides};
 use inprocess_node::InProcessNode;
-use kaspa_stratum_bridge::BridgeConfig;
+use celenium_stratum_bridge::BridgeConfig;
 
 static CONFIG_LOADED_FROM: OnceLock<Option<PathBuf>> = OnceLock::new();
 static REQUESTED_CONFIG_PATH: OnceLock<PathBuf> = OnceLock::new();
@@ -151,7 +151,7 @@ fn log_bridge_configuration(config: &BridgeConfig) {
     let instance_count = config.instances.len();
     tracing::info!("----------------------------------");
     tracing::info!("initializing bridge ({} instance{})", instance_count, if instance_count > 1 { "s" } else { "" });
-    tracing::info!("\tkaspad:          {} (shared)", config.global.kaspad_address);
+    tracing::info!("\tceleniumd:          {} (shared)", config.global.celeniumd_address);
     tracing::info!("\tblock wait:      {:?}", config.global.block_wait_time);
     tracing::info!("\tprint stats:     {}", config.global.print_stats);
     tracing::info!("\tvar diff:        {}", config.global.var_diff);
@@ -203,7 +203,7 @@ async fn main() -> Result<(), anyhow::Error> {
     // Provide web/prom status endpoints with the *actual* effective config (after CLI overrides),
     // instead of having the server re-read `config.yaml` from disk.
     // This is best-effort and does not affect any mining logic.
-    prom::set_web_status_config(config.global.kaspad_address.clone(), config.instances.len());
+    prom::set_web_status_config(config.global.celeniumd_address.clone(), config.instances.len());
     // Point the web config endpoint at the actual config file path the bridge is using.
     let loaded_config_path = CONFIG_LOADED_FROM.get().and_then(|p| p.as_ref()).cloned().unwrap_or_else(|| requested_config.clone());
     prom::set_web_config_path(loaded_config_path);
@@ -215,9 +215,9 @@ async fn main() -> Result<(), anyhow::Error> {
         // Default: warn level, but allow info from the bridge. In inprocess mode we also
         // enable info-level logs from the embedded node (which uses the `log` crate).
         if node_mode == NodeMode::Inprocess {
-            EnvFilter::new("warn,kaspa_stratum_bridge=info,kaspa=info,kaspad=info,kaspad_lib=info,log=info")
+            EnvFilter::new("warn,celenium_stratum_bridge=info,celenium=info,celeniumd=info,celeniumd_lib=info,log=info")
         } else {
-            EnvFilter::new("warn,kaspa_stratum_bridge=info")
+            EnvFilter::new("warn,celenium_stratum_bridge=info")
         }
     });
 
@@ -232,18 +232,18 @@ async fn main() -> Result<(), anyhow::Error> {
     let (shutdown_tx, shutdown_rx) = watch::channel(false);
 
     // Start in-process node after tracing is initialized so bridge logs (including the stats table)
-    // are not filtered out by a tracing subscriber installed by kaspad.
+    // are not filtered out by a tracing subscriber installed by celeniumd.
     let mut inprocess_node: Option<InProcessNode> = None;
     if node_mode == NodeMode::Inprocess {
-        let mut node_args: Vec<String> = cli.kaspad_args;
+        let mut node_args: Vec<String> = cli.celeniumd_args;
 
         if cli.testnet && !node_args.iter().any(|arg| arg == "--testnet") {
             node_args.push("--testnet".to_string());
         }
 
-        // Add appdir if not provided in kaspad_args
+        // Add appdir if not provided in celeniumd_args
         if !node_args.iter().any(|arg| arg.starts_with("--appdir")) {
-            let default_appdir = app_dirs::default_inprocess_kaspad_appdir();
+            let default_appdir = app_dirs::default_inprocess_celeniumd_appdir();
             let appdir_to_use = cli.appdir.as_ref().cloned().unwrap_or(default_appdir);
 
             // Create the directory if it doesn't exist
@@ -252,14 +252,14 @@ async fn main() -> Result<(), anyhow::Error> {
             node_args.push("--appdir".to_string());
             node_args.push(appdir_to_use.to_string_lossy().to_string());
         } else {
-            assert!(cli.appdir.is_none(), "appdir should not be specified both in bridge args and kaspad args");
+            assert!(cli.appdir.is_none(), "appdir should not be specified both in bridge args and celeniumd args");
         }
 
         #[allow(clippy::arithmetic_side_effects, reason = "ARITH-SAFETY(LENGTH)")]
         let mut argv: Vec<OsString> = Vec::with_capacity(node_args.len() + 1);
-        argv.push(OsString::from("kaspad"));
+        argv.push(OsString::from("celeniumd"));
         argv.extend(node_args.iter().map(OsString::from));
-        let args = kaspad_args::Args::parse(argv).map_err(|e| anyhow::anyhow!("{}", e))?;
+        let args = celeniumd_args::Args::parse(argv).map_err(|e| anyhow::anyhow!("{}", e))?;
         inprocess_node = Some(InProcessNode::start_from_args(args)?);
     }
 
@@ -283,11 +283,11 @@ async fn main() -> Result<(), anyhow::Error> {
         health_check::spawn_health_check_server(health_port);
     }
 
-    // Create shared kaspa API client (all instances use the same node)
-    let kaspa_api =
-        KaspaApi::new(config.global.kaspad_address.clone(), config.global.coinbase_tag_suffix.clone(), shutdown_rx.clone())
+    // Create shared celenium API client (all instances use the same node)
+    let celenium_api =
+        CeleniumApi::new(config.global.celeniumd_address.clone(), config.global.coinbase_tag_suffix.clone(), shutdown_rx.clone())
             .await
-            .map_err(|e| anyhow::anyhow!("Failed to create Kaspa API client: {}", e))?;
+            .map_err(|e| anyhow::anyhow!("Failed to create Celenium API client: {}", e))?;
 
     if !config.global.web_dashboard_port.is_empty() {
         let web_dashboard_port = config.global.web_dashboard_port.clone();
@@ -299,7 +299,7 @@ async fn main() -> Result<(), anyhow::Error> {
     }
 
     tracing::info!("Waiting for node to fully sync before starting stratum listeners");
-    kaspa_api
+    celenium_api
         .wait_for_sync_with_shutdown(shutdown_rx.clone())
         .await
         .map_err(|e| anyhow::anyhow!("Failed while waiting for node sync: {}", e))?;
@@ -313,13 +313,13 @@ async fn main() -> Result<(), anyhow::Error> {
             let mining_address = cli
                 .internal_cpu_miner_address
                 .clone()
-                .ok_or_else(|| anyhow::anyhow!("--internal-cpu-miner requires --internal-cpu-miner-address <kaspa:...>"))?;
+                .ok_or_else(|| anyhow::anyhow!("--internal-cpu-miner requires --internal-cpu-miner-address <celenium:...>"))?;
 
             let threads = cli.internal_cpu_miner_threads.unwrap_or(1);
             let throttle = cli.internal_cpu_miner_throttle_ms.map(Duration::from_millis);
             let template_poll_interval = Duration::from_millis(cli.internal_cpu_miner_template_poll_ms.unwrap_or(250));
 
-            let cfg = kaspa_stratum_bridge::InternalCpuMinerConfig {
+            let cfg = celenium_stratum_bridge::InternalCpuMinerConfig {
                 enabled: true,
                 mining_address,
                 threads,
@@ -334,16 +334,16 @@ async fn main() -> Result<(), anyhow::Error> {
                 cfg.template_poll_interval.as_millis()
             );
 
-            kaspa_stratum_bridge::prom::set_internal_cpu_mining_address(cfg.mining_address.clone());
+            celenium_stratum_bridge::prom::set_internal_cpu_mining_address(cfg.mining_address.clone());
 
-            let metrics = kaspa_stratum_bridge::spawn_internal_cpu_miner(Arc::clone(&kaspa_api), cfg, shutdown_rx.clone())?;
-            kaspa_stratum_bridge::set_rkstratum_cpu_miner_metrics(metrics);
+            let metrics = celenium_stratum_bridge::spawn_internal_cpu_miner(Arc::clone(&celenium_api), cfg, shutdown_rx.clone())?;
+            celenium_stratum_bridge::set_rkstratum_cpu_miner_metrics(metrics);
 
             // Periodically export internal miner stats to Prometheus (if a /metrics server is running).
             // This is best-effort and does not affect mining.
             {
                 let mut prom_shutdown_rx = shutdown_rx.clone();
-                let internal_metrics = kaspa_stratum_bridge::RKSTRATUM_CPU_MINER_METRICS.lock().as_ref().cloned();
+                let internal_metrics = celenium_stratum_bridge::RKSTRATUM_CPU_MINER_METRICS.lock().as_ref().cloned();
 
                 tokio::spawn(async move {
                     let Some(internal_metrics) = internal_metrics else { return };
@@ -379,7 +379,7 @@ async fn main() -> Result<(), anyhow::Error> {
                         // Hashrate as GH/s
                         let hashrate_ghs = (dh as f64 / dt) / 1e9;
 
-                        kaspa_stratum_bridge::prom::record_internal_cpu_miner_snapshot(
+                        celenium_stratum_bridge::prom::record_internal_cpu_miner_snapshot(
                             hashes_tried,
                             blocks_submitted,
                             blocks_accepted,
@@ -397,7 +397,7 @@ async fn main() -> Result<(), anyhow::Error> {
         let instance_num = idx + 1;
         let instance = instance_config.clone();
         let global = config.global.clone();
-        let kaspa_api_clone = Arc::clone(&kaspa_api);
+        let celenium_api_clone = Arc::clone(&celenium_api);
         let instance_shutdown_rx = shutdown_rx.clone();
 
         let is_first_instance = idx == 0;
@@ -424,7 +424,7 @@ async fn main() -> Result<(), anyhow::Error> {
             let bridge_config = StratumBridgeConfig {
                 instance_id: instance_id_str.clone(),
                 stratum_port: instance.stratum_port.clone(),
-                kaspad_address: global.kaspad_address.clone(),
+                celeniumd_address: global.celeniumd_address.clone(),
                 prom_port: String::new(),
                 print_stats: global.print_stats,
                 log_to_file: instance.log_to_file.unwrap_or(global.log_to_file),
@@ -441,8 +441,8 @@ async fn main() -> Result<(), anyhow::Error> {
 
             listen_and_serve_with_shutdown(
                 bridge_config,
-                Arc::clone(&kaspa_api_clone),
-                if is_first_instance { Some(kaspa_api_clone) } else { None },
+                Arc::clone(&celenium_api_clone),
+                if is_first_instance { Some(celenium_api_clone) } else { None },
                 instance_shutdown_rx,
             )
             .await

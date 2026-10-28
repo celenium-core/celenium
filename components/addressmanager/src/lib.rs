@@ -13,10 +13,10 @@ use itertools::{
     Either::{Left, Right},
     Itertools,
 };
-use kaspa_consensus_core::config::Config;
-use kaspa_core::{debug, info, task::tick::TickService, time::unix_now, warn};
-use kaspa_database::prelude::{CachePolicy, DB, StoreResultExt};
-use kaspa_utils::networking::IpAddress;
+use celenium_consensus_core::config::Config;
+use celenium_core::{debug, info, task::tick::TickService, time::unix_now, warn};
+use celenium_database::prelude::{CachePolicy, DB, StoreResultExt};
+use celenium_utils::networking::IpAddress;
 use local_ip_address::list_afinet_netifas;
 use parking_lot::Mutex;
 use stores::banned_address_store::{BannedAddressesStore, BannedAddressesStoreReader, ConnectionBanTimestamp, DbBannedAddressesStore};
@@ -31,7 +31,7 @@ const UPNP_DEADLINE_SEC: u64 = 2 * 60;
 const UPNP_EXTEND_PERIOD: u64 = UPNP_DEADLINE_SEC / 2;
 
 /// The name used as description when registering the UPnP service
-pub(crate) const UPNP_REGISTRATION_NAME: &str = "rusty-kaspa";
+pub(crate) const UPNP_REGISTRATION_NAME: &str = "rusty-celenium";
 
 struct ExtendHelper {
     gateway: Gateway,
@@ -347,8 +347,8 @@ mod address_store_with_cache {
     };
 
     use itertools::Itertools;
-    use kaspa_database::prelude::{CachePolicy, DB};
-    use kaspa_utils::networking::PrefixBucket;
+    use celenium_database::prelude::{CachePolicy, DB};
+    use celenium_utils::networking::PrefixBucket;
     use rand::{
         distributions::{WeightedError, WeightedIndex},
         prelude::Distribution,
@@ -537,11 +537,11 @@ mod address_store_with_cache {
 
         use super::*;
         use address_manager::AddressManager;
-        use kaspa_consensus_core::config::{Config, params::SIMNET_PARAMS};
-        use kaspa_core::task::tick::TickService;
-        use kaspa_database::create_temp_db;
-        use kaspa_database::prelude::ConnBuilder;
-        use kaspa_utils::networking::IpAddress;
+        use celenium_consensus_core::config::{Config, params::SIMNET_PARAMS};
+        use celenium_core::task::tick::TickService;
+        use celenium_database::create_temp_db;
+        use celenium_database::prelude::ConnBuilder;
+        use celenium_utils::networking::IpAddress;
         use rv::{dist::Uniform, misc::ks_test as one_way_ks_test, traits::Cdf};
         use std::net::{IpAddr, Ipv6Addr};
 
@@ -563,7 +563,7 @@ mod address_store_with_cache {
         #[test]
         #[ignore]
         fn test_network_distribution_weighting() {
-            kaspa_core::log::try_init_logger("info");
+            celenium_core::log::try_init_logger("info");
 
             // Variables to initialize ip generation with.
             let largest_bucket: u16 = 2048;
@@ -639,7 +639,7 @@ mod address_store_with_cache {
             let significance = 0.10;
 
             // Display and assert the result
-            kaspa_core::info!(
+            celenium_core::info!(
                 "Kolmogorov–Smirnov test result for weighted network distribution uniformity: p = {0:.4} (p < {1})",
                 adjusted_p,
                 significance

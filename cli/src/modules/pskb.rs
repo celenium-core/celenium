@@ -1,23 +1,23 @@
 #![allow(unused_imports)]
 
 use crate::imports::*;
-use kaspa_addresses::Prefix;
-use kaspa_consensus_core::hashing::sighash_type::{SIG_HASH_ALL, SigHashType};
-use kaspa_consensus_core::tx::{TransactionOutpoint, UtxoEntry};
-use kaspa_wallet_core::account::pskb::finalize_pskt_one_or_more_sig_and_redeem_script;
-use kaspa_wallet_pskt::{
+use celenium_addresses::Prefix;
+use celenium_consensus_core::hashing::sighash_type::{SIG_HASH_ALL, SigHashType};
+use celenium_consensus_core::tx::{TransactionOutpoint, UtxoEntry};
+use celenium_wallet_core::account::pskb::finalize_pskt_one_or_more_sig_and_redeem_script;
+use celenium_wallet_pskt::{
     prelude::{Bundle, PSKT, Signer, lock_script_sig_templating, script_sig_to_address, unlock_utxos_as_pskb},
     pskt::Inner,
 };
 use std::collections::HashSet;
 
 #[derive(Default, Handler)]
-#[help("Send a Kaspa transaction to a public address")]
+#[help("Send a Celenium transaction to a public address")]
 pub struct Pskb;
 
 impl Pskb {
     async fn main(self: Arc<Self>, ctx: &Arc<dyn Context>, mut argv: Vec<String>, _cmd: &str) -> Result<()> {
-        let ctx = ctx.clone().downcast_arc::<KaspaCli>()?;
+        let ctx = ctx.clone().downcast_arc::<CeleniumCli>()?;
 
         if !ctx.wallet().is_open() {
             return Err(Error::WalletIsNotOpen);
@@ -38,9 +38,9 @@ impl Pskb {
                 let _ = ctx.notifier().show(Notification::Processing).await;
 
                 let address = Address::try_from(argv.first().unwrap().as_str())?;
-                let amount_sompi = try_parse_required_nonzero_kaspa_as_sompi_u64(argv.get(1))?;
+                let amount_sompi = try_parse_required_nonzero_celenium_as_sompi_u64(argv.get(1))?;
                 let outputs = PaymentOutputs::from((address, amount_sompi));
-                let priority_fee_sompi = try_parse_optional_kaspa_as_sompi_i64(argv.get(2))?.unwrap_or(0);
+                let priority_fee_sompi = try_parse_optional_celenium_as_sompi_i64(argv.get(2))?.unwrap_or(0);
                 let abortable = Abortable::default();
 
                 let account: Arc<dyn Account> = ctx.wallet().account()?;
@@ -91,11 +91,11 @@ impl Pskb {
 
                 match subcommand.as_str() {
                     "lock" => {
-                        let amount_sompi = try_parse_required_nonzero_kaspa_as_sompi_u64(argv.first())?;
+                        let amount_sompi = try_parse_required_nonzero_celenium_as_sompi_u64(argv.first())?;
                         let outputs = PaymentOutputs::from((script_p2sh, amount_sompi));
                         // TODO fee_rate
                         let fee_rate = None;
-                        let priority_fee_sompi = try_parse_optional_kaspa_as_sompi_i64(argv.get(1))?.unwrap_or(0);
+                        let priority_fee_sompi = try_parse_optional_celenium_as_sompi_i64(argv.get(1))?.unwrap_or(0);
                         let abortable = Abortable::default();
 
                         let signer = account
@@ -121,9 +121,9 @@ impl Pskb {
                         }
 
                         // Get locked UTXO set.
-                        let spend_utxos: Vec<kaspa_rpc_core::RpcUtxosByAddressesEntry> =
+                        let spend_utxos: Vec<celenium_rpc_core::RpcUtxosByAddressesEntry> =
                             ctx.wallet().rpc_api().get_utxos_by_addresses(vec![script_p2sh.clone()]).await?;
-                        let priority_fee_sompi = try_parse_optional_kaspa_as_sompi_i64(argv.first())?.unwrap_or(0) as u64;
+                        let priority_fee_sompi = try_parse_optional_celenium_as_sompi_i64(argv.first())?.unwrap_or(0) as u64;
 
                         if spend_utxos.is_empty() {
                             twarnln!(ctx, "No locked UTXO set found.");
@@ -140,7 +140,7 @@ impl Pskb {
                             "{} locked UTXO{} found with total amount of {} KAS",
                             spend_utxos.len(),
                             if spend_utxos.len() == 1 { "" } else { "s" },
-                            sompi_to_kaspa(total_locked_sompi)
+                            sompi_to_celenium(total_locked_sompi)
                         );
 
                         // Sweep UTXO set.
@@ -218,7 +218,7 @@ impl Pskb {
                     return self.display_help(ctx, argv).await;
                 }
                 let pskb = Self::parse_input_pskb(argv.first().unwrap().as_str())?;
-                tprintln!(ctx, "{}", pskb.display_format(ctx.wallet().network_id()?, sompi_to_kaspa_string_with_suffix));
+                tprintln!(ctx, "{}", pskb.display_format(ctx.wallet().network_id()?, sompi_to_celenium_string_with_suffix));
 
                 for (pskt_index, bundle_inner) in pskb.0.iter().enumerate() {
                     tprintln!(ctx, "PSKT #{:03} finalized check:", pskt_index + 1);
@@ -292,7 +292,7 @@ impl Pskb {
         )))
     }
 
-    async fn display_help(self: Arc<Self>, ctx: Arc<KaspaCli>, _argv: Vec<String>) -> Result<()> {
+    async fn display_help(self: Arc<Self>, ctx: Arc<CeleniumCli>, _argv: Vec<String>) -> Result<()> {
         ctx.term().help(
             &[
                 ("pskb create <address> <amount> <priority fee>", "Create a PSKB from single send transaction"),
@@ -318,8 +318,8 @@ impl Pskb {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use kaspa_consensus_core::hashing::sighash_type::SIG_HASH_NONE;
-    use kaspa_wallet_pskt::prelude::InputBuilder;
+    use celenium_consensus_core::hashing::sighash_type::SIG_HASH_NONE;
+    use celenium_wallet_pskt::prelude::InputBuilder;
 
     fn bundle_with_sighash_type(sighash_type: SigHashType) -> Bundle {
         let input = InputBuilder::default().sighash_type(sighash_type).build().unwrap();

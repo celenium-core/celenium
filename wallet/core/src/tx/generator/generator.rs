@@ -65,12 +65,12 @@ use crate::tx::{
     PendingTransactionStream, mass::*,
 };
 use crate::utxo::{NetworkParams, UtxoContext, UtxoEntryReference};
-use kaspa_consensus_client::UtxoEntry;
-use kaspa_consensus_core::constants::UNACCEPTED_DAA_SCORE;
-use kaspa_consensus_core::mass::NonContextualMasses;
-use kaspa_consensus_core::subnets::SUBNETWORK_ID_NATIVE;
-use kaspa_consensus_core::tx::{ComputeCommit, Transaction, TransactionInput, TransactionOutpoint, TransactionOutput};
-use kaspa_txscript::pay_to_address_script;
+use celenium_consensus_client::UtxoEntry;
+use celenium_consensus_core::constants::UNACCEPTED_DAA_SCORE;
+use celenium_consensus_core::mass::NonContextualMasses;
+use celenium_consensus_core::subnets::SUBNETWORK_ID_NATIVE;
+use celenium_consensus_core::tx::{ComputeCommit, Transaction, TransactionInput, TransactionOutpoint, TransactionOutput};
+use celenium_txscript::pay_to_address_script;
 use std::collections::VecDeque;
 
 // fee reduction - when a transactions has some storage mass

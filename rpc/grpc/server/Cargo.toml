@@ -1,6 +1,6 @@
 [package]
-name = "kaspa-grpc-server"
-description = "Kaspa gRPC server"
+name = "celenium-grpc-server"
+description = "Celenium gRPC server"
 rust-version.workspace = true
 version.workspace = true
 edition.workspace = true
@@ -10,15 +10,15 @@ license.workspace = true
 repository.workspace = true
 
 [dependencies]
-kaspa-consensus-core.workspace = true
-kaspa-core.workspace = true
-kaspa-grpc-core.workspace = true
-kaspa-notify.workspace = true
-kaspa-rpc-core.workspace = true
-kaspa-rpc-macros.workspace = true
-kaspa-rpc-service.workspace = true
-kaspa-utils-tower.workspace = true
-kaspa-utils.workspace = true
+celenium-consensus-core.workspace = true
+celenium-core.workspace = true
+celenium-grpc-core.workspace = true
+celenium-notify.workspace = true
+celenium-rpc-core.workspace = true
+celenium-rpc-macros.workspace = true
+celenium-rpc-service.workspace = true
+celenium-utils-tower.workspace = true
+celenium-utils.workspace = true
 
 async-channel.workspace = true
 async-stream.workspace = true
@@ -42,7 +42,7 @@ uuid.workspace = true
 rustls.workspace = true
 
 [dev-dependencies]
-kaspa-grpc-client.workspace = true
+celenium-grpc-client.workspace = true
 
 [lints]
 workspace = true

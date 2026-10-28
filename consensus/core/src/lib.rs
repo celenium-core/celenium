@@ -3,7 +3,7 @@
 //!
 //! # Consensus Core
 //!
-//! This crate implements primitives used in the Kaspa node consensus processing.
+//! This crate implements primitives used in the Celenium node consensus processing.
 //!
 
 #![cfg_attr(not(feature = "std"), no_std)]
@@ -21,7 +21,7 @@ extern crate self as consensus_core;
 use alloc::vec::Vec;
 use core::hash::{BuildHasher, Hasher};
 
-pub use kaspa_hashes::Hash;
+pub use celenium_hashes::Hash;
 
 // Re-export `HashMap`/`HashSet` from a single place so the whole crate (and its
 // consumers) share one hasher policy
@@ -60,7 +60,7 @@ pub mod utxo;
 /// Integer type for accumulated PoW of blue blocks. We expect no more than
 /// 2^128 work in a single block (btc has ~2^80), and no more than 2^64
 /// overall blocks, so 2^192 is definitely a justified upper-bound.
-pub type BlueWorkType = kaspa_math::Uint192;
+pub type BlueWorkType = celenium_math::Uint192;
 
 /// The extends directly from the expectation above about having no more than
 /// 2^128 work in a single block
@@ -156,7 +156,7 @@ pub type BlockLevel = u8;
 mod tests {
     use super::BlockHasher;
     use core::hash::{Hash as _, Hasher as _};
-    use kaspa_hashes::Hash;
+    use celenium_hashes::Hash;
     #[test]
     fn test_block_hasher() {
         let hash = Hash::from_le_u64([1, 2, 3, 4]);

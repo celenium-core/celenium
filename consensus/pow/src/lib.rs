@@ -11,9 +11,9 @@ pub mod xoshiro;
 use std::cmp::max;
 
 use crate::matrix::Matrix;
-use kaspa_consensus_core::{BlockLevel, hashing, header::Header};
-use kaspa_hashes::PowHash;
-use kaspa_math::Uint256;
+use celenium_consensus_core::{BlockLevel, hashing, header::Header};
+use celenium_hashes::PowHash;
+use celenium_math::Uint256;
 
 /// State is an intermediate data structure with pre-computed values to speed up mining.
 pub struct State {

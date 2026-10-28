@@ -1,58 +1,58 @@
 use std::{fs, path::PathBuf, process::exit, sync::Arc, time::Duration};
 
 use async_channel::unbounded;
-use kaspa_build_info::git;
-use kaspa_consensus_core::{
+use celenium_build_info::git;
+use celenium_consensus_core::{
     config::ConfigBuilder,
     constants::TRANSIENT_BYTE_TO_MASS_FACTOR,
     errors::config::{ConfigError, ConfigResult},
     mining_rules::MiningRules,
 };
-use kaspa_consensus_notify::{root::ConsensusNotificationRoot, service::NotifyService};
-use kaspa_core::{core::Core, debug, info};
-use kaspa_core::{kaspad_env::version, task::tick::TickService};
-use kaspa_database::{
+use celenium_consensus_notify::{root::ConsensusNotificationRoot, service::NotifyService};
+use celenium_core::{core::Core, debug, info};
+use celenium_core::{celeniumd_env::version, task::tick::TickService};
+use celenium_database::{
     prelude::{CachePolicy, DbWriter, DirectDbWriter, RocksDbPreset},
     registry::DatabaseStorePrefixes,
 };
-use kaspa_grpc_server::service::GrpcService;
-use kaspa_notify::{address::tracker::Tracker, subscription::context::SubscriptionContext};
-use kaspa_p2p_lib::Hub;
-use kaspa_p2p_mining::rule_engine::MiningRuleEngine;
-use kaspa_rpc_service::service::RpcCoreService;
-use kaspa_system_info::SystemInfo;
-use kaspa_txscript::caches::TxScriptCacheCounters;
-use kaspa_utils::networking::ContextualNetAddress;
-use kaspa_utils_tower::counters::TowerConnectionCounters;
+use celenium_grpc_server::service::GrpcService;
+use celenium_notify::{address::tracker::Tracker, subscription::context::SubscriptionContext};
+use celenium_p2p_lib::Hub;
+use celenium_p2p_mining::rule_engine::MiningRuleEngine;
+use celenium_rpc_service::service::RpcCoreService;
+use celenium_system_info::SystemInfo;
+use celenium_txscript::caches::TxScriptCacheCounters;
+use celenium_utils::networking::ContextualNetAddress;
+use celenium_utils_tower::counters::TowerConnectionCounters;
 
-use kaspa_addressmanager::AddressManager;
-use kaspa_consensus::{
+use celenium_addressmanager::AddressManager;
+use celenium_consensus::{
     consensus::factory::MultiConsensusManagementStore, model::stores::headers::DbHeadersStore, pipeline::monitor::ConsensusMonitor,
 };
-use kaspa_consensus::{
+use celenium_consensus::{
     consensus::factory::{Factory as ConsensusFactory, LATEST_DB_VERSION},
     params::{OverrideParams, Params},
     pipeline::ProcessingCounters,
 };
-use kaspa_consensusmanager::ConsensusManager;
-use kaspa_core::task::runtime::AsyncRuntime;
-use kaspa_index_processor::service::IndexService;
-use kaspa_mining::{
+use celenium_consensusmanager::ConsensusManager;
+use celenium_core::task::runtime::AsyncRuntime;
+use celenium_index_processor::service::IndexService;
+use celenium_mining::{
     MiningCounters,
     manager::{MiningManager, MiningManagerProxy},
     monitor::MiningMonitor,
 };
-use kaspa_p2p_flows::{flow_context::FlowContext, service::P2pService};
+use celenium_p2p_flows::{flow_context::FlowContext, service::P2pService};
 
-use kaspa_perf_monitor::{builder::Builder as PerfMonitorBuilder, counters::CountersSnapshot};
-use kaspa_utxoindex::{UtxoIndex, api::UtxoIndexProxy};
-use kaspa_wrpc_server::service::{Options as WrpcServerOptions, WebSocketCounters as WrpcServerCounters, WrpcEncoding, WrpcService};
+use celenium_perf_monitor::{builder::Builder as PerfMonitorBuilder, counters::CountersSnapshot};
+use celenium_utxoindex::{UtxoIndex, api::UtxoIndexProxy};
+use celenium_wrpc_server::service::{Options as WrpcServerOptions, WebSocketCounters as WrpcServerCounters, WrpcEncoding, WrpcService};
 
 /// Desired soft FD limit that needs to be configured
-/// for the kaspad process.
+/// for the celeniumd process.
 pub const DESIRED_DAEMON_SOFT_FD_LIMIT: u64 = 8 * 1024;
-/// Minimum acceptable soft FD limit for the kaspad
-/// process. (Rusty Kaspa will operate with the minimal
+/// Minimum acceptable soft FD limit for the celeniumd
+/// process. (Rusty Celenium will operate with the minimal
 /// acceptable limit of `4096`, but a setting below
 /// this value may impact the database performance).
 pub const MINIMUM_DAEMON_SOFT_FD_LIMIT: u64 = 4 * 1024;
@@ -81,21 +81,14 @@ fn get_home_dir() -> PathBuf {
 /// Get the default application directory.
 pub fn get_app_dir() -> PathBuf {
     #[cfg(target_os = "windows")]
-    return get_home_dir().join("rusty-kaspa");
+    return get_home_dir().join("celenium");
     #[cfg(not(target_os = "windows"))]
-    return get_home_dir().join(".rusty-kaspa");
+    return get_home_dir().join(".celenium");
 }
 
 pub fn validate_args(args: &Args) -> ConfigResult<()> {
-    #[cfg(feature = "devnet-prealloc")]
-    {
-        if args.num_prealloc_utxos.is_some() && !(args.devnet || args.simnet) {
-            return Err(ConfigError::PreallocUtxosOnNonDevnet);
-        }
-
-        if args.prealloc_address.is_some() ^ args.num_prealloc_utxos.is_some() {
-            return Err(ConfigError::MissingPreallocNumOrAddress);
-        }
+    if args.prealloc_address.is_some() ^ args.num_prealloc_utxos.is_some() {
+        return Err(ConfigError::MissingPreallocNumOrAddress);
     }
 
     if !args.connect_peers.is_empty() && !args.add_peers.is_empty() {
@@ -117,13 +110,13 @@ pub fn validate_args(args: &Args) -> ConfigResult<()> {
 }
 
 fn request_database_deletion_approval(approve: bool) -> bool {
-    let msg = "Node database is from a different Kaspad *DB* version and needs to be fully deleted, do you confirm the delete? (y/n)";
+    let msg = "Node database is from a different Celeniumd *DB* version and needs to be fully deleted, do you confirm the delete? (y/n)";
     request_database_deletion_approval_with_message(msg, approve)
 }
 
 fn request_database_deletion_approval_with_message(message: &str, approve: bool) -> bool {
     get_user_approval_or_exit(message, approve);
-    info!("Deleting databases due to incompatible Kaspad DB version");
+    info!("Deleting databases due to incompatible Celeniumd DB version");
     true // Approval was granted; rejection exits the process above.
 }
 
@@ -159,7 +152,7 @@ pub struct Runtime {
 
 /// Get the application directory from the supplied [`Args`].
 /// This function can be used to identify the location of
-/// the application folder that contains kaspad logs and the database.
+/// the application folder that contains celeniumd logs and the database.
 pub fn get_app_dir_from_args(args: &Args) -> PathBuf {
     let app_dir = args
         .appdir
@@ -188,15 +181,15 @@ impl Runtime {
         // Initialize the logger
         cfg_if::cfg_if! {
             if #[cfg(feature = "semaphore-trace")] {
-                kaspa_core::log::init_logger(log_dir.as_deref(), &format!("{},{}=debug", args.log_level, kaspa_utils::sync::semaphore_module_path()));
+                celenium_core::log::init_logger(log_dir.as_deref(), &format!("{},{}=debug", args.log_level, celenium_utils::sync::semaphore_module_path()));
             } else {
-                kaspa_core::log::init_logger(log_dir.as_deref(), &args.log_level);
+                celenium_core::log::init_logger(log_dir.as_deref(), &args.log_level);
             }
         };
 
         // Configure the panic behavior
         // As we log the panic, we want to set it up after the logger
-        kaspa_core::panic::configure_panic();
+        celenium_core::panic::configure_panic();
 
         Self { log_dir: log_dir.map(|log_dir| log_dir.to_owned()) }
     }
@@ -365,7 +358,7 @@ pub fn create_core_with_runtime(runtime: &Runtime, args: &Args, fd_total_budget:
     // Reset Condition: User explicitly requested a reset
     if is_db_reset_needed && db_dir.exists() {
         let msg = "Reset DB was requested -- this means the current databases will be fully deleted,
-do you confirm? (answer y/n or pass --yes to the Kaspad command line to confirm all interactive questions)";
+do you confirm? (answer y/n or pass --yes to the Celeniumd command line to confirm all interactive questions)";
         get_user_approval_or_exit(msg, args.yes);
         info!("Deleting databases");
         fs::remove_dir_all(&db_dir).unwrap();
@@ -404,7 +397,7 @@ do you confirm? (answer y/n or pass --yes to the Kaspad command line to confirm 
     }
 
     // DB used for addresses store and for multi-consensus management
-    let mut meta_db = kaspa_database::prelude::ConnBuilder::default()
+    let mut meta_db = celenium_database::prelude::ConnBuilder::default()
         .with_db_path(meta_db_dir.clone())
         .with_files_limit(META_DB_FILE_LIMIT)
         .with_preset(rocksdb_preset)
@@ -423,7 +416,7 @@ do you confirm? (answer y/n or pass --yes to the Kaspad command line to confirm 
 
         match active_consensus_dir_name {
             Some(dir_name) => {
-                let consensus_db = kaspa_database::prelude::ConnBuilder::default()
+                let consensus_db = celenium_database::prelude::ConnBuilder::default()
                     .with_db_path(consensus_db_dir.clone().join(dir_name))
                     .with_files_limit(1)
                     .with_preset(rocksdb_preset)
@@ -450,14 +443,14 @@ do you confirm? (answer y/n or pass --yes to the Kaspad command line to confirm 
         }
     }
 
-    // Reset/upgrade condition: Handle mismatches against the current Kaspad DB version.
+    // Reset/upgrade condition: Handle mismatches against the current Celeniumd DB version.
     'db_upgrade: while !is_db_reset_needed && MultiConsensusManagementStore::new(meta_db.clone()).should_upgrade().unwrap() {
         let mut mcms = MultiConsensusManagementStore::new(meta_db.clone());
         let version = mcms.version().unwrap();
 
         if version > LATEST_DB_VERSION {
             let msg = format!(
-                "Node database is from a newer Kaspad DB version ({version}) than this node supports ({LATEST_DB_VERSION}). Downgrading requires deleting the database, do you confirm the delete? (y/n)"
+                "Node database is from a newer Celeniumd DB version ({version}) than this node supports ({LATEST_DB_VERSION}). Downgrading requires deleting the database, do you confirm the delete? (y/n)"
             );
             is_db_reset_needed = request_database_deletion_approval_with_message(&msg, args.yes);
             continue 'db_upgrade;
@@ -483,7 +476,7 @@ Do you confirm? (y/n)";
                     // Apply soft upgrade logic: delete relation data from higher levels
                     // and then update DB version to 6
 
-                    let consensus_db = kaspa_database::prelude::ConnBuilder::default()
+                    let consensus_db = celenium_database::prelude::ConnBuilder::default()
                         .with_db_path(consensus_db_dir.clone().join(current_consensus_db))
                         .with_files_limit(10)
                         .with_preset(rocksdb_preset)
@@ -552,7 +545,7 @@ Do you confirm? (y/n)";
         }
 
         // Reopen the DB
-        meta_db = kaspa_database::prelude::ConnBuilder::default()
+        meta_db = celenium_database::prelude::ConnBuilder::default()
             .with_db_path(meta_db_dir)
             .with_files_limit(META_DB_FILE_LIMIT)
             .with_preset(rocksdb_preset)
@@ -623,10 +616,10 @@ Do you confirm? (y/n)";
         .with_tick_service(tick_service.clone());
     let perf_monitor = if args.perf_metrics {
         let cb = move |counters: CountersSnapshot| {
-            debug!("[{}] {}", kaspa_perf_monitor::SERVICE_NAME, counters.to_process_metrics_display());
-            debug!("[{}] {}", kaspa_perf_monitor::SERVICE_NAME, counters.to_io_metrics_display());
+            debug!("[{}] {}", celenium_perf_monitor::SERVICE_NAME, counters.to_process_metrics_display());
+            debug!("[{}] {}", celenium_perf_monitor::SERVICE_NAME, counters.to_io_metrics_display());
             #[cfg(feature = "heap")]
-            debug!("[{}] heap stats: {:?}", kaspa_perf_monitor::SERVICE_NAME, dhat::HeapStats::get());
+            debug!("[{}] heap stats: {:?}", celenium_perf_monitor::SERVICE_NAME, dhat::HeapStats::get());
         };
         Arc::new(perf_monitor_builder.with_fetch_cb(cb).build())
     } else {
@@ -638,7 +631,7 @@ Do you confirm? (y/n)";
     let notify_service = Arc::new(NotifyService::new(notification_root.clone(), notification_recv, subscription_context.clone()));
     let index_service: Option<Arc<IndexService>> = if args.utxoindex {
         // Use only a single thread for none-consensus databases
-        let mut utxoindex_db = kaspa_database::prelude::ConnBuilder::default()
+        let mut utxoindex_db = celenium_database::prelude::ConnBuilder::default()
             .with_db_path(utxoindex_db_dir.clone())
             .with_files_limit(utxo_files_limit)
             .with_preset(rocksdb_preset)
@@ -655,7 +648,7 @@ Do you confirm? (y/n)";
             fs::remove_dir_all(utxoindex_db_dir.as_path()).unwrap();
             fs::create_dir_all(utxoindex_db_dir.as_path()).unwrap();
 
-            utxoindex_db = kaspa_database::prelude::ConnBuilder::default()
+            utxoindex_db = celenium_database::prelude::ConnBuilder::default()
                 .with_db_path(utxoindex_db_dir.clone())
                 .with_files_limit(utxo_files_limit)
                 .with_preset(rocksdb_preset)

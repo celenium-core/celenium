@@ -12,11 +12,11 @@ use self::{
     model::{accepted_transactions::AcceptedTransactions, orphan_pool::OrphanPool, pool::Pool, transactions_pool::TransactionsPool},
     tx::Priority,
 };
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     block::TemplateTransactionSelector,
     tx::{MutableTransaction, TransactionId},
 };
-use kaspa_core::time::Stopwatch;
+use celenium_core::time::Stopwatch;
 use std::sync::Arc;
 
 pub(crate) mod check_transaction_limits;

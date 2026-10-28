@@ -6,13 +6,13 @@ use crate::errors::{UtxoIndexError, UtxoIndexResult};
 use zerocopy::big_endian::U64 as BigEndianU64;
 
 use itertools::Itertools;
-use kaspa_consensus_core::tx::{
+use celenium_consensus_core::tx::{
     ScriptPublicKey, ScriptPublicKeyVersion, ScriptPublicKeys, ScriptVec, TransactionIndexType, TransactionOutpoint,
 };
-use kaspa_core::debug;
-use kaspa_database::prelude::{CachePolicy, CachedDbAccess, DB, DirectDbWriter, StoreResult};
-use kaspa_database::registry::DatabaseStorePrefixes;
-use kaspa_hashes::Hash;
+use celenium_core::debug;
+use celenium_database::prelude::{CachePolicy, CachedDbAccess, DB, DirectDbWriter, StoreResult};
+use celenium_database::registry::DatabaseStorePrefixes;
+use celenium_hashes::Hash;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::fmt::Display;
@@ -66,7 +66,7 @@ impl AsRef<[u8]> for ScriptPublicKeyBucket {
 
 // TransactionOutpoint:
 /// Size of the [TransactionOutpointKey] in bytes.
-pub const TRANSACTION_OUTPOINT_KEY_SIZE: usize = kaspa_hashes::HASH_SIZE + size_of::<TransactionIndexType>();
+pub const TRANSACTION_OUTPOINT_KEY_SIZE: usize = celenium_hashes::HASH_SIZE + size_of::<TransactionIndexType>();
 
 /// [TransactionOutpoint] key which references the [CompactUtxoEntry] within a [ScriptPublicKeyBucket]
 /// Consists of 32 bytes of [TransactionId], followed by 4 bytes of little endian [TransactionIndexType]
@@ -75,9 +75,9 @@ struct TransactionOutpointKey([u8; TRANSACTION_OUTPOINT_KEY_SIZE]);
 
 impl From<TransactionOutpointKey> for TransactionOutpoint {
     fn from(key: TransactionOutpointKey) -> Self {
-        let transaction_id = Hash::from_slice(&key.0[..kaspa_hashes::HASH_SIZE]);
+        let transaction_id = Hash::from_slice(&key.0[..celenium_hashes::HASH_SIZE]);
         let index = TransactionIndexType::from_le_bytes(
-            <[u8; size_of::<TransactionIndexType>()]>::try_from(&key.0[kaspa_hashes::HASH_SIZE..]).expect("expected index size"),
+            <[u8; size_of::<TransactionIndexType>()]>::try_from(&key.0[celenium_hashes::HASH_SIZE..]).expect("expected index size"),
         );
         Self::new(transaction_id, index)
     }
@@ -86,8 +86,8 @@ impl From<TransactionOutpointKey> for TransactionOutpoint {
 impl From<&TransactionOutpoint> for TransactionOutpointKey {
     fn from(outpoint: &TransactionOutpoint) -> Self {
         let mut bytes = [0; TRANSACTION_OUTPOINT_KEY_SIZE];
-        bytes[..kaspa_hashes::HASH_SIZE].copy_from_slice(&outpoint.transaction_id.as_bytes());
-        bytes[kaspa_hashes::HASH_SIZE..].copy_from_slice(&outpoint.index.to_le_bytes());
+        bytes[..celenium_hashes::HASH_SIZE].copy_from_slice(&outpoint.transaction_id.as_bytes());
+        bytes[celenium_hashes::HASH_SIZE..].copy_from_slice(&outpoint.index.to_le_bytes());
         Self(bytes)
     }
 }
@@ -195,7 +195,7 @@ impl DbUtxoSetByScriptPublicKeyStore {
 }
 
 impl UtxoSetByScriptPublicKeyStoreReader for DbUtxoSetByScriptPublicKeyStore {
-    // compared to go-kaspad this gets transaction outpoints from multiple script public keys at once.
+    // compared to go-celeniumd this gets transaction outpoints from multiple script public keys at once.
     fn get_utxos_from_script_public_keys(&self, script_public_keys: ScriptPublicKeys) -> StoreResult<UtxoSetByScriptPublicKey> {
         let script_count = script_public_keys.len();
         let mut utxos_by_script_public_keys = UtxoSetByScriptPublicKey::new();
@@ -416,7 +416,7 @@ impl UtxoSetByScriptPublicKeyStore for DbUtxoSetByScriptPublicKeyStore {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use kaspa_database::{create_temp_db, prelude::ConnBuilder};
+    use celenium_database::{create_temp_db, prelude::ConnBuilder};
 
     fn create_outpoint(word: u64, index: u32) -> TransactionOutpoint {
         TransactionOutpoint::new(Hash::from_u64_word(word), index)

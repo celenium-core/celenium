@@ -3,12 +3,12 @@ use crate::{
     tasks::{Stopper, Task},
 };
 use async_trait::async_trait;
-use kaspa_addresses::Address;
-use kaspa_core::warn;
-use kaspa_grpc_client::GrpcClient;
-use kaspa_notify::{listener::ListenerId, scope::NewBlockTemplateScope};
-use kaspa_rpc_core::{GetBlockTemplateResponse, Notification, api::rpc::RpcApi};
-use kaspa_utils::{channel::Channel, triggers::SingleTrigger};
+use celenium_addresses::Address;
+use celenium_core::warn;
+use celenium_grpc_client::GrpcClient;
+use celenium_notify::{listener::ListenerId, scope::NewBlockTemplateScope};
+use celenium_rpc_core::{GetBlockTemplateResponse, Notification, api::rpc::RpcApi};
+use celenium_utils::{channel::Channel, triggers::SingleTrigger};
 use parking_lot::Mutex;
 use std::sync::Arc;
 use tokio::task::JoinHandle;

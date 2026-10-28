@@ -7,9 +7,9 @@ use crate::{
 use alloc::sync::Arc;
 use alloc::vec;
 use alloc::vec::Vec;
-use kaspa_hashes::Hash;
+use celenium_hashes::Hash;
 #[cfg(feature = "mem_size")]
-use kaspa_utils::mem_size::MemSizeEstimator;
+use celenium_utils::mem_size::MemSizeEstimator;
 
 /// A mutable block structure where header and transactions within can still be mutated.
 #[derive(Debug, Clone)]

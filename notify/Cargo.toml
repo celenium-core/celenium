@@ -1,6 +1,6 @@
 [package]
-name = "kaspa-notify"
-description = "Kaspa notification subsystem"
+name = "celenium-notify"
+description = "Celenium notification subsystem"
 rust-version.workspace = true
 version.workspace = true
 edition.workspace = true
@@ -18,13 +18,13 @@ futures-util.workspace = true
 futures.workspace = true
 indexmap.workspace = true
 itertools.workspace = true
-kaspa-addresses.workspace = true
-kaspa-consensus-core.workspace = true
-kaspa-core.workspace = true
-kaspa-hashes.workspace = true
-kaspa-txscript-errors = { workspace = true, features = ["std"] }
-kaspa-txscript.workspace = true
-kaspa-utils = { workspace = true, features = ["triggers"] }
+celenium-addresses.workspace = true
+celenium-consensus-core.workspace = true
+celenium-core.workspace = true
+celenium-hashes.workspace = true
+celenium-txscript-errors = { workspace = true, features = ["std"] }
+celenium-txscript.workspace = true
+celenium-utils = { workspace = true, features = ["triggers"] }
 log.workspace = true
 parking_lot.workspace = true
 paste.workspace = true
@@ -38,8 +38,8 @@ workflow-serializer.workspace = true
 
 [dev-dependencies]
 criterion.workspace = true
-kaspa-alloc.workspace = true
-kaspa-math = { workspace = true, features = ["std"] }
+celenium-alloc.workspace = true
+celenium-math = { workspace = true, features = ["std"] }
 tokio = { workspace = true, features = ["rt", "macros"] }
 workflow-perf-monitor.workspace = true
 

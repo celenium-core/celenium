@@ -10,7 +10,7 @@ use core::fmt::Formatter;
 use core::str::{self, FromStr};
 #[cfg(feature = "wasm32-sdk")]
 use js_sys::Object;
-use kaspa_utils::{
+use celenium_utils::{
     hex::{FromHex, ToHex},
     serde_bytes::FromHexVisitor,
 };
@@ -55,7 +55,7 @@ export interface IScriptPublicKey {
 }
 "#;
 
-/// Represents a Kaspad ScriptPublicKey
+/// Represents a Celeniumd ScriptPublicKey
 /// @category Consensus
 #[derive(Default, PartialEq, Eq, Clone, Hash)]
 #[cfg_attr(feature = "wasm32-sdk", derive(CastFromJs))]
@@ -135,7 +135,7 @@ impl<'de> Deserialize<'de> for ScriptPublicKey {
             // as serialization will never produce objects.
             // - review multiple integer mappings (are they all needed?)
             // - consider manual marshaling of RPC data structures
-            // (which is now possible due to the introduction of the kaspa-consensus-wasm crate)
+            // (which is now possible due to the introduction of the celenium-consensus-wasm crate)
             #[cfg(target_arch = "wasm32")]
             fn visit_i32<E>(self, v: i32) -> Result<Self::Value, E>
             where

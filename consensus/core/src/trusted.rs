@@ -1,7 +1,7 @@
 use crate::{BlockHashMap, BlueWorkType, KType, block::Block, header::Header};
 use alloc::sync::Arc;
 use alloc::vec::Vec;
-use kaspa_hashes::Hash;
+use celenium_hashes::Hash;
 use serde::{Deserialize, Serialize};
 
 /// Represents semi-trusted externally provided Ghostdag data (by a network peer)

@@ -4,7 +4,7 @@ extern crate alloc;
 
 use alloc::string::String;
 use alloc::vec::Vec;
-use kaspa_hashes::Hash;
+use celenium_hashes::Hash;
 use thiserror::Error;
 
 #[derive(Error, PartialEq, Eq, Debug, Clone)]

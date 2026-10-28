@@ -3,15 +3,15 @@ use std::{
     time::{Duration, Instant},
 };
 
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     api::counters::ProcessingCounters,
     config::Config,
     daa_score_timestamp::DaaScoreTimestamp,
     mining_rules::MiningRules,
     network::NetworkType::{Mainnet, Testnet},
 };
-use kaspa_consensusmanager::ConsensusManager;
-use kaspa_core::{
+use celenium_consensusmanager::ConsensusManager;
+use celenium_core::{
     task::{
         service::{AsyncService, AsyncServiceFuture},
         tick::{TickReason, TickService},
@@ -19,7 +19,7 @@ use kaspa_core::{
     time::unix_now,
     trace,
 };
-use kaspa_p2p_lib::Hub;
+use celenium_p2p_lib::Hub;
 
 use crate::rules::{ExtraData, mining_rule::MiningRule, sync_rate_rule::SyncRateRule};
 

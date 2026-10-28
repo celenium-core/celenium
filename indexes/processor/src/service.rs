@@ -1,21 +1,21 @@
 use crate::{IDENT, processor::Processor};
-use kaspa_consensus_notify::{
+use celenium_consensus_notify::{
     connection::ConsensusChannelConnection, notification::Notification as ConsensusNotification, notifier::ConsensusNotifier,
 };
-use kaspa_core::{
+use celenium_core::{
     task::service::{AsyncService, AsyncServiceError, AsyncServiceFuture},
     trace, warn,
 };
-use kaspa_index_core::notifier::IndexNotifier;
-use kaspa_notify::{
+use celenium_index_core::notifier::IndexNotifier;
+use celenium_notify::{
     connection::ChannelType,
     events::{EventSwitches, EventType},
     listener::ListenerLifespan,
     scope::{PruningPointUtxoSetOverrideScope, UtxosChangedScope},
     subscription::{MutationPolicies, UtxosChangedMutationPolicy, context::SubscriptionContext},
 };
-use kaspa_utils::{channel::Channel, triggers::SingleTrigger};
-use kaspa_utxoindex::api::UtxoIndexProxy;
+use celenium_utils::{channel::Channel, triggers::SingleTrigger};
+use celenium_utxoindex::api::UtxoIndexProxy;
 use std::sync::Arc;
 
 const INDEX_SERVICE: &str = IDENT;

@@ -1,5 +1,5 @@
 use alloc::string::String;
-use kaspa_hashes::Hash;
+use celenium_hashes::Hash;
 use thiserror::Error;
 
 use crate::{tx::TransactionIndexType, utxo::utxo_inquirer::UtxoInquirerError};

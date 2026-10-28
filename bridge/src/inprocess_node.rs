@@ -1,19 +1,19 @@
 use std::sync::Arc;
 
-use kaspa_core::signals::Shutdown;
-use kaspa_utils::fd_budget;
-use kaspad_lib::{args as kaspad_args, daemon as kaspad_daemon};
+use celenium_core::signals::Shutdown;
+use celenium_utils::fd_budget;
+use celeniumd_lib::{args as celeniumd_args, daemon as celeniumd_daemon};
 
 pub(crate) struct InProcessNode {
-    core: Arc<kaspa_core::core::Core>,
+    core: Arc<celenium_core::core::Core>,
     workers: Vec<std::thread::JoinHandle<()>>,
 }
 
 impl InProcessNode {
-    pub(crate) fn start_from_args(args: kaspad_args::Args) -> Result<Self, anyhow::Error> {
-        let _ = fd_budget::try_set_fd_limit(kaspad_daemon::DESIRED_DAEMON_SOFT_FD_LIMIT);
+    pub(crate) fn start_from_args(args: celeniumd_args::Args) -> Result<Self, anyhow::Error> {
+        let _ = fd_budget::try_set_fd_limit(celeniumd_daemon::DESIRED_DAEMON_SOFT_FD_LIMIT);
 
-        let runtime = kaspad_daemon::Runtime::from_args(&args);
+        let runtime = celeniumd_daemon::Runtime::from_args(&args);
         let rpc_max_clients = i32::try_from(args.rpc_max_clients)?;
         let inbound_limit = i32::try_from(args.inbound_limit)?;
         let outbound_target = i32::try_from(args.outbound_target)?;
@@ -23,7 +23,7 @@ impl InProcessNode {
             .and_then(|budget| budget.checked_sub(outbound_target))
             .ok_or_else(|| anyhow::anyhow!("file descriptor budget subtraction overflow"))?;
         anyhow::ensure!(fd_total_budget > 0, "client and peer limits exhaust the file descriptor budget");
-        let (core, _) = kaspad_daemon::create_core_with_runtime(&runtime, &args, fd_total_budget);
+        let (core, _) = celeniumd_daemon::create_core_with_runtime(&runtime, &args, fd_total_budget);
         let workers = core.start();
         Ok(Self { core, workers })
     }

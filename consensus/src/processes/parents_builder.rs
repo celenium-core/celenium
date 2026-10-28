@@ -1,11 +1,11 @@
 use indexmap::{IndexMap, IndexSet};
 use itertools::Itertools;
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     BlockHasher, BlockLevel,
     blockhash::ORIGIN,
     header::{CompressedParents, Header},
 };
-use kaspa_hashes::Hash;
+use celenium_hashes::Hash;
 use smallvec::{SmallVec, smallvec};
 use std::sync::Arc;
 
@@ -213,13 +213,13 @@ mod tests {
 
     use super::ParentsManager;
     use itertools::Itertools;
-    use kaspa_consensus_core::{
+    use celenium_consensus_core::{
         BlockHashMap, BlockHashSet, HashMapCustomHasher,
         blockhash::{BlockHashes, ORIGIN},
         header::Header,
     };
-    use kaspa_database::prelude::{ReadLock, StoreError, StoreResult};
-    use kaspa_hashes::Hash;
+    use celenium_database::prelude::{ReadLock, StoreError, StoreResult};
+    use celenium_hashes::Hash;
     use parking_lot::RwLock;
 
     struct HeaderStoreMock {
@@ -234,34 +234,34 @@ mod tests {
 
     #[allow(unused_variables)]
     impl HeaderStoreReader for HeaderStoreMock {
-        fn get_daa_score(&self, hash: kaspa_hashes::Hash) -> Result<u64, StoreError> {
+        fn get_daa_score(&self, hash: celenium_hashes::Hash) -> Result<u64, StoreError> {
             unimplemented!()
         }
 
-        fn get_timestamp(&self, hash: kaspa_hashes::Hash) -> Result<u64, StoreError> {
+        fn get_timestamp(&self, hash: celenium_hashes::Hash) -> Result<u64, StoreError> {
             unimplemented!()
         }
 
-        fn get_bits(&self, hash: kaspa_hashes::Hash) -> Result<u32, StoreError> {
+        fn get_bits(&self, hash: celenium_hashes::Hash) -> Result<u32, StoreError> {
             unimplemented!()
         }
 
-        fn get_header(&self, hash: kaspa_hashes::Hash) -> Result<Arc<Header>, StoreError> {
+        fn get_header(&self, hash: celenium_hashes::Hash) -> Result<Arc<Header>, StoreError> {
             Ok(self.map.read().get(&hash).unwrap().header.clone())
         }
 
         fn get_compact_header_data(
             &self,
-            hash: kaspa_hashes::Hash,
+            hash: celenium_hashes::Hash,
         ) -> Result<crate::model::stores::headers::CompactHeaderData, StoreError> {
             unimplemented!()
         }
 
-        fn get_blue_score(&self, hash: kaspa_hashes::Hash) -> Result<u64, StoreError> {
+        fn get_blue_score(&self, hash: celenium_hashes::Hash) -> Result<u64, StoreError> {
             unimplemented!()
         }
 
-        fn get_header_with_block_level(&self, hash: kaspa_hashes::Hash) -> Result<HeaderWithBlockLevel, StoreError> {
+        fn get_header_with_block_level(&self, hash: celenium_hashes::Hash) -> Result<HeaderWithBlockLevel, StoreError> {
             Ok(self.map.read().get(&hash).unwrap().clone())
         }
     }
@@ -272,7 +272,7 @@ mod tests {
 
     #[allow(unused_variables)]
     impl RelationsStoreReader for RelationsStoreMock {
-        fn get_parents(&self, hash: Hash) -> Result<kaspa_consensus_core::blockhash::BlockHashes, StoreError> {
+        fn get_parents(&self, hash: Hash) -> Result<celenium_consensus_core::blockhash::BlockHashes, StoreError> {
             unimplemented!()
         }
 

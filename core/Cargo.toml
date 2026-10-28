@@ -1,6 +1,6 @@
 [package]
-name = "kaspa-core"
-description = "Kaspa core"
+name = "celenium-core"
+description = "Celenium core"
 rust-version.workspace = true
 version.workspace = true
 edition.workspace = true

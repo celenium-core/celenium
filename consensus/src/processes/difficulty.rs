@@ -3,13 +3,13 @@ use crate::model::stores::{
     ghostdag::{GhostdagData, GhostdagStoreReader},
     headers::HeaderStoreReader,
 };
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     BlockHashSet, BlueWorkType, MAX_WORK_LEVEL,
     config::params::MAX_DIFFICULTY_TARGET_AS_F64,
     errors::difficulty::{DifficultyError, DifficultyResult},
 };
-use kaspa_hashes::Hash;
-use kaspa_math::{Uint256, Uint320};
+use celenium_hashes::Hash;
+use celenium_math::{Uint256, Uint320};
 use std::{
     cmp::{Ordering, max},
     ops::Deref,
@@ -92,7 +92,7 @@ fn _difficulty_desc(target: Uint320) -> String {
     format!("{:.2} {}", rate, suffix)
 }
 
-/// A difficulty manager based on sampled block windows, implementing [KIP-0004](https://github.com/kaspanet/kips/blob/master/kip-0004.md)
+/// A difficulty manager based on sampled block windows, implementing [KIP-0004](https://github.com/celeniumnet/kips/blob/master/kip-0004.md)
 #[derive(Clone)]
 pub struct SampledDifficultyManager<T: HeaderStoreReader, U: GhostdagStoreReader> {
     headers_store: Arc<T>,
@@ -260,12 +260,12 @@ impl Ord for DifficultyBlock {
 
 #[cfg(test)]
 mod tests {
-    use kaspa_consensus_core::{BlockLevel, BlueWorkType, MAX_WORK_LEVEL};
-    use kaspa_math::{Uint256, Uint320};
-    use kaspa_pow::calc_level_from_pow;
+    use celenium_consensus_core::{BlockLevel, BlueWorkType, MAX_WORK_LEVEL};
+    use celenium_math::{Uint256, Uint320};
+    use celenium_pow::calc_level_from_pow;
 
     use crate::processes::difficulty::{calc_work, level_work};
-    use kaspa_utils::hex::ToHex;
+    use celenium_utils::hex::ToHex;
 
     #[test]
     fn test_target_levels() {

@@ -14,14 +14,14 @@ pub use crate::settings::WalletSettings;
 pub use crate::storage::{IdT, Interface, PrvKeyDataId, PrvKeyDataInfo, TransactionId, TransactionRecord, WalletDescriptor};
 pub use crate::tx::{Fees, PaymentDestination, PaymentOutput, PaymentOutputs};
 pub use crate::utils::{
-    kaspa_suffix, kaspa_to_sompi, sompi_to_kaspa, sompi_to_kaspa_string, sompi_to_kaspa_string_with_suffix, try_kaspa_str_to_sompi,
-    try_kaspa_str_to_sompi_i64,
+    celenium_suffix, celenium_to_sompi, sompi_to_celenium, sompi_to_celenium_string, sompi_to_celenium_string_with_suffix, try_celenium_str_to_sompi,
+    try_celenium_str_to_sompi_i64,
 };
 pub use crate::utxo::balance::{Balance, BalanceStrings};
 pub use crate::wallet::Wallet;
 pub use crate::wallet::args::*;
 pub use async_lock::{Mutex as AsyncMutex, MutexGuard as AsyncMutexGuard};
-pub use kaspa_addresses::{Address, Prefix as AddressPrefix};
-pub use kaspa_bip32::{Language, Mnemonic, WordCount};
-pub use kaspa_wallet_keys::secret::Secret;
-pub use kaspa_wrpc_client::{KaspaRpcClient, WrpcEncoding};
+pub use celenium_addresses::{Address, Prefix as AddressPrefix};
+pub use celenium_bip32::{Language, Mnemonic, WordCount};
+pub use celenium_wallet_keys::secret::Secret;
+pub use celenium_wrpc_client::{CeleniumRpcClient, WrpcEncoding};

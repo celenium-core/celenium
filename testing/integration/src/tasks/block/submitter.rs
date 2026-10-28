@@ -4,10 +4,10 @@ use crate::{
 };
 use async_channel::Sender;
 use async_trait::async_trait;
-use kaspa_core::warn;
-use kaspa_grpc_client::ClientPool;
-use kaspa_rpc_core::{RpcRawBlock, api::rpc::RpcApi};
-use kaspa_utils::triggers::SingleTrigger;
+use celenium_core::warn;
+use celenium_grpc_client::ClientPool;
+use celenium_rpc_core::{RpcRawBlock, api::rpc::RpcApi};
+use celenium_utils::triggers::SingleTrigger;
 use std::{sync::Arc, time::Duration};
 use tokio::{task::JoinHandle, time::sleep};
 
@@ -39,7 +39,7 @@ impl Task for BlockSubmitterTask {
             loop {
                 match c.submit_block(block.clone(), false).await {
                     Ok(response) => {
-                        assert_eq!(response.report, kaspa_rpc_core::SubmitBlockReport::Success);
+                        assert_eq!(response.report, celenium_rpc_core::SubmitBlockReport::Success);
                         break;
                     }
                     Err(_) => {

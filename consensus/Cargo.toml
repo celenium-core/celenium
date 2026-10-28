@@ -1,6 +1,6 @@
 [package]
-name = "kaspa-consensus"
-description = "Kaspa consensus library"
+name = "celenium-consensus"
+description = "Celenium consensus library"
 rust-version.workspace = true
 version.workspace = true
 edition.workspace = true
@@ -19,24 +19,24 @@ futures-util.workspace = true
 hashbrown.workspace = true
 indexmap.workspace = true
 itertools.workspace = true
-kaspa-addresses.workspace = true
-kaspa-consensus-core.workspace = true
-kaspa-consensus-notify.workspace = true
-kaspa-consensusmanager.workspace = true
-kaspa-core.workspace = true
-kaspa-database.workspace = true
-kaspa-hashes.workspace = true
-kaspa-math = { workspace = true, features = ["std"] }
-kaspa-merkle.workspace = true
-kaspa-muhash = { workspace = true, features = ["std"] }
-kaspa-notify.workspace = true
-kaspa-pow.workspace = true
-kaspa-seq-commit.workspace = true
-kaspa-smt.workspace = true
-kaspa-smt-store.workspace = true
-kaspa-txscript.workspace = true
-kaspa-txscript-errors = { workspace = true, features = ["std"] }
-kaspa-utils = { workspace = true, features = ["sim"] }
+celenium-addresses.workspace = true
+celenium-consensus-core.workspace = true
+celenium-consensus-notify.workspace = true
+celenium-consensusmanager.workspace = true
+celenium-core.workspace = true
+celenium-database.workspace = true
+celenium-hashes.workspace = true
+celenium-math = { workspace = true, features = ["std"] }
+celenium-merkle.workspace = true
+celenium-muhash = { workspace = true, features = ["std"] }
+celenium-notify.workspace = true
+celenium-pow.workspace = true
+celenium-seq-commit.workspace = true
+celenium-smt.workspace = true
+celenium-smt-store.workspace = true
+celenium-txscript.workspace = true
+celenium-txscript-errors = { workspace = true, features = ["std"] }
+celenium-utils = { workspace = true, features = ["sim"] }
 log.workspace = true
 once_cell.workspace = true
 parking_lot.workspace = true
@@ -58,8 +58,8 @@ criterion.workspace = true
 serde_json.workspace = true
 flate2.workspace = true
 rand_distr.workspace = true
-kaspa-txscript-errors = { workspace = true, features = ["std"] }
-kaspa-addresses.workspace = true
+celenium-txscript-errors = { workspace = true, features = ["std"] }
+celenium-addresses.workspace = true
 
 [[bench]]
 name = "parallel_muhash"
@@ -71,8 +71,8 @@ harness = false
 
 [features]
 html_reports = []
-devnet-prealloc = ["kaspa-consensus-core/devnet-prealloc"]
-test-smt-pruning-diagnostics = ["kaspa-smt-store/test-smt-pruning-diagnostics"]
+devnet-prealloc = ["celenium-consensus-core/devnet-prealloc"]
+test-smt-pruning-diagnostics = ["celenium-smt-store/test-smt-pruning-diagnostics"]
 
 [lints]
 workspace = true

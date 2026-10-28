@@ -1,19 +1,19 @@
 use async_channel::Sender;
-use kaspa_consensus_core::coinbase::MinerData;
-use kaspa_consensus_core::mining_rules::MiningRules;
-use kaspa_consensus_core::tx::ScriptPublicKey;
-use kaspa_consensus_core::{
+use celenium_consensus_core::coinbase::MinerData;
+use celenium_consensus_core::mining_rules::MiningRules;
+use celenium_consensus_core::tx::ScriptPublicKey;
+use celenium_consensus_core::{
     api::ConsensusApi, block::MutableBlock, blockstatus::BlockStatus, header::Header, merkle::calc_hash_merkle_root,
     subnets::SUBNETWORK_ID_COINBASE, tx::Transaction,
 };
-use kaspa_consensus_notify::{notification::Notification, root::ConsensusNotificationRoot};
-use kaspa_consensusmanager::{ConsensusFactory, ConsensusInstance, DynConsensusCtl};
-use kaspa_core::{core::Core, service::Service};
-use kaspa_database::utils::DbLifetime;
-use kaspa_hashes::Hash;
-use kaspa_notify::subscription::context::SubscriptionContext;
-use kaspa_smt::proof::OwnedSmtProof;
-use kaspa_smt_store::processor::SmtReadBounds;
+use celenium_consensus_notify::{notification::Notification, root::ConsensusNotificationRoot};
+use celenium_consensusmanager::{ConsensusFactory, ConsensusInstance, DynConsensusCtl};
+use celenium_core::{core::Core, service::Service};
+use celenium_database::utils::DbLifetime;
+use celenium_hashes::Hash;
+use celenium_notify::subscription::context::SubscriptionContext;
+use celenium_smt::proof::OwnedSmtProof;
+use celenium_smt_store::processor::SmtReadBounds;
 use parking_lot::RwLock;
 
 use super::Consensus;
@@ -34,9 +34,9 @@ use crate::{
     pipeline::{ProcessingCounters, body_processor::BlockBodyProcessor, virtual_processor::VirtualStateProcessor},
     test_helpers::header_from_precomputed_hash,
 };
-use kaspa_consensus_core::api::SeqCommitLaneEntry;
-use kaspa_database::create_temp_db;
-use kaspa_database::prelude::ConnBuilder;
+use celenium_consensus_core::api::SeqCommitLaneEntry;
+use celenium_database::create_temp_db;
+use celenium_database::prelude::ConnBuilder;
 use std::future::Future;
 use std::{sync::Arc, thread::JoinHandle};
 
@@ -160,7 +160,7 @@ impl TestConsensus {
     /// # Panics
     ///
     /// Panics if block builder validation rules are violated.
-    /// See `kaspa_consensus_core::errors::block::RuleError` for the complete list of possible validation rules.
+    /// See `celenium_consensus_core::errors::block::RuleError` for the complete list of possible validation rules.
     pub fn add_utxo_valid_block_with_parents(
         &self,
         hash: Hash,
@@ -185,7 +185,7 @@ impl TestConsensus {
     /// # Panics
     ///
     /// Panics if block builder validation rules are violated.
-    /// See `kaspa_consensus_core::errors::block::RuleError` for the complete list of possible validation rules.
+    /// See `celenium_consensus_core::errors::block::RuleError` for the complete list of possible validation rules.
     pub fn build_utxo_valid_block_with_parents(
         &self,
         hash: Hash,

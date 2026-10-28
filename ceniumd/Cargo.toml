@@ -1,0 +1,75 @@
+[package]
+name = "celeniumd"
+description = "Celenium full node daemon"
+keywords = ["celenium", "blockdag"]
+rust-version.workspace = true
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+include.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lib]
+name = "celeniumd_lib"
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+celenium-alloc.workspace = true # This changes the global allocator for all of the next dependencies so should be kept first
+
+celenium-addresses.workspace = true
+celenium-addressmanager.workspace = true
+celenium-build-info.workspace = true
+celenium-consensus-core.workspace = true
+celenium-consensus-notify.workspace = true
+celenium-consensus.workspace = true
+celenium-consensusmanager.workspace = true
+celenium-core.workspace = true
+celenium-database.workspace = true
+celenium-grpc-server.workspace = true
+celenium-hashes.workspace = true
+celenium-index-processor.workspace = true
+celenium-mining.workspace = true
+celenium-notify.workspace = true
+celenium-p2p-flows.workspace = true
+celenium-p2p-lib.workspace = true
+celenium-p2p-mining.workspace = true
+celenium-perf-monitor.workspace = true
+celenium-rpc-core.workspace = true
+celenium-rpc-service.workspace = true
+celenium-system-info.workspace = true
+celenium-txscript.workspace = true
+celenium-utils.workspace = true
+celenium-utils-tower.workspace = true
+celenium-utxoindex.workspace = true
+celenium-wrpc-server.workspace = true
+
+async-channel.workspace = true
+cfg-if.workspace = true
+clap = { workspace = true, features = ["env"]}
+dhat = { workspace = true, optional = true }
+dirs.workspace = true
+futures-util.workspace = true
+itertools.workspace = true
+log.workspace = true
+num_cpus.workspace = true
+rand.workspace = true
+rayon.workspace = true
+rocksdb.workspace = true
+serde.workspace = true
+tempfile.workspace = true
+thiserror.workspace = true
+tokio = { workspace = true, features = ["rt", "macros", "rt-multi-thread"] }
+workflow-log.workspace = true
+serde_json.workspace = true
+serde_with.workspace = true
+
+toml = "0.8.10"
+
+[features]
+heap = ["dhat", "celenium-alloc/heap"]
+devnet-prealloc = ["celenium-consensus/devnet-prealloc"]
+semaphore-trace = ["celenium-utils/semaphore-trace"]
+
+[lints]
+workspace = true

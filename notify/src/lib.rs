@@ -1,4 +1,4 @@
-extern crate self as kaspa_notify;
+extern crate self as celenium_notify;
 
 pub mod address;
 pub(crate) mod broadcaster;

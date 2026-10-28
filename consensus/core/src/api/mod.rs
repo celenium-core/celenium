@@ -2,7 +2,7 @@ use alloc::boxed::Box;
 use alloc::sync::Arc;
 use alloc::vec::Vec;
 use futures_util::future::BoxFuture;
-use kaspa_muhash::MuHash;
+use celenium_muhash::MuHash;
 
 use crate::{
     BlockHashSet, BlueWorkType, ChainPath,
@@ -28,7 +28,7 @@ use crate::{
         TransactionType, UtxoEntry,
     },
 };
-use kaspa_hashes::Hash;
+use celenium_hashes::Hash;
 
 pub use self::stats::{BlockCount, ConsensusStats};
 
@@ -67,7 +67,7 @@ pub struct ImportLane {
     pub lane_key: Hash,
     pub lane_tip: Hash,
     pub blue_score: u64,
-    pub proof: Option<kaspa_smt::proof::OwnedSmtProof>,
+    pub proof: Option<celenium_smt::proof::OwnedSmtProof>,
 }
 
 pub type ImportLaneBatchIterator<'a> = &'a mut (dyn Iterator<Item = Vec<ImportLane>> + Send);
@@ -104,7 +104,7 @@ pub struct SeqCommitLaneEntry {
 /// `activity_root = H_activity_root(inactivity_shortcut, lanes_root)`.
 #[derive(Clone, Debug)]
 pub struct SeqCommitLaneProof {
-    pub smt_proof: kaspa_smt::proof::OwnedSmtProof,
+    pub smt_proof: celenium_smt::proof::OwnedSmtProof,
     pub lane: Option<SeqCommitLaneEntry>,
     pub payload_and_ctx_digest: Hash,
     pub parent_seq_commit: Hash,

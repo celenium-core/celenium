@@ -1,9 +1,9 @@
 use core::fmt;
 
 use borsh::{BorshDeserialize, BorshSerialize};
-use kaspa_hashes::Hash;
+use celenium_hashes::Hash;
 #[cfg(feature = "mem_size")]
-use kaspa_utils::mem_size::MemSizeEstimator;
+use celenium_utils::mem_size::MemSizeEstimator;
 use serde::de::{Error as DeError, SeqAccess, Visitor};
 use serde::{Deserialize, Deserializer, Serialize};
 #[cfg(feature = "wasm32-sdk")]

@@ -1,13 +1,13 @@
-use kaspa_consensus_core::{BlockHasher, blockstatus::BlockStatus};
-use kaspa_database::registry::DatabaseStorePrefixes;
+use celenium_consensus_core::{BlockHasher, blockstatus::BlockStatus};
+use celenium_database::registry::DatabaseStorePrefixes;
 use parking_lot::{RwLock, RwLockWriteGuard};
 use rocksdb::WriteBatch;
 use std::sync::Arc;
 
-use kaspa_database::prelude::{BatchDbWriter, CachedDbAccess, DirectDbWriter};
-use kaspa_database::prelude::{CachePolicy, DB};
-use kaspa_database::prelude::{StoreError, StoreResult};
-use kaspa_hashes::Hash;
+use celenium_database::prelude::{BatchDbWriter, CachedDbAccess, DirectDbWriter};
+use celenium_database::prelude::{CachePolicy, DB};
+use celenium_database::prelude::{StoreError, StoreResult};
+use celenium_hashes::Hash;
 
 /// Reader API for `StatusesStore`.
 pub trait StatusesStoreReader {

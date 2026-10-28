@@ -8,21 +8,21 @@ use ark_relations::gr1cs::{ConstraintSynthesizer, ConstraintSystemRef, Synthesis
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_snark::SNARK;
 use criterion::{BenchmarkId, Criterion, SamplingMode, black_box, criterion_group, criterion_main};
-use kaspa_addresses::{Address, Prefix, Version};
-use kaspa_consensus_core::config::params::MAINNET_PARAMS;
-use kaspa_consensus_core::hashing::sighash::{
+use celenium_addresses::{Address, Prefix, Version};
+use celenium_consensus_core::config::params::MAINNET_PARAMS;
+use celenium_consensus_core::hashing::sighash::{
     SigHashReusedValuesSync, SigHashReusedValuesUnsync, calc_ecdsa_signature_hash, calc_schnorr_signature_hash,
 };
-use kaspa_consensus_core::hashing::sighash_type::SIG_HASH_ALL;
-use kaspa_consensus_core::mass::{ComputeBudget, Gram, MassCalculator, ScriptUnits};
-use kaspa_consensus_core::tx::{
+use celenium_consensus_core::hashing::sighash_type::SIG_HASH_ALL;
+use celenium_consensus_core::mass::{ComputeBudget, Gram, MassCalculator, ScriptUnits};
+use celenium_consensus_core::tx::{
     ComputeCommit, MutableTransaction, PopulatedTransaction, ScriptPublicKey, Transaction, TransactionId, TransactionInput,
     TransactionOutpoint, TransactionOutput, UtxoEntry, VerifiableTransaction,
 };
-use kaspa_txscript::caches::Cache;
-use kaspa_txscript::opcodes::codes::{self, OpDrop, OpDup};
-use kaspa_txscript::script_builder::ScriptBuilder;
-use kaspa_txscript::{
+use celenium_txscript::caches::Cache;
+use celenium_txscript::opcodes::codes::{self, OpDrop, OpDup};
+use celenium_txscript::script_builder::ScriptBuilder;
+use celenium_txscript::{
     EngineCtx, EngineFlags, MAX_SCRIPT_ELEMENT_SIZE, MAX_STACK_SIZE, TxScriptEngine, pay_to_address_script, pay_to_script_hash_script,
     pay_to_script_hash_signature_script_with_flags,
     zk_precompiles::{
@@ -30,7 +30,7 @@ use kaspa_txscript::{
         tests::helpers::{build_groth_script, load_groth_fields, load_stark_fields},
     },
 };
-use kaspa_txscript_errors::TxScriptError;
+use celenium_txscript_errors::TxScriptError;
 use rand::{SeedableRng, rngs::StdRng};
 use rayon::ThreadPoolBuilder;
 use rayon::prelude::*;

@@ -3,14 +3,14 @@
 
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use itertools::Itertools;
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     config::constants::consensus::{DEFAULT_GAS_PER_LANE_LIMIT, DEFAULT_LANES_PER_BLOCK_LIMIT},
     mass::BlockLaneLimits,
     subnets::SubnetworkId,
     tx::{Transaction, TransactionInput, TransactionOutpoint},
 };
-use kaspa_hashes::{HasherBase, TransactionID};
-use kaspa_mining::{FeerateTransactionKey, Frontier, Policy, model::topological_index::TopologicalIndex};
+use celenium_hashes::{HasherBase, TransactionID};
+use celenium_mining::{FeerateTransactionKey, Frontier, Policy, model::topological_index::TopologicalIndex};
 use rand::{Rng, thread_rng};
 use std::{
     collections::{HashMap, HashSet, hash_set::Iter},

@@ -2,10 +2,10 @@
 
 use crate::RpcUtxoEntry;
 use crate::RpcUtxosByAddressesEntry;
-use kaspa_addresses::Prefix;
-use kaspa_index_core::indexed_utxos::OrderedUtxoEntries;
-use kaspa_index_core::indexed_utxos::UtxoSetByScriptPublicKey;
-use kaspa_txscript::extract_script_pub_key_address;
+use celenium_addresses::Prefix;
+use celenium_index_core::indexed_utxos::OrderedUtxoEntries;
+use celenium_index_core::indexed_utxos::UtxoSetByScriptPublicKey;
+use celenium_txscript::extract_script_pub_key_address;
 
 // ----------------------------------------------------------------------------
 // index to rpc_core

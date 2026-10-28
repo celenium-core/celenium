@@ -3,9 +3,9 @@ use crate::mempool::{
     errors::RuleResult,
     model::{pool::Pool, tx::TxRemovalReason},
 };
-use kaspa_consensus_core::tx::TransactionId;
-use kaspa_core::debug;
-use kaspa_utils::iter::IterExtensions;
+use celenium_consensus_core::tx::TransactionId;
+use celenium_core::debug;
+use celenium_utils::iter::IterExtensions;
 
 impl Mempool {
     pub(crate) fn remove_transaction(

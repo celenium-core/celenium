@@ -28,7 +28,7 @@
 #[cfg(test)]
 use crate::cli::{parse_bool, parse_instance_spec};
 #[cfg(test)]
-use kaspa_stratum_bridge::BridgeConfig;
+use celenium_stratum_bridge::BridgeConfig;
 
 #[cfg(test)]
 #[test]
@@ -135,7 +135,7 @@ fn test_config_single_instance_mode() {
     // When no instances array is provided, a single instance is created from top-level fields.
     // This is the simplest configuration mode for single-pool setups.
     let yaml = r#"
-kaspad_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:16110"
 stratum_port: ":5555"
 min_share_diff: 8192
 print_stats: true
@@ -147,7 +147,7 @@ print_stats: true
     assert_eq!(config.instances.len(), 1, "Should create one instance in single-instance mode");
     assert_eq!(config.instances[0].stratum_port, ":5555", "Stratum port should be parsed correctly");
     assert_eq!(config.instances[0].min_share_diff, 8192, "Min share diff should be parsed correctly");
-    assert_eq!(config.global.kaspad_address, "127.0.0.1:16110", "Kaspad address should be stored in global config");
+    assert_eq!(config.global.celeniumd_address, "127.0.0.1:16110", "Celeniumd address should be stored in global config");
 }
 
 #[cfg(test)]
@@ -156,7 +156,7 @@ fn test_config_single_instance_defaults_when_missing_fields() {
     // Test: Single instance mode uses defaults for missing fields
     // When fields are not specified, sensible defaults are applied (e.g., stratum_port=":5555", min_share_diff=8192).
     let yaml = r#"
-kaspad_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:16110"
 print_stats: true
 "#;
 
@@ -175,7 +175,7 @@ fn test_config_single_instance_log_to_file_uses_global() {
     // Global settings are applied to the single instance when not specified at instance level.
     // The instance-level log_to_file remains None, indicating it uses the global value.
     let yaml = r#"
-kaspad_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:16110"
 stratum_port: ":5555"
 min_share_diff: 8192
 log_to_file: false
@@ -197,7 +197,7 @@ fn test_config_multi_instance_mode() {
     // Each instance can have its own port, difficulty, and other settings.
     // This enables running multiple pools or different configurations simultaneously.
     let yaml = r#"
-kaspad_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:16110"
 instances:
   - stratum_port: ":5555"
     min_share_diff: 8192
@@ -219,7 +219,7 @@ instances:
 #[test]
 fn test_config_port_normalization() {
     let yaml = r#"
-kaspad_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:16110"
 stratum_port: "3030"
 min_share_diff: 8192
 web_dashboard_port: "3031"
@@ -236,7 +236,7 @@ web_dashboard_port: "3031"
 #[test]
 fn test_config_duplicate_ports_error() {
     let yaml = r#"
-kaspad_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:16110"
 instances:
   - stratum_port: ":5555"
     min_share_diff: 8192
@@ -253,7 +253,7 @@ instances:
 #[test]
 fn test_config_coinbase_tag_suffix_empty_string() {
     let yaml = r#"
-kaspad_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:16110"
 stratum_port: ":5555"
 min_share_diff: 8192
 coinbase_tag_suffix: ""
@@ -269,7 +269,7 @@ coinbase_tag_suffix: ""
 #[test]
 fn test_config_coinbase_tag_suffix_with_value() {
     let yaml = r#"
-kaspad_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:16110"
 stratum_port: ":5555"
 min_share_diff: 8192
 coinbase_tag_suffix: "test"
@@ -286,7 +286,7 @@ coinbase_tag_suffix: "test"
 fn test_config_var_diff_parsing() {
     // Test single-instance mode with var_diff
     let yaml = r#"
-kaspad_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:16110"
 stratum_port: ":5555"
 min_share_diff: 8192
 var_diff: true
@@ -304,7 +304,7 @@ shares_per_min: 30
 
     // Test multi-instance mode with var_diff
     let yaml2 = r#"
-kaspad_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:16110"
 var_diff: false
 var_diff_stats: false
 shares_per_min: 20
@@ -332,13 +332,13 @@ instances:
 #[test]
 fn test_config_missing_instance_fields_error() {
     let yaml_missing_port = r#"
-kaspad_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:16110"
 instances:
   - min_share_diff: 8192
 "#;
 
     let yaml_missing_diff = r#"
-kaspad_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:16110"
 instances:
   - stratum_port: ":5555"
 "#;
@@ -351,12 +351,12 @@ instances:
 #[test]
 fn test_config_single_instance_missing_fields_use_defaults() {
     let yaml_single_missing_diff = r#"
-kaspad_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:16110"
 stratum_port: ":5555"
 "#;
 
     let yaml_single_missing_port = r#"
-kaspad_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:16110"
 min_share_diff: 1024
 "#;
 
@@ -379,7 +379,7 @@ min_share_diff: 1024
 #[test]
 fn test_config_empty_web_dashboard_port_kept_empty() {
     let yaml = r#"
-kaspad_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:16110"
 stratum_port: ":5555"
 min_share_diff: 8192
 web_dashboard_port: ""
@@ -397,7 +397,7 @@ web_dashboard_port: ""
 fn test_normalize_port_with_colon() {
     // Test: Port normalization preserves ports that already have a colon prefix
     // This ensures that ports like ":3030" remain unchanged during normalization.
-    use kaspa_stratum_bridge::net_utils::normalize_port;
+    use celenium_stratum_bridge::net_utils::normalize_port;
     assert_eq!(normalize_port(":3030"), ":3030", "Port with colon should remain unchanged");
     assert_eq!(normalize_port(":5555"), ":5555", "Port with colon should remain unchanged");
     assert_eq!(normalize_port(":16110"), ":16110", "Port with colon should remain unchanged");
@@ -408,7 +408,7 @@ fn test_normalize_port_with_colon() {
 fn test_normalize_port_without_colon() {
     // Test: Port normalization adds colon prefix to ports without it
     // This allows users to specify ports as either "3030" or ":3030" - both are normalized to ":3030".
-    use kaspa_stratum_bridge::net_utils::normalize_port;
+    use celenium_stratum_bridge::net_utils::normalize_port;
     assert_eq!(normalize_port("3030"), ":3030", "Port without colon should get colon prefix");
     assert_eq!(normalize_port("5555"), ":5555", "Port without colon should get colon prefix");
     assert_eq!(normalize_port("16110"), ":16110", "Port without colon should get colon prefix");
@@ -420,7 +420,7 @@ fn test_normalize_port_with_full_address() {
     // Test: Port normalization preserves full IP:port addresses
     // When a full address is provided (IP:port), it remains unchanged.
     // This allows binding to specific interfaces while still normalizing port-only values.
-    use kaspa_stratum_bridge::net_utils::normalize_port;
+    use celenium_stratum_bridge::net_utils::normalize_port;
     assert_eq!(normalize_port("127.0.0.1:3030"), "127.0.0.1:3030", "Full address should remain unchanged");
     assert_eq!(normalize_port("0.0.0.0:3030"), "0.0.0.0:3030", "Full address should remain unchanged");
     assert_eq!(normalize_port("192.168.1.1:5555"), "192.168.1.1:5555", "Full address should remain unchanged");
@@ -432,7 +432,7 @@ fn test_normalize_port_empty() {
     // Test: Port normalization handles empty strings
     // Empty strings and whitespace-only strings are normalized to empty strings.
     // This allows optional port configuration.
-    use kaspa_stratum_bridge::net_utils::normalize_port;
+    use celenium_stratum_bridge::net_utils::normalize_port;
     assert_eq!(normalize_port(""), "", "Empty string should remain empty");
     assert_eq!(normalize_port("   "), "", "Whitespace-only string should become empty");
 }
@@ -442,7 +442,7 @@ fn test_normalize_port_empty() {
 fn test_normalize_port_with_whitespace() {
     // Test: Port normalization trims whitespace from port values
     // Leading and trailing whitespace is removed, making configuration more forgiving.
-    use kaspa_stratum_bridge::net_utils::normalize_port;
+    use celenium_stratum_bridge::net_utils::normalize_port;
     assert_eq!(normalize_port("  :3030  "), ":3030", "Whitespace should be trimmed from port with colon");
     assert_eq!(normalize_port("  3030  "), ":3030", "Whitespace should be trimmed and colon added");
     assert_eq!(normalize_port("  127.0.0.1:3030  "), "127.0.0.1:3030", "Whitespace should be trimmed from full address");
@@ -451,7 +451,7 @@ fn test_normalize_port_with_whitespace() {
 #[cfg(test)]
 #[test]
 fn test_bind_addr_from_port_with_colon() {
-    use kaspa_stratum_bridge::net_utils::bind_addr_from_port;
+    use celenium_stratum_bridge::net_utils::bind_addr_from_port;
     assert_eq!(bind_addr_from_port(":3030"), "0.0.0.0:3030");
     assert_eq!(bind_addr_from_port(":5555"), "0.0.0.0:5555");
     assert_eq!(bind_addr_from_port(":16110"), "0.0.0.0:16110");
@@ -460,7 +460,7 @@ fn test_bind_addr_from_port_with_colon() {
 #[cfg(test)]
 #[test]
 fn test_bind_addr_from_port_without_colon() {
-    use kaspa_stratum_bridge::net_utils::bind_addr_from_port;
+    use celenium_stratum_bridge::net_utils::bind_addr_from_port;
     assert_eq!(bind_addr_from_port("3030"), "0.0.0.0:3030");
     assert_eq!(bind_addr_from_port("5555"), "0.0.0.0:5555");
     assert_eq!(bind_addr_from_port("16110"), "0.0.0.0:16110");
@@ -469,7 +469,7 @@ fn test_bind_addr_from_port_without_colon() {
 #[cfg(test)]
 #[test]
 fn test_bind_addr_from_port_with_full_address() {
-    use kaspa_stratum_bridge::net_utils::bind_addr_from_port;
+    use celenium_stratum_bridge::net_utils::bind_addr_from_port;
     assert_eq!(bind_addr_from_port("127.0.0.1:3030"), "127.0.0.1:3030");
     assert_eq!(bind_addr_from_port("0.0.0.0:3030"), "0.0.0.0:3030");
     assert_eq!(bind_addr_from_port("192.168.1.1:5555"), "192.168.1.1:5555");
@@ -478,7 +478,7 @@ fn test_bind_addr_from_port_with_full_address() {
 #[cfg(test)]
 #[test]
 fn test_bind_addr_from_port_empty() {
-    use kaspa_stratum_bridge::net_utils::bind_addr_from_port;
+    use celenium_stratum_bridge::net_utils::bind_addr_from_port;
     assert_eq!(bind_addr_from_port(""), "");
     assert_eq!(bind_addr_from_port("   "), "");
 }
@@ -487,7 +487,7 @@ fn test_bind_addr_from_port_empty() {
 #[cfg(test)]
 #[test]
 fn test_append_line_data_accepts_data_under_limit() {
-    use kaspa_stratum_bridge::append_line_data;
+    use celenium_stratum_bridge::append_line_data;
     let mut buf = String::new();
     assert!(append_line_data(&mut buf, "{\"jsonrpc\":\"2.0\"}\n"));
     assert_eq!(buf, "{\"jsonrpc\":\"2.0\"}\n");
@@ -496,7 +496,7 @@ fn test_append_line_data_accepts_data_under_limit() {
 #[cfg(test)]
 #[test]
 fn test_append_line_data_accepts_incremental_chunks_under_limit() {
-    use kaspa_stratum_bridge::{MAX_STRATUM_LINE_BYTES, append_line_data};
+    use celenium_stratum_bridge::{MAX_STRATUM_LINE_BYTES, append_line_data};
     let mut buf = String::new();
     let chunk_size = 1024;
     let chunks = MAX_STRATUM_LINE_BYTES / chunk_size;
@@ -509,7 +509,7 @@ fn test_append_line_data_accepts_incremental_chunks_under_limit() {
 #[cfg(test)]
 #[test]
 fn test_append_line_data_rejects_when_limit_exceeded() {
-    use kaspa_stratum_bridge::{MAX_STRATUM_LINE_BYTES, append_line_data};
+    use celenium_stratum_bridge::{MAX_STRATUM_LINE_BYTES, append_line_data};
     let mut buf = "x".repeat(MAX_STRATUM_LINE_BYTES);
     assert!(!append_line_data(&mut buf, "y"));
     assert_eq!(buf.len(), MAX_STRATUM_LINE_BYTES);
@@ -518,7 +518,7 @@ fn test_append_line_data_rejects_when_limit_exceeded() {
 #[cfg(test)]
 #[test]
 fn test_append_line_data_rejects_single_oversized_chunk() {
-    use kaspa_stratum_bridge::{MAX_STRATUM_LINE_BYTES, append_line_data};
+    use celenium_stratum_bridge::{MAX_STRATUM_LINE_BYTES, append_line_data};
     let mut buf = String::new();
     assert!(!append_line_data(&mut buf, &"x".repeat(MAX_STRATUM_LINE_BYTES + 1)));
     assert!(buf.is_empty());
@@ -527,7 +527,7 @@ fn test_append_line_data_rejects_single_oversized_chunk() {
 #[cfg(test)]
 #[test]
 fn test_append_line_data_accepts_exactly_at_limit() {
-    use kaspa_stratum_bridge::{MAX_STRATUM_LINE_BYTES, append_line_data};
+    use celenium_stratum_bridge::{MAX_STRATUM_LINE_BYTES, append_line_data};
     let mut buf = String::new();
     assert!(append_line_data(&mut buf, &"x".repeat(MAX_STRATUM_LINE_BYTES)));
     assert_eq!(buf.len(), MAX_STRATUM_LINE_BYTES);
@@ -537,7 +537,7 @@ fn test_append_line_data_accepts_exactly_at_limit() {
 #[cfg(test)]
 #[test]
 fn test_total_row_spm_uses_worker_average() {
-    use kaspa_stratum_bridge::average_worker_spm;
+    use celenium_stratum_bridge::average_worker_spm;
     assert_eq!(average_worker_spm(0.0, 0), 0.0);
     assert!((average_worker_spm(30.0, 2) - 15.0).abs() < f64::EPSILON);
     assert!((average_worker_spm(12.5, 1) - 12.5).abs() < f64::EPSILON);
@@ -547,7 +547,7 @@ fn test_total_row_spm_uses_worker_average() {
 #[cfg(test)]
 #[test]
 fn test_stratum_method_from_str() {
-    use kaspa_stratum_bridge::jsonrpc_event::StratumMethod;
+    use celenium_stratum_bridge::jsonrpc_event::StratumMethod;
     assert_eq!(StratumMethod::from("mining.subscribe"), StratumMethod::Subscribe);
     assert_eq!(StratumMethod::from("mining.authorize"), StratumMethod::Authorize);
     assert_eq!(StratumMethod::from("mining.submit"), StratumMethod::Submit);
@@ -561,7 +561,7 @@ fn test_stratum_method_from_str() {
 #[cfg(test)]
 #[test]
 fn test_stratum_method_to_string() {
-    use kaspa_stratum_bridge::jsonrpc_event::StratumMethod;
+    use celenium_stratum_bridge::jsonrpc_event::StratumMethod;
     assert_eq!(String::from(StratumMethod::Subscribe), "mining.subscribe");
     assert_eq!(String::from(StratumMethod::Authorize), "mining.authorize");
     assert_eq!(String::from(StratumMethod::Submit), "mining.submit");
@@ -575,7 +575,7 @@ fn test_stratum_method_to_string() {
 #[cfg(test)]
 #[test]
 fn test_jsonrpc_event_new() {
-    use kaspa_stratum_bridge::jsonrpc_event::JsonRpcEvent;
+    use celenium_stratum_bridge::jsonrpc_event::JsonRpcEvent;
     use serde_json::json;
     let event = JsonRpcEvent::new(Some("1".to_string()), "mining.subscribe", vec![json!("BzMiner")]);
     assert_eq!(event.method, "mining.subscribe");
@@ -586,7 +586,7 @@ fn test_jsonrpc_event_new() {
 #[cfg(test)]
 #[test]
 fn test_jsonrpc_event_method_enum() {
-    use kaspa_stratum_bridge::jsonrpc_event::{JsonRpcEvent, StratumMethod};
+    use celenium_stratum_bridge::jsonrpc_event::{JsonRpcEvent, StratumMethod};
     let event = JsonRpcEvent::new(None, "mining.subscribe", vec![]);
     assert_eq!(event.method_enum(), StratumMethod::Subscribe);
 
@@ -597,7 +597,7 @@ fn test_jsonrpc_event_method_enum() {
 #[cfg(test)]
 #[test]
 fn test_jsonrpc_response_new() {
-    use kaspa_stratum_bridge::jsonrpc_event::{JsonRpcEvent, JsonRpcResponse};
+    use celenium_stratum_bridge::jsonrpc_event::{JsonRpcEvent, JsonRpcResponse};
     use serde_json::json;
     let event = JsonRpcEvent::new(Some("1".to_string()), "mining.subscribe", vec![]);
     let response = JsonRpcResponse::new(&event, Some(json!(["subscription_id"])), None);
@@ -608,7 +608,7 @@ fn test_jsonrpc_response_new() {
 #[cfg(test)]
 #[test]
 fn test_jsonrpc_response_success() {
-    use kaspa_stratum_bridge::jsonrpc_event::JsonRpcResponse;
+    use celenium_stratum_bridge::jsonrpc_event::JsonRpcResponse;
     use serde_json::{Value, json};
     let response = JsonRpcResponse::success(Some(Value::String("1".to_string())), json!(["subscription_id"]));
     assert!(response.result.is_some());
@@ -618,7 +618,7 @@ fn test_jsonrpc_response_success() {
 #[cfg(test)]
 #[test]
 fn test_jsonrpc_response_error() {
-    use kaspa_stratum_bridge::jsonrpc_event::JsonRpcResponse;
+    use celenium_stratum_bridge::jsonrpc_event::JsonRpcResponse;
     use serde_json::Value;
     let response = JsonRpcResponse::error(Some(Value::String("1".to_string())), -1, "Invalid request", None);
     assert!(response.result.is_none());
@@ -632,7 +632,7 @@ fn test_jsonrpc_response_error() {
 #[cfg(test)]
 #[test]
 fn test_unmarshal_event_basic() {
-    use kaspa_stratum_bridge::jsonrpc_event::unmarshal_event;
+    use celenium_stratum_bridge::jsonrpc_event::unmarshal_event;
     let json = r#"{"jsonrpc":"2.0","method":"mining.subscribe","params":["BzMiner"],"id":1}"#;
     let event = unmarshal_event(json).unwrap();
     assert_eq!(event.method, "mining.subscribe");
@@ -642,7 +642,7 @@ fn test_unmarshal_event_basic() {
 #[cfg(test)]
 #[test]
 fn test_unmarshal_event_with_null_id() {
-    use kaspa_stratum_bridge::jsonrpc_event::unmarshal_event;
+    use celenium_stratum_bridge::jsonrpc_event::unmarshal_event;
     let json = r#"{"jsonrpc":"2.0","method":"mining.notify","params":[],"id":null}"#;
     let event = unmarshal_event(json).unwrap();
     assert_eq!(event.method, "mining.notify");
@@ -651,7 +651,7 @@ fn test_unmarshal_event_with_null_id() {
 #[cfg(test)]
 #[test]
 fn test_unmarshal_event_with_string_id() {
-    use kaspa_stratum_bridge::jsonrpc_event::unmarshal_event;
+    use celenium_stratum_bridge::jsonrpc_event::unmarshal_event;
     use serde_json::Value;
     let json = r#"{"jsonrpc":"2.0","method":"mining.subscribe","params":[],"id":"abc123"}"#;
     let event = unmarshal_event(json).unwrap();
@@ -661,7 +661,7 @@ fn test_unmarshal_event_with_string_id() {
 #[cfg(test)]
 #[test]
 fn test_unmarshal_event_without_id() {
-    use kaspa_stratum_bridge::jsonrpc_event::unmarshal_event;
+    use celenium_stratum_bridge::jsonrpc_event::unmarshal_event;
     let json = r#"{"jsonrpc":"2.0","method":"mining.notify","params":[]}"#;
     let event = unmarshal_event(json).unwrap();
     assert_eq!(event.method, "mining.notify");
@@ -671,7 +671,7 @@ fn test_unmarshal_event_without_id() {
 #[cfg(test)]
 #[test]
 fn test_unmarshal_event_sanitizes_control_chars() {
-    use kaspa_stratum_bridge::jsonrpc_event::unmarshal_event;
+    use celenium_stratum_bridge::jsonrpc_event::unmarshal_event;
     // Test with tab character (common in Goldshell ASICs)
     let json_with_tab = "{\"jsonrpc\":\"2.0\",\"method\":\"mining.subscribe\",\"params\":[\"BzMiner\t\"],\"id\":1}";
     let event = unmarshal_event(json_with_tab).unwrap();
@@ -685,7 +685,7 @@ fn test_unmarshal_event_sanitizes_control_chars() {
 #[cfg(test)]
 #[test]
 fn test_unmarshal_event_preserves_newlines() {
-    use kaspa_stratum_bridge::jsonrpc_event::unmarshal_event;
+    use celenium_stratum_bridge::jsonrpc_event::unmarshal_event;
     // Newlines should be preserved
     let json_with_newline = "{\"jsonrpc\":\"2.0\",\"method\":\"mining.subscribe\",\"params\":[\"line1\\nline2\"],\"id\":1}";
     let event = unmarshal_event(json_with_newline).unwrap();
@@ -695,7 +695,7 @@ fn test_unmarshal_event_preserves_newlines() {
 #[cfg(test)]
 #[test]
 fn test_unmarshal_response_success() {
-    use kaspa_stratum_bridge::jsonrpc_event::unmarshal_response;
+    use celenium_stratum_bridge::jsonrpc_event::unmarshal_response;
     let json = r#"{"jsonrpc":"2.0","result":["subscription_id"],"id":1}"#;
     let response = unmarshal_response(json).unwrap();
     assert!(response.result.is_some());
@@ -705,7 +705,7 @@ fn test_unmarshal_response_success() {
 #[cfg(test)]
 #[test]
 fn test_unmarshal_response_error() {
-    use kaspa_stratum_bridge::jsonrpc_event::unmarshal_response;
+    use celenium_stratum_bridge::jsonrpc_event::unmarshal_response;
     let json = r#"{"jsonrpc":"2.0","error":[-1,"Invalid request",null],"id":1}"#;
     let response = unmarshal_response(json).unwrap();
     assert!(response.result.is_none());
@@ -715,7 +715,7 @@ fn test_unmarshal_response_error() {
 #[cfg(test)]
 #[test]
 fn test_unmarshal_event_invalid_json() {
-    use kaspa_stratum_bridge::jsonrpc_event::unmarshal_event;
+    use celenium_stratum_bridge::jsonrpc_event::unmarshal_event;
     let invalid_json = r#"{"jsonrpc":"2.0","method":"mining.subscribe""#;
     assert!(unmarshal_event(invalid_json).is_err());
 }
@@ -723,7 +723,7 @@ fn test_unmarshal_event_invalid_json() {
 #[cfg(test)]
 #[test]
 fn test_unmarshal_response_invalid_json() {
-    use kaspa_stratum_bridge::jsonrpc_event::unmarshal_response;
+    use celenium_stratum_bridge::jsonrpc_event::unmarshal_response;
     let invalid_json = r#"{"jsonrpc":"2.0","result":["subscription_id""#;
     assert!(unmarshal_response(invalid_json).is_err());
 }
@@ -731,7 +731,7 @@ fn test_unmarshal_response_invalid_json() {
 #[cfg(test)]
 #[test]
 fn test_jsonrpc_event_serialize() {
-    use kaspa_stratum_bridge::jsonrpc_event::JsonRpcEvent;
+    use celenium_stratum_bridge::jsonrpc_event::JsonRpcEvent;
     use serde_json::json;
     let event = JsonRpcEvent::new(Some("1".to_string()), "mining.subscribe", vec![json!("BzMiner")]);
     let serialized = serde_json::to_string(&event).unwrap();
@@ -742,7 +742,7 @@ fn test_jsonrpc_event_serialize() {
 #[cfg(test)]
 #[test]
 fn test_jsonrpc_response_serialize() {
-    use kaspa_stratum_bridge::jsonrpc_event::JsonRpcResponse;
+    use celenium_stratum_bridge::jsonrpc_event::JsonRpcResponse;
     use serde_json::{Value, json};
     let response = JsonRpcResponse::success(Some(Value::String("1".to_string())), json!(["subscription_id"]));
     let serialized = serde_json::to_string(&response).unwrap();
@@ -753,7 +753,7 @@ fn test_jsonrpc_response_serialize() {
 #[cfg(test)]
 #[test]
 fn test_error_short_code_display() {
-    use kaspa_stratum_bridge::errors::ErrorShortCode;
+    use celenium_stratum_bridge::errors::ErrorShortCode;
     assert_eq!(ErrorShortCode::NoMinerAddress.as_str(), "err_no_miner_address");
     assert_eq!(ErrorShortCode::FailedBlockFetch.as_str(), "err_failed_block_fetch");
     assert_eq!(ErrorShortCode::InvalidAddressFmt.as_str(), "err_malformed_wallet_address");
@@ -767,7 +767,7 @@ fn test_error_short_code_display() {
 #[cfg(test)]
 #[test]
 fn test_error_short_code_to_string() {
-    use kaspa_stratum_bridge::errors::ErrorShortCode;
+    use celenium_stratum_bridge::errors::ErrorShortCode;
     assert_eq!(format!("{}", ErrorShortCode::NoMinerAddress), "err_no_miner_address");
     assert_eq!(format!("{}", ErrorShortCode::Disconnected), "err_worker_disconnected");
 }
@@ -783,7 +783,7 @@ fn test_mining_state_initial_values() {
     // - Max jobs set to 300
     // - Job counter starts at 0
     // - No stored job IDs
-    use kaspa_stratum_bridge::mining_state::MiningState;
+    use celenium_stratum_bridge::mining_state::MiningState;
     let state = MiningState::new();
     assert!(!state.is_initialized(), "State should start uninitialized");
     assert!(!state.use_big_job(), "Big job format should be disabled by default");
@@ -798,9 +798,9 @@ fn test_mining_state_job_management() {
     // Test: Job storage and retrieval in MiningState
     // This verifies that jobs can be added to the mining state and retrieved by their job ID.
     // Jobs are stored in a circular buffer with a maximum of 300 jobs.
-    use kaspa_consensus_core::block::Block;
-    use kaspa_hashes::Hash;
-    use kaspa_stratum_bridge::mining_state::{Job, MiningState};
+    use celenium_consensus_core::block::Block;
+    use celenium_hashes::Hash;
+    use celenium_stratum_bridge::mining_state::{Job, MiningState};
 
     let state = MiningState::new();
 
@@ -834,7 +834,7 @@ fn test_mining_state_difficulty_management() {
     // Test: Difficulty storage and retrieval in MiningState
     // This verifies that the mining state can store and retrieve difficulty values
     // using BigUint for arbitrary precision arithmetic.
-    use kaspa_stratum_bridge::mining_state::MiningState;
+    use celenium_stratum_bridge::mining_state::MiningState;
     use num_bigint::BigUint;
     use num_traits::Zero;
 
@@ -852,7 +852,7 @@ fn test_mining_state_initialization_flag() {
     // Test: Initialization flag toggling in MiningState
     // This verifies that the initialization flag can be set and cleared,
     // which tracks whether a miner has completed the subscribe/authorize flow.
-    use kaspa_stratum_bridge::mining_state::MiningState;
+    use celenium_stratum_bridge::mining_state::MiningState;
     let state = MiningState::new();
     assert!(!state.is_initialized(), "State should start uninitialized");
 
@@ -869,7 +869,7 @@ fn test_mining_state_big_job_flag() {
     // Test: Big job format flag toggling in MiningState
     // This verifies that the big job format flag can be set and cleared.
     // Big job format is used for miners that require extended job data (e.g., some ASICs).
-    use kaspa_stratum_bridge::mining_state::MiningState;
+    use celenium_stratum_bridge::mining_state::MiningState;
     let state = MiningState::new();
     assert!(!state.use_big_job(), "Big job format should be disabled by default");
 
@@ -884,9 +884,9 @@ fn test_mining_state_big_job_flag() {
 #[cfg(test)]
 #[test]
 fn test_config_invalid_yaml() {
-    use kaspa_stratum_bridge::BridgeConfig;
+    use celenium_stratum_bridge::BridgeConfig;
     let invalid_yaml = r#"
-kaspad_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:16110"
 stratum_port: ":5555"
 min_share_diff: invalid_number
 "#;
@@ -896,9 +896,9 @@ min_share_diff: invalid_number
 #[cfg(test)]
 #[test]
 fn test_config_malformed_yaml() {
-    use kaspa_stratum_bridge::BridgeConfig;
+    use celenium_stratum_bridge::BridgeConfig;
     let malformed_yaml = r#"
-kaspad_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:16110"
 stratum_port: ":5555"
 min_share_diff: 8192
 invalid: [unclosed
@@ -909,9 +909,9 @@ invalid: [unclosed
 #[cfg(test)]
 #[test]
 fn test_config_negative_values() {
-    use kaspa_stratum_bridge::BridgeConfig;
+    use celenium_stratum_bridge::BridgeConfig;
     let yaml = r#"
-kaspad_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:16110"
 stratum_port: ":5555"
 min_share_diff: -1
 "#;
@@ -925,9 +925,9 @@ min_share_diff: -1
 #[cfg(test)]
 #[test]
 fn test_config_very_large_values() {
-    use kaspa_stratum_bridge::BridgeConfig;
+    use celenium_stratum_bridge::BridgeConfig;
     let yaml = r#"
-kaspad_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:16110"
 stratum_port: ":5555"
 min_share_diff: 999999999
 "#;
@@ -939,9 +939,9 @@ min_share_diff: 999999999
 #[cfg(test)]
 #[test]
 fn test_config_empty_instances_list() {
-    use kaspa_stratum_bridge::BridgeConfig;
+    use celenium_stratum_bridge::BridgeConfig;
     let yaml = r#"
-kaspad_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:16110"
 instances: []
 "#;
     let config = BridgeConfig::from_yaml(yaml);
@@ -952,9 +952,9 @@ instances: []
 #[cfg(test)]
 #[test]
 fn test_config_whitespace_in_values() {
-    use kaspa_stratum_bridge::BridgeConfig;
+    use celenium_stratum_bridge::BridgeConfig;
     let yaml = r#"
-kaspad_address: "  127.0.0.1:16110  "
+celeniumd_address: "  127.0.0.1:16110  "
 stratum_port: "  :5555  "
 min_share_diff: 8192
 "#;
@@ -969,7 +969,7 @@ min_share_diff: 8192
 #[cfg(test)]
 #[test]
 fn test_unmarshal_event_with_empty_params() {
-    use kaspa_stratum_bridge::jsonrpc_event::unmarshal_event;
+    use celenium_stratum_bridge::jsonrpc_event::unmarshal_event;
     let json = r#"{"jsonrpc":"2.0","method":"mining.subscribe","params":[],"id":1}"#;
     let event = unmarshal_event(json).unwrap();
     assert_eq!(event.method, "mining.subscribe");
@@ -979,7 +979,7 @@ fn test_unmarshal_event_with_empty_params() {
 #[cfg(test)]
 #[test]
 fn test_unmarshal_event_with_nested_objects() {
-    use kaspa_stratum_bridge::jsonrpc_event::unmarshal_event;
+    use celenium_stratum_bridge::jsonrpc_event::unmarshal_event;
     let json = r#"{"jsonrpc":"2.0","method":"mining.submit","params":["address","job_id",{"nonce":123}],"id":1}"#;
     let event = unmarshal_event(json).unwrap();
     assert_eq!(event.method, "mining.submit");
@@ -989,7 +989,7 @@ fn test_unmarshal_event_with_nested_objects() {
 #[cfg(test)]
 #[test]
 fn test_unmarshal_event_with_unicode() {
-    use kaspa_stratum_bridge::jsonrpc_event::unmarshal_event;
+    use celenium_stratum_bridge::jsonrpc_event::unmarshal_event;
     let json = r#"{"jsonrpc":"2.0","method":"mining.subscribe","params":["测试"],"id":1}"#;
     let event = unmarshal_event(json).unwrap();
     assert_eq!(event.method, "mining.subscribe");
@@ -999,7 +999,7 @@ fn test_unmarshal_event_with_unicode() {
 #[cfg(test)]
 #[test]
 fn test_unmarshal_event_with_very_long_string() {
-    use kaspa_stratum_bridge::jsonrpc_event::unmarshal_event;
+    use celenium_stratum_bridge::jsonrpc_event::unmarshal_event;
     let long_string = "a".repeat(10000);
     let json = format!(r#"{{"jsonrpc":"2.0","method":"mining.subscribe","params":["{}"],"id":1}}"#, long_string);
     let event = unmarshal_event(&json).unwrap();
@@ -1072,14 +1072,14 @@ fn test_parse_instance_spec_multiple_ports() {
 }
 
 // Integration tests for the bridge binary
-// These tests run with: cargo test -p kaspa-stratum-bridge --bin stratum-bridge
-// Or with CPU miner: cargo test -p kaspa-stratum-bridge --features rkstratum_cpu_miner --bin stratum-bridge
+// These tests run with: cargo test -p celenium-stratum-bridge --bin stratum-bridge
+// Or with CPU miner: cargo test -p celenium-stratum-bridge --features rkstratum_cpu_miner --bin stratum-bridge
 
 #[cfg(test)]
 mod integration {
-    use kaspa_alloc::init_allocator_with_default_settings;
-    use kaspa_stratum_bridge::{KaspaApi, StratumServerBridgeConfig as StratumBridgeConfig, listen_and_serve_with_shutdown};
-    use kaspad_lib::args as kaspad_args;
+    use celenium_alloc::init_allocator_with_default_settings;
+    use celenium_stratum_bridge::{CeleniumApi, StratumServerBridgeConfig as StratumBridgeConfig, listen_and_serve_with_shutdown};
+    use celeniumd_lib::args as celeniumd_args;
     use std::ffi::OsString;
     use std::time::Duration;
     use tokio::sync::watch;
@@ -1101,14 +1101,14 @@ mod integration {
         init_allocator_with_default_settings();
 
         // Use a temporary directory for the node data
-        let temp_dir = std::env::temp_dir().join(format!("kaspad_test_{}", uuid::Uuid::new_v4()));
+        let temp_dir = std::env::temp_dir().join(format!("celeniumd_test_{}", uuid::Uuid::new_v4()));
         std::fs::create_dir_all(&temp_dir).unwrap();
 
         // Start an in-process devnet node with random listener ports to avoid conflicts
         // with a locally running node.
         let rpc_address = format!("127.0.0.1:{}", free_port());
         let argv: Vec<OsString> = vec![
-            "kaspad".into(),
+            "celeniumd".into(),
             "--devnet".into(),
             "--appdir".into(),
             temp_dir.to_string_lossy().to_string().into(),
@@ -1118,21 +1118,21 @@ mod integration {
             "--utxoindex".into(),
         ];
 
-        let node_args = kaspad_args::Args::parse(argv).unwrap();
+        let node_args = celeniumd_args::Args::parse(argv).unwrap();
         let inprocess_node = crate::inprocess_node::InProcessNode::start_from_args(node_args).unwrap();
 
         // Wait a bit for the node to start
         tokio::time::sleep(Duration::from_millis(500)).await;
 
-        // Create KaspaApi client
+        // Create CeleniumApi client
         let (shutdown_tx, shutdown_rx) = watch::channel(false);
-        let kaspa_api = KaspaApi::new(rpc_address.clone(), None, shutdown_rx.clone()).await.unwrap();
+        let celenium_api = CeleniumApi::new(rpc_address.clone(), None, shutdown_rx.clone()).await.unwrap();
 
         // Create bridge config
         let bridge_config = StratumBridgeConfig {
             instance_id: "test-instance".to_string(),
             stratum_port: ":0".to_string(), // Use port 0 for testing
-            kaspad_address: rpc_address.clone(),
+            celeniumd_address: rpc_address.clone(),
             prom_port: String::new(),
             print_stats: false,
             log_to_file: false,
@@ -1149,7 +1149,7 @@ mod integration {
 
         // Start the bridge server (with a timeout to prevent hanging)
         let bridge_handle =
-            tokio::spawn(async move { listen_and_serve_with_shutdown::<KaspaApi>(bridge_config, kaspa_api, None, shutdown_rx).await });
+            tokio::spawn(async move { listen_and_serve_with_shutdown::<CeleniumApi>(bridge_config, celenium_api, None, shutdown_rx).await });
 
         // Give it a moment to start
         tokio::time::sleep(Duration::from_millis(200)).await;
@@ -1173,7 +1173,7 @@ mod integration {
         init_allocator_with_default_settings();
 
         // Use a temporary directory for the node data
-        let temp_dir = std::env::temp_dir().join(format!("kaspad_test_{}", uuid::Uuid::new_v4()));
+        let temp_dir = std::env::temp_dir().join(format!("celeniumd_test_{}", uuid::Uuid::new_v4()));
         std::fs::create_dir_all(&temp_dir).unwrap();
 
         // Start an in-process devnet node with random listener ports to avoid conflicts
@@ -1181,7 +1181,7 @@ mod integration {
         let rpc_port = free_port();
         let rpc_address = format!("127.0.0.1:{}", rpc_port);
         let argv: Vec<OsString> = vec![
-            "kaspad".into(),
+            "celeniumd".into(),
             "--devnet".into(),
             "--appdir".into(),
             temp_dir.to_string_lossy().to_string().into(),
@@ -1191,21 +1191,21 @@ mod integration {
             "--utxoindex".into(),
         ];
 
-        let node_args = kaspad_args::Args::parse(argv).unwrap();
+        let node_args = celeniumd_args::Args::parse(argv).unwrap();
         let inprocess_node = crate::inprocess_node::InProcessNode::start_from_args(node_args).unwrap();
 
         // Wait a bit for the node to start
         tokio::time::sleep(Duration::from_millis(500)).await;
 
-        // Create KaspaApi client
+        // Create CeleniumApi client
         let (shutdown_tx, shutdown_rx) = watch::channel(false);
-        let kaspa_api = KaspaApi::new(rpc_address.clone(), None, shutdown_rx.clone()).await.unwrap();
+        let celenium_api = CeleniumApi::new(rpc_address.clone(), None, shutdown_rx.clone()).await.unwrap();
 
         // Test that CPU miner module is available when feature is enabled
-        use kaspa_stratum_bridge::InternalCpuMinerConfig;
+        use celenium_stratum_bridge::InternalCpuMinerConfig;
         let miner_config = InternalCpuMinerConfig {
             enabled: false, // Don't actually mine in test
-            mining_address: "kaspatest:test".to_string(),
+            mining_address: "celeniumtest:test".to_string(),
             threads: 1,
             throttle: None,
             template_poll_interval: Duration::from_millis(250),
@@ -1219,7 +1219,7 @@ mod integration {
         let bridge_config = StratumBridgeConfig {
             instance_id: "test-instance-cpu-miner".to_string(),
             stratum_port: ":0".to_string(),
-            kaspad_address: rpc_address.clone(),
+            celeniumd_address: rpc_address.clone(),
             prom_port: String::new(),
             print_stats: false,
             log_to_file: false,
@@ -1236,7 +1236,7 @@ mod integration {
 
         // Start the bridge server
         let bridge_handle =
-            tokio::spawn(async move { listen_and_serve_with_shutdown::<KaspaApi>(bridge_config, kaspa_api, None, shutdown_rx).await });
+            tokio::spawn(async move { listen_and_serve_with_shutdown::<CeleniumApi>(bridge_config, celenium_api, None, shutdown_rx).await });
 
         // Give it a moment to start
         tokio::time::sleep(Duration::from_millis(200)).await;
@@ -1260,15 +1260,15 @@ mod integration {
 
 #[cfg(test)]
 mod comprehensive_tests {
-    use kaspa_consensus_core::block::Block;
-    use kaspa_consensus_core::header::Header;
-    use kaspa_consensus_core::subnets::SubnetworkId;
-    use kaspa_consensus_core::tx::{ScriptPublicKey, Transaction, TransactionOutput};
-    use kaspa_hashes::Hash;
-    use kaspa_stratum_bridge::{
+    use celenium_consensus_core::block::Block;
+    use celenium_consensus_core::header::Header;
+    use celenium_consensus_core::subnets::SubnetworkId;
+    use celenium_consensus_core::tx::{ScriptPublicKey, Transaction, TransactionOutput};
+    use celenium_hashes::Hash;
+    use celenium_stratum_bridge::{
         client_handler::ClientHandler,
         default_client::{handle_authorize, handle_subscribe},
-        hasher::KaspaDiff,
+        hasher::CeleniumDiff,
         jsonrpc_event::JsonRpcEvent,
         mining_state::{GetMiningState, Job, MiningState},
         prom::{WorkerContext, init_metrics, record_share_found},
@@ -1286,7 +1286,7 @@ mod comprehensive_tests {
     // ========================================================================
 
     /// Create a test block with specified parameters
-    /// This helps us test share validation without needing a real Kaspa node
+    /// This helps us test share validation without needing a real Celenium node
     fn create_test_block(timestamp: u64, bits: u32, nonce: u64) -> Block {
         // Create a minimal header using from_precomputed_hash (test helper)
         let hash = Hash::from_bytes([1; 32]);
@@ -1580,7 +1580,7 @@ mod comprehensive_tests {
     // These tests demonstrate how difficulty is converted to target values:
     // - diff_to_target: Converts difficulty to target (BigUint)
     // - diff_to_hash: Converts difficulty to hash value (f64)
-    // - KaspaDiff: Stores difficulty, target, and hash value
+    // - CeleniumDiff: Stores difficulty, target, and hash value
     // ========================================================================
 
     #[test]
@@ -1588,7 +1588,7 @@ mod comprehensive_tests {
         // Test: Difficulty to target conversion
         // This demonstrates how pool difficulty is converted to a target hash
 
-        use kaspa_stratum_bridge::hasher::diff_to_target;
+        use celenium_stratum_bridge::hasher::diff_to_target;
 
         // Test with difficulty = 1.0 (maximum target)
         let target_1 = diff_to_target(1.0);
@@ -1606,11 +1606,11 @@ mod comprehensive_tests {
     }
 
     #[test]
-    fn test_kaspa_diff_structure() {
-        // Test: KaspaDiff structure and methods
+    fn test_celenium_diff_structure() {
+        // Test: CeleniumDiff structure and methods
         // This demonstrates how difficulty is stored and managed
 
-        let mut diff = KaspaDiff::new();
+        let mut diff = CeleniumDiff::new();
         assert_eq!(diff.diff_value, 0.0);
         assert_eq!(diff.hash_value, 0.0);
         assert!(diff.target_value.is_zero());
@@ -1627,9 +1627,9 @@ mod comprehensive_tests {
         // Test: Difficulty calculation is the same for all miners
         // (Previously there were miner-specific calculations, now unified)
 
-        let mut diff1 = KaspaDiff::new();
-        let mut diff2 = KaspaDiff::new();
-        let mut diff3 = KaspaDiff::new();
+        let mut diff1 = CeleniumDiff::new();
+        let mut diff2 = CeleniumDiff::new();
+        let mut diff3 = CeleniumDiff::new();
 
         diff1.set_diff_value_for_miner(8192.0, "IceRiver");
         diff2.set_diff_value_for_miner(8192.0, "Bitmain");
@@ -1729,7 +1729,7 @@ mod comprehensive_tests {
         assert_eq!(state.get_big_diff(), test_diff, "Big diff should be stored");
 
         // Test stratum difficulty
-        let mut stratum_diff = KaspaDiff::new();
+        let mut stratum_diff = CeleniumDiff::new();
         stratum_diff.set_diff_value(4096.0);
         state.set_stratum_diff(stratum_diff.clone());
 
@@ -1780,7 +1780,7 @@ mod comprehensive_tests {
         let handler = ShareHandler::new("test-instance".to_string());
         let ctx = create_test_context_sync();
         *ctx.worker_name.lock() = "worker1".to_string();
-        *ctx.wallet_addr.lock() = "kaspatest:test".to_string();
+        *ctx.wallet_addr.lock() = "celeniumtest:test".to_string();
 
         let stats = handler.get_create_stats(&ctx);
         assert_eq!(*stats.worker_name.lock(), "worker1");
@@ -1802,7 +1802,7 @@ mod comprehensive_tests {
         let stats_before_wallet = handler.get_create_stats(&ctx);
         assert_eq!(*stats_before_wallet.worker_name.lock(), "ks0");
 
-        let wallet = "kaspa:qr8example123456789012345678901234567890123456789012345678901234567890".to_string();
+        let wallet = "celenium:qr8example123456789012345678901234567890123456789012345678901234567890".to_string();
         *ctx.wallet_addr.lock() = wallet.clone();
 
         // Reusing the same in-memory stats entry must still sync prom start time for the wallet.
@@ -1837,7 +1837,7 @@ mod comprehensive_tests {
         let handler = ShareHandler::new("test-instance".to_string());
         let ctx = create_test_context_sync();
         *ctx.worker_name.lock() = "worker1".to_string();
-        *ctx.wallet_addr.lock() = "kaspatest:test".to_string();
+        *ctx.wallet_addr.lock() = "celeniumtest:test".to_string();
         handler.get_create_stats(&ctx);
 
         // Set initial difficulty
@@ -1891,7 +1891,7 @@ mod comprehensive_tests {
         let handler = ShareHandler::new("test-instance".to_string());
         let ctx = create_test_context_sync();
         *ctx.worker_name.lock() = "worker1".to_string();
-        *ctx.wallet_addr.lock() = "kaspatest:test".to_string();
+        *ctx.wallet_addr.lock() = "celeniumtest:test".to_string();
         handler.get_create_stats(&ctx);
 
         // Set initial difficulty
@@ -1914,7 +1914,7 @@ mod comprehensive_tests {
     #[test]
     fn test_error_short_codes() {
         // Test: Error short codes for tracking
-        use kaspa_stratum_bridge::errors::ErrorShortCode;
+        use celenium_stratum_bridge::errors::ErrorShortCode;
 
         assert_eq!(ErrorShortCode::NoMinerAddress.as_str(), "err_no_miner_address");
         assert_eq!(ErrorShortCode::FailedBlockFetch.as_str(), "err_failed_block_fetch");
@@ -1959,7 +1959,7 @@ mod comprehensive_tests {
         state.set_use_big_job(false); // IceRiver uses single hex string, not "big job"
 
         // 6. Set difficulty
-        let mut stratum_diff = KaspaDiff::new();
+        let mut stratum_diff = CeleniumDiff::new();
         stratum_diff.set_diff_value(8192.0);
         state.set_stratum_diff(stratum_diff);
 
@@ -2025,7 +2025,7 @@ mod comprehensive_tests {
     // - PoW checking and block submission
     // ========================================================================
     // Note: These tests only compile when built with --features rkstratum_cpu_miner
-    // Run with: cargo test -p kaspa-stratum-bridge --features rkstratum_cpu_miner
+    // Run with: cargo test -p celenium-stratum-bridge --features rkstratum_cpu_miner
     // ========================================================================
 
     #[cfg(feature = "rkstratum_cpu_miner")]
@@ -2034,12 +2034,12 @@ mod comprehensive_tests {
         // Test: InternalCpuMinerConfig creation and fields
         // This demonstrates how to configure the internal CPU miner
 
-        use kaspa_stratum_bridge::InternalCpuMinerConfig;
+        use celenium_stratum_bridge::InternalCpuMinerConfig;
         use std::time::Duration;
 
         let config = InternalCpuMinerConfig {
             enabled: true,
-            mining_address: "kaspatest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
+            mining_address: "celeniumtest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
             threads: 4,
             throttle: Some(Duration::from_millis(10)),
             template_poll_interval: Duration::from_millis(250),
@@ -2047,7 +2047,7 @@ mod comprehensive_tests {
 
         assert!(config.enabled);
         assert_eq!(config.threads, 4);
-        assert_eq!(config.mining_address, "kaspatest:test123456789012345678901234567890123456789012345678901234567890");
+        assert_eq!(config.mining_address, "celeniumtest:test123456789012345678901234567890123456789012345678901234567890");
         assert!(config.throttle.is_some());
         assert_eq!(config.template_poll_interval, Duration::from_millis(250));
     }
@@ -2058,7 +2058,7 @@ mod comprehensive_tests {
         // Test: Config validation - empty address should fail
         // This demonstrates the validation logic
 
-        use kaspa_stratum_bridge::InternalCpuMinerConfig;
+        use celenium_stratum_bridge::InternalCpuMinerConfig;
         use std::time::Duration;
 
         let config_empty = InternalCpuMinerConfig {
@@ -2074,7 +2074,7 @@ mod comprehensive_tests {
 
         let config_valid = InternalCpuMinerConfig {
             enabled: true,
-            mining_address: "kaspatest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
+            mining_address: "celeniumtest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
             threads: 1,
             throttle: None,
             template_poll_interval: Duration::from_millis(250),
@@ -2089,7 +2089,7 @@ mod comprehensive_tests {
         // Test: InternalMinerMetrics initialization and default values
         // This demonstrates how metrics are tracked
 
-        use kaspa_stratum_bridge::rkstratum_cpu_miner::InternalMinerMetrics;
+        use celenium_stratum_bridge::rkstratum_cpu_miner::InternalMinerMetrics;
         use std::sync::atomic::Ordering;
 
         let metrics = InternalMinerMetrics::default();
@@ -2115,12 +2115,12 @@ mod comprehensive_tests {
         // Test: Threads are clamped to minimum of 1
         // This demonstrates the thread count validation
 
-        use kaspa_stratum_bridge::InternalCpuMinerConfig;
+        use celenium_stratum_bridge::InternalCpuMinerConfig;
         use std::time::Duration;
 
         let config_zero_threads = InternalCpuMinerConfig {
             enabled: true,
-            mining_address: "kaspatest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
+            mining_address: "celeniumtest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
             threads: 0, // Should be clamped to 1
             throttle: None,
             template_poll_interval: Duration::from_millis(250),
@@ -2138,12 +2138,12 @@ mod comprehensive_tests {
         // Test: When disabled, miner should return default metrics without starting
         // This demonstrates the disabled state handling
 
-        use kaspa_stratum_bridge::InternalCpuMinerConfig;
+        use celenium_stratum_bridge::InternalCpuMinerConfig;
         use std::time::Duration;
 
         let config_disabled = InternalCpuMinerConfig {
             enabled: false,
-            mining_address: "kaspatest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
+            mining_address: "celeniumtest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
             threads: 4,
             throttle: None,
             template_poll_interval: Duration::from_millis(250),
@@ -2160,21 +2160,21 @@ mod comprehensive_tests {
         // Test: Spawning disabled miner returns default metrics
         // This demonstrates the spawn behavior when disabled
 
-        use kaspa_stratum_bridge::InternalCpuMinerConfig;
+        use celenium_stratum_bridge::InternalCpuMinerConfig;
         use std::time::Duration;
 
-        // Create a mock KaspaApi (we won't actually use it when disabled)
+        // Create a mock CeleniumApi (we won't actually use it when disabled)
         // For this test, we'll just verify the disabled path doesn't require a real API
         let config = InternalCpuMinerConfig {
             enabled: false,
-            mining_address: "kaspatest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
+            mining_address: "celeniumtest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
             threads: 1,
             throttle: None,
             template_poll_interval: Duration::from_millis(250),
         };
 
         // When disabled, spawn_internal_cpu_miner should return immediately with default metrics
-        // without needing a real KaspaApi
+        // without needing a real CeleniumApi
         assert!(!config.enabled, "Config should be disabled");
         // The actual spawn would be: spawn_internal_cpu_miner(api, config, shutdown_rx)
         // When disabled, it returns Ok(Arc::new(InternalMinerMetrics::default())) immediately
@@ -2186,13 +2186,13 @@ mod comprehensive_tests {
         // Test: Throttle configuration for CPU miner
         // This demonstrates how to control CPU usage via throttling
 
-        use kaspa_stratum_bridge::InternalCpuMinerConfig;
+        use celenium_stratum_bridge::InternalCpuMinerConfig;
         use std::time::Duration;
 
         // Test with throttle enabled
         let config_with_throttle = InternalCpuMinerConfig {
             enabled: true,
-            mining_address: "kaspatest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
+            mining_address: "celeniumtest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
             threads: 1,
             throttle: Some(Duration::from_millis(1)), // 1ms sleep per hash
             template_poll_interval: Duration::from_millis(250),
@@ -2204,7 +2204,7 @@ mod comprehensive_tests {
         // Test without throttle (maximum CPU usage)
         let config_no_throttle = InternalCpuMinerConfig {
             enabled: true,
-            mining_address: "kaspatest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
+            mining_address: "celeniumtest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
             threads: 1,
             throttle: None, // No sleep between hashes
             template_poll_interval: Duration::from_millis(250),
@@ -2219,13 +2219,13 @@ mod comprehensive_tests {
         // Test: Template poll interval configuration
         // This demonstrates how often the miner refreshes block templates
 
-        use kaspa_stratum_bridge::InternalCpuMinerConfig;
+        use celenium_stratum_bridge::InternalCpuMinerConfig;
         use std::time::Duration;
 
         // Fast polling (more frequent template updates)
         let config_fast = InternalCpuMinerConfig {
             enabled: true,
-            mining_address: "kaspatest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
+            mining_address: "celeniumtest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
             threads: 1,
             throttle: None,
             template_poll_interval: Duration::from_millis(100), // Poll every 100ms
@@ -2236,7 +2236,7 @@ mod comprehensive_tests {
         // Slow polling (less frequent template updates, less API load)
         let config_slow = InternalCpuMinerConfig {
             enabled: true,
-            mining_address: "kaspatest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
+            mining_address: "celeniumtest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
             threads: 1,
             throttle: None,
             template_poll_interval: Duration::from_millis(1000), // Poll every 1 second
@@ -2292,15 +2292,15 @@ mod comprehensive_tests {
     async fn test_internal_cpu_miner_integration_with_mock_api() {
         // Test: Integration test with mock components
         // This demonstrates how the CPU miner integrates with the bridge
-        // Note: Full integration requires a real Kaspa node (tested in integration tests)
+        // Note: Full integration requires a real Celenium node (tested in integration tests)
 
-        use kaspa_stratum_bridge::InternalCpuMinerConfig;
+        use celenium_stratum_bridge::InternalCpuMinerConfig;
         use std::time::Duration;
 
         // Create a valid config
         let config = InternalCpuMinerConfig {
             enabled: true,
-            mining_address: "kaspatest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
+            mining_address: "celeniumtest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
             threads: 2,
             throttle: Some(Duration::from_millis(1)),
             template_poll_interval: Duration::from_millis(500),
@@ -2313,7 +2313,7 @@ mod comprehensive_tests {
         assert!(config.template_poll_interval > Duration::ZERO);
 
         // In a real scenario, this would be:
-        // let metrics = spawn_internal_cpu_miner(kaspa_api, config, shutdown_rx).await?;
+        // let metrics = spawn_internal_cpu_miner(celenium_api, config, shutdown_rx).await?;
         // The metrics would track hashes_tried, blocks_submitted, blocks_accepted
     }
 
@@ -2323,7 +2323,7 @@ mod comprehensive_tests {
         // Test: Metrics tracking for CPU miner
         // This demonstrates how metrics are updated during mining
 
-        use kaspa_stratum_bridge::rkstratum_cpu_miner::InternalMinerMetrics;
+        use celenium_stratum_bridge::rkstratum_cpu_miner::InternalMinerMetrics;
         use std::sync::atomic::Ordering;
 
         let metrics = Arc::new(InternalMinerMetrics::default());
@@ -2352,9 +2352,9 @@ mod comprehensive_tests {
         // Test: PoW checking concept for CPU miner
         // This demonstrates how the CPU miner validates PoW
 
-        use kaspa_consensus_core::header::Header;
-        use kaspa_hashes::Hash;
-        use kaspa_pow::State as PowState;
+        use celenium_consensus_core::header::Header;
+        use celenium_hashes::Hash;
+        use celenium_pow::State as PowState;
 
         // Create a test block
         let hash = Hash::from_bytes([1; 32]);
@@ -2453,13 +2453,13 @@ mod comprehensive_tests {
         // Test: Various configuration examples
         // This demonstrates different use cases for the CPU miner
 
-        use kaspa_stratum_bridge::InternalCpuMinerConfig;
+        use celenium_stratum_bridge::InternalCpuMinerConfig;
         use std::time::Duration;
 
         // Example 1: Single-threaded, throttled (low CPU usage)
         let config_low_cpu = InternalCpuMinerConfig {
             enabled: true,
-            mining_address: "kaspatest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
+            mining_address: "celeniumtest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
             threads: 1,
             throttle: Some(Duration::from_millis(10)),           // 10ms sleep per hash
             template_poll_interval: Duration::from_millis(1000), // Poll every second
@@ -2471,7 +2471,7 @@ mod comprehensive_tests {
         // Example 2: Multi-threaded, no throttle (maximum CPU usage)
         let config_max_cpu = InternalCpuMinerConfig {
             enabled: true,
-            mining_address: "kaspatest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
+            mining_address: "celeniumtest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
             threads: 8,                                         // Use all CPU cores
             throttle: None,                                     // No throttling
             template_poll_interval: Duration::from_millis(100), // Frequent template updates
@@ -2483,7 +2483,7 @@ mod comprehensive_tests {
         // Example 3: Balanced configuration
         let config_balanced = InternalCpuMinerConfig {
             enabled: true,
-            mining_address: "kaspatest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
+            mining_address: "celeniumtest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
             threads: 4,
             throttle: Some(Duration::from_millis(1)),           // Light throttling
             template_poll_interval: Duration::from_millis(250), // Default polling
@@ -2500,22 +2500,22 @@ mod comprehensive_tests {
         // This test ensures the feature is properly enabled
 
         // Test that InternalCpuMinerConfig is available
-        use kaspa_stratum_bridge::InternalCpuMinerConfig;
+        use celenium_stratum_bridge::InternalCpuMinerConfig;
         let _config = InternalCpuMinerConfig {
             enabled: true,
-            mining_address: "kaspatest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
+            mining_address: "celeniumtest:test123456789012345678901234567890123456789012345678901234567890".to_string(),
             threads: 1,
             throttle: None,
             template_poll_interval: std::time::Duration::from_millis(250),
         };
 
         // Test that InternalMinerMetrics is available
-        use kaspa_stratum_bridge::rkstratum_cpu_miner::InternalMinerMetrics;
+        use celenium_stratum_bridge::rkstratum_cpu_miner::InternalMinerMetrics;
         let _metrics = InternalMinerMetrics::default();
 
         // Test that spawn function is available (compile-time check)
         // The actual function signature: spawn_internal_cpu_miner(
-        //     kaspa_api: Arc<KaspaApi>,
+        //     celenium_api: Arc<CeleniumApi>,
         //     cfg: InternalCpuMinerConfig,
         //     shutdown_rx: watch::Receiver<bool>,
         // ) -> Result<Arc<InternalMinerMetrics>, anyhow::Error>
@@ -2533,53 +2533,53 @@ mod comprehensive_tests {
 
     #[tokio::test]
     async fn test_wallet_address_cleaning_with_prefix() {
-        // Test: Wallet addresses with kaspa:/kaspatest:/kaspadev: prefixes
+        // Test: Wallet addresses with celenium:/celeniumtest:/celeniumdev: prefixes
         // These should be accepted as-is
         let ctx = create_test_context().await;
         // Note: State is already created in create_test_context, no need to create another
 
-        // Test kaspa: prefix
+        // Test celenium: prefix
         let event1 = JsonRpcEvent::new(
             Some("1".to_string()),
             "mining.authorize",
-            vec![json!("kaspa:qr8example123456789012345678901234567890123456789012345678901234567890")],
+            vec![json!("celenium:qr8example123456789012345678901234567890123456789012345678901234567890")],
         );
         // Verify event was created with proper prefix before calling handle_authorize
         assert_eq!(event1.params.len(), 1);
         let addr1 = event1.params[0].as_str().unwrap();
-        assert!(addr1.starts_with("kaspa:"), "Address should have kaspa: prefix");
+        assert!(addr1.starts_with("celenium:"), "Address should have celenium: prefix");
         let _result1: Result<(), _> = handle_authorize(ctx.clone(), event1, None, None).await;
         // Note: This will fail with invalid address, but we're testing the cleaning logic
         // In real scenario, valid addresses would work
 
-        // Test kaspatest: prefix
+        // Test celeniumtest: prefix
         let ctx2 = create_test_context().await;
         let event2 = JsonRpcEvent::new(
             Some("2".to_string()),
             "mining.authorize",
-            vec![json!("kaspatest:qr8example123456789012345678901234567890123456789012345678901234567890")],
+            vec![json!("celeniumtest:qr8example123456789012345678901234567890123456789012345678901234567890")],
         );
         assert_eq!(event2.params.len(), 1);
         let addr2 = event2.params[0].as_str().unwrap();
-        assert!(addr2.starts_with("kaspatest:"), "Address should have kaspatest: prefix");
+        assert!(addr2.starts_with("celeniumtest:"), "Address should have celeniumtest: prefix");
         let _result2: Result<(), _> = handle_authorize(ctx2.clone(), event2, None, None).await;
 
-        // Test kaspadev: prefix
+        // Test celeniumdev: prefix
         let ctx3 = create_test_context().await;
         let event3 = JsonRpcEvent::new(
             Some("3".to_string()),
             "mining.authorize",
-            vec![json!("kaspadev:qr8example123456789012345678901234567890123456789012345678901234567890")],
+            vec![json!("celeniumdev:qr8example123456789012345678901234567890123456789012345678901234567890")],
         );
         assert_eq!(event3.params.len(), 1);
         let addr3 = event3.params[0].as_str().unwrap();
-        assert!(addr3.starts_with("kaspadev:"), "Address should have kaspadev: prefix");
+        assert!(addr3.starts_with("celeniumdev:"), "Address should have celeniumdev: prefix");
         let _result3: Result<(), _> = handle_authorize(ctx3.clone(), event3, None, None).await;
     }
 
     #[tokio::test]
     async fn test_wallet_address_cleaning_without_prefix() {
-        // Test: Wallet addresses without prefix should get kaspa: prefix added
+        // Test: Wallet addresses without prefix should get celenium: prefix added
         let ctx = create_test_context().await;
         let event = JsonRpcEvent::new(
             Some("1".to_string()),
@@ -2589,9 +2589,9 @@ mod comprehensive_tests {
         // Verify event was created with address without prefix (before calling handle_authorize)
         assert_eq!(event.params.len(), 1);
         let addr_param = event.params[0].as_str().unwrap();
-        assert!(!addr_param.starts_with("kaspa:"), "Test address should not have prefix initially");
+        assert!(!addr_param.starts_with("celenium:"), "Test address should not have prefix initially");
 
-        // handle_authorize will call clean_wallet which should add kaspa: prefix
+        // handle_authorize will call clean_wallet which should add celenium: prefix
         let _result: Result<(), _> = handle_authorize(ctx.clone(), event, None, None).await;
         // Note: Actual validation requires valid address format
     }
@@ -2620,7 +2620,7 @@ mod comprehensive_tests {
         let event = JsonRpcEvent::new(
             Some("1".to_string()),
             "mining.authorize",
-            vec![json!("  kaspa:qr8example123456789012345678901234567890123456789012345678901234567890  ")],
+            vec![json!("  celenium:qr8example123456789012345678901234567890123456789012345678901234567890  ")],
         );
         // Verify event was created with whitespace (before calling handle_authorize)
         assert_eq!(event.params.len(), 1);
@@ -2646,14 +2646,14 @@ mod comprehensive_tests {
         // Test: EthereumStratum format with 5 parameters (lolMiner)
         // Format: [address.name, job_id, extranonce2, ntime, nonce]
         // This test verifies the format structure (parameter count validation)
-        // Note: Full submission testing requires a KaspaApi mock, so we test the format here
+        // Note: Full submission testing requires a CeleniumApi mock, so we test the format here
 
         // Create event with 5 params (EthereumStratum format)
         let event = JsonRpcEvent::new(
             Some("1".to_string()),
             "mining.submit",
             vec![
-                json!("kaspatest:qr8example123456789012345678901234567890123456789012345678901234567890.worker1"),
+                json!("celeniumtest:qr8example123456789012345678901234567890123456789012345678901234567890.worker1"),
                 json!("1"),
                 json!("0000"),     // extranonce2
                 json!("00000000"), // ntime
@@ -2677,7 +2677,7 @@ mod comprehensive_tests {
             Some("1".to_string()),
             "mining.submit",
             vec![
-                json!("kaspatest:qr8example123456789012345678901234567890123456789012345678901234567890.worker1"),
+                json!("celeniumtest:qr8example123456789012345678901234567890123456789012345678901234567890.worker1"),
                 json!("1"),
                 json!("00000000"), // nonce
             ],
@@ -2718,7 +2718,7 @@ mod comprehensive_tests {
         let handler = ShareHandler::new("test-instance".to_string());
         let ctx = create_test_context_sync();
         *ctx.worker_name.lock() = "worker1".to_string();
-        *ctx.wallet_addr.lock() = "kaspatest:test".to_string();
+        *ctx.wallet_addr.lock() = "celeniumtest:test".to_string();
         handler.get_create_stats(&ctx);
 
         // Test minimum difficulty (1.0)
@@ -2744,7 +2744,7 @@ mod comprehensive_tests {
         let handler = ShareHandler::new("test-instance".to_string());
         let ctx = create_test_context_sync();
         *ctx.worker_name.lock() = "worker1".to_string();
-        *ctx.wallet_addr.lock() = "kaspatest:test".to_string();
+        *ctx.wallet_addr.lock() = "celeniumtest:test".to_string();
         handler.get_create_stats(&ctx);
 
         // Set initial difficulty
@@ -2834,7 +2834,7 @@ mod comprehensive_tests {
     #[test]
     fn test_unmarshal_event_type_mismatches() {
         // Test: Events with wrong parameter types
-        use kaspa_stratum_bridge::jsonrpc_event::unmarshal_event;
+        use celenium_stratum_bridge::jsonrpc_event::unmarshal_event;
 
         // Test with method as number instead of string
         let json1 = r#"{"jsonrpc":"2.0","method":123,"params":[],"id":1}"#;
@@ -2858,7 +2858,7 @@ mod comprehensive_tests {
     #[test]
     fn test_unmarshal_event_missing_required_fields() {
         // Test: Events missing jsonrpc/method fields
-        use kaspa_stratum_bridge::jsonrpc_event::unmarshal_event;
+        use celenium_stratum_bridge::jsonrpc_event::unmarshal_event;
 
         // Test missing jsonrpc field
         let json1 = r#"{"method":"mining.subscribe","params":[],"id":1}"#;
@@ -2985,7 +2985,7 @@ mod comprehensive_tests {
         let ctx = create_test_context_sync();
 
         // Set wallet and worker
-        *ctx.wallet_addr.lock() = "kaspatest:qr8example123456789012345678901234567890123456789012345678901234567890".to_string();
+        *ctx.wallet_addr.lock() = "celeniumtest:qr8example123456789012345678901234567890123456789012345678901234567890".to_string();
         *ctx.worker_name.lock() = "worker1".to_string();
         *ctx.remote_app.lock() = "BzMiner".to_string();
 
@@ -2993,7 +2993,7 @@ mod comprehensive_tests {
         assert_eq!(summary.remote_addr, "127.0.0.1", "Summary should contain remote address");
         assert_eq!(summary.remote_port, 12345, "Summary should contain remote port");
         assert_eq!(
-            summary.wallet_addr, "kaspatest:qr8example123456789012345678901234567890123456789012345678901234567890",
+            summary.wallet_addr, "celeniumtest:qr8example123456789012345678901234567890123456789012345678901234567890",
             "Summary should contain wallet address"
         );
         assert_eq!(summary.worker_name, "worker1", "Summary should contain worker name");

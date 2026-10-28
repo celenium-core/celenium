@@ -14,11 +14,11 @@ use crate::{
     },
     model::{TransactionIdSet, topological_index::TopologicalIndex},
 };
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     block::TemplateTransactionSelector,
     tx::{MutableTransaction, TransactionId, TransactionOutpoint},
 };
-use kaspa_core::{debug, time::unix_now, trace};
+use celenium_core::{debug, time::unix_now, trace};
 use std::{collections::hash_map::Keys, iter::once, sync::Arc};
 
 use super::frontier::Frontier;

@@ -1,12 +1,12 @@
 use crate::{flow_context::FlowContext, flow_trait::Flow};
-use kaspa_consensus_core::errors::consensus::ConsensusError;
-use kaspa_core::debug;
-use kaspa_hashes::Hash;
-use kaspa_p2p_lib::{
+use celenium_consensus_core::errors::consensus::ConsensusError;
+use celenium_core::debug;
+use celenium_hashes::Hash;
+use celenium_p2p_lib::{
     IncomingRoute, Router,
     common::ProtocolError,
     dequeue_with_request_id, make_response,
-    pb::{BlockHeadersMessage, DoneHeadersMessage, kaspad_message::Payload},
+    pb::{BlockHeadersMessage, DoneHeadersMessage, celeniumd_message::Payload},
 };
 use std::sync::Arc;
 

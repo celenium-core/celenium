@@ -1,16 +1,16 @@
-// Example of simple grpc client to connect with Kaspa node and collect some node and network basic data
+// Example of simple grpc client to connect with Celenium node and collect some node and network basic data
 
-use kaspa_grpc_client::GrpcClient;
-use kaspa_rpc_core::RpcResult;
-use kaspa_rpc_core::notify::mode::NotificationMode;
-use kaspa_rpc_core::{GetBlockDagInfoResponse, GetServerInfoResponse, api::rpc::RpcApi};
+use celenium_grpc_client::GrpcClient;
+use celenium_rpc_core::RpcResult;
+use celenium_rpc_core::notify::mode::NotificationMode;
+use celenium_rpc_core::{GetBlockDagInfoResponse, GetServerInfoResponse, api::rpc::RpcApi};
 use std::process::ExitCode;
 
 #[tokio::main]
 async fn main() -> ExitCode {
     match check_node_status().await {
         Ok(_) => {
-            println!("Well done! You successfully completed your first client connection to Kaspa node!");
+            println!("Well done! You successfully completed your first client connection to Celenium node!");
             ExitCode::SUCCESS
         }
         Err(error) => {
@@ -28,7 +28,7 @@ async fn check_node_status() -> RpcResult<()> {
             .await
             .unwrap();
 
-    // Retrieve and show Kaspa node information
+    // Retrieve and show Celenium node information
     let GetServerInfoResponse { is_synced, server_version, network_id, has_utxo_index, .. } = client.get_server_info().await?;
 
     println!("Node version: {server_version}");
@@ -36,7 +36,7 @@ async fn check_node_status() -> RpcResult<()> {
     println!("Node is synced: {is_synced}");
     println!("Node is indexing UTXOs: {has_utxo_index}");
 
-    // Retrieve and show Kaspa network information
+    // Retrieve and show Celenium network information
     let GetBlockDagInfoResponse {
         block_count,
         header_count,
@@ -66,7 +66,7 @@ async fn check_node_status() -> RpcResult<()> {
     println!("Virtual DAA score: {virtual_daa_score}");
     println!("Sink: {sink}");
 
-    // Disconnect client from Kaspa node
+    // Disconnect client from Celenium node
     client.disconnect().await?;
 
     // Return function result

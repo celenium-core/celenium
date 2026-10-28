@@ -2,7 +2,7 @@ use crate::BlockLevel;
 
 use super::{block::RuleError, tx::TxRuleError};
 use alloc::string::String;
-use kaspa_hashes::Hash;
+use celenium_hashes::Hash;
 use thiserror::Error;
 
 #[derive(Error, Debug, Clone)]

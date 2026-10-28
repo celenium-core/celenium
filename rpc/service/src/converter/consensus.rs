@@ -1,6 +1,6 @@
 use async_trait::async_trait;
-use kaspa_addresses::{Address, AddressError};
-use kaspa_consensus_core::{
+use celenium_addresses::{Address, AddressError};
+use celenium_consensus_core::{
     ChainPath,
     acceptance_data::{AcceptanceData, MergesetBlockAcceptanceData},
     block::Block,
@@ -14,13 +14,13 @@ use kaspa_consensus_core::{
         TransactionQueryResult, TransactionType, UtxoEntry,
     },
 };
-use kaspa_consensus_notify::notification::{self as consensus_notify, Notification as ConsensusNotification};
-use kaspa_consensusmanager::{ConsensusManager, ConsensusProxy};
-use kaspa_hashes::Hash;
-use kaspa_math::Uint256;
-use kaspa_mining::model::{TransactionIdSet, owner_txs::OwnerTransactions};
-use kaspa_notify::converter::Converter;
-use kaspa_rpc_core::{
+use celenium_consensus_notify::notification::{self as consensus_notify, Notification as ConsensusNotification};
+use celenium_consensusmanager::{ConsensusManager, ConsensusProxy};
+use celenium_hashes::Hash;
+use celenium_math::Uint256;
+use celenium_mining::model::{TransactionIdSet, owner_txs::OwnerTransactions};
+use celenium_notify::converter::Converter;
+use celenium_rpc_core::{
     BlockAddedNotification, Notification, RpcAcceptanceDataVerbosity, RpcAcceptedTransactionIds, RpcBlock, RpcBlockVerboseData,
     RpcChainBlockAcceptedTransactions, RpcError, RpcHash, RpcHeaderVerbosity, RpcMempoolEntry, RpcMempoolEntryByAddress,
     RpcMergesetBlockAcceptanceDataVerbosity, RpcOptionalHeader, RpcOptionalTransaction, RpcOptionalTransactionInput,
@@ -31,7 +31,7 @@ use kaspa_rpc_core::{
     RpcTransactionVerboseData, RpcTransactionVerboseDataVerbosity, RpcTransactionVerbosity, RpcUtxoEntryVerboseDataVerbosity,
     RpcUtxoEntryVerbosity,
 };
-use kaspa_txscript::{extract_script_pub_key_address, script_class::ScriptClass};
+use celenium_txscript::{extract_script_pub_key_address, script_class::ScriptClass};
 use std::{collections::HashMap, fmt::Debug, sync::Arc};
 /// Conversion of consensus_core to rpc_core structures
 pub struct ConsensusConverter {
@@ -57,7 +57,7 @@ impl ConsensusConverter {
 
     /// Converts a consensus [`Block`] into an [`RpcBlock`], optionally including transaction verbose data.
     ///
-    /// _GO-KASPAD: PopulateBlockWithVerboseData_
+    /// _GO-CELENIUMD: PopulateBlockWithVerboseData_
     pub async fn get_block(
         &self,
         consensus: &ConsensusProxy,
@@ -128,7 +128,7 @@ impl ConsensusConverter {
 
     /// Converts a consensus [`Transaction`] into an [`RpcTransaction`], optionally including verbose data.
     ///
-    /// _GO-KASPAD: PopulateTransactionWithVerboseData
+    /// _GO-CELENIUMD: PopulateTransactionWithVerboseData
     pub fn get_transaction(
         &self,
         consensus: &ConsensusProxy,

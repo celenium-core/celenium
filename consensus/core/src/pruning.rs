@@ -5,7 +5,7 @@ use crate::{
 };
 use alloc::sync::Arc;
 use alloc::vec::Vec;
-use kaspa_hashes::Hash;
+use celenium_hashes::Hash;
 
 pub type PruningPointProof = Vec<Vec<Arc<Header>>>;
 

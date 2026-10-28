@@ -1,13 +1,13 @@
 use std::sync::Arc;
 
 use itertools::Itertools;
-use kaspa_consensus_core::pruning::PruningPointProof;
-use kaspa_database::prelude::DB;
-use kaspa_database::prelude::StoreResult;
-use kaspa_database::prelude::{BatchDbWriter, CachedDbItem, DirectDbWriter};
-use kaspa_database::registry::DatabaseStorePrefixes;
-use kaspa_hashes::Hash;
-use kaspa_hashes::ZERO_HASH;
+use celenium_consensus_core::pruning::PruningPointProof;
+use celenium_database::prelude::DB;
+use celenium_database::prelude::StoreResult;
+use celenium_database::prelude::{BatchDbWriter, CachedDbItem, DirectDbWriter};
+use celenium_database::registry::DatabaseStorePrefixes;
+use celenium_hashes::Hash;
+use celenium_hashes::ZERO_HASH;
 use rocksdb::WriteBatch;
 use serde::{Deserialize, Serialize};
 

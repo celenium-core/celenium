@@ -1,6 +1,6 @@
 use super::*;
 use js_sys::Reflect;
-use kaspa_addresses::{Prefix, Version};
+use celenium_addresses::{Prefix, Version};
 use wasm_bindgen_test::wasm_bindgen_test;
 
 #[wasm_bindgen_test]
@@ -35,7 +35,7 @@ fn get_utxos_by_addresses_v2_response_returns_wasm_utxo_entries_and_camel_case_c
     let entry = RpcUtxosByAddressesEntry {
         address: Some(address.clone()),
         outpoint: cctx::TransactionOutpoint::EMPTY.into(),
-        utxo_entry: RpcUtxoEntry::new(1, kaspa_txscript::pay_to_address_script(&address), 2, false, None),
+        utxo_entry: RpcUtxoEntry::new(1, celenium_txscript::pay_to_address_script(&address), 2, false, None),
     };
     let cursor = RpcGetUtxosByAddressesCursor::new(Some(address), 2, None);
     let response = IGetUtxosByAddressesV2Response::try_from(GetUtxosByAddressesV2Response::new(vec![entry], Some(cursor))).unwrap();

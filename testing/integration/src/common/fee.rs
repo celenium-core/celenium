@@ -1,4 +1,4 @@
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     constants::{STORAGE_MASS_PARAMETER, TRANSIENT_BYTE_TO_MASS_FACTOR},
     mass::MassCalculator,
     tx::Transaction,

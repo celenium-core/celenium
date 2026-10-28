@@ -1,17 +1,17 @@
 //!
 //! In v6 of the P2P protocol we dropped the filling of DAA and GHOSTDAG indices for each trusted entry
-//! since the syncee no longer uses them in the rusty-kaspa design where the full sub-DAG is sent
+//! since the syncee no longer uses them in the rusty-celenium design where the full sub-DAG is sent
 //!
 
 use itertools::Itertools;
-use kaspa_consensus_core::{block::Block, trusted::TrustedHeader};
-use kaspa_p2p_lib::{
+use celenium_consensus_core::{block::Block, trusted::TrustedHeader};
+use celenium_p2p_lib::{
     IncomingRoute, Router,
     common::ProtocolError,
     dequeue, dequeue_with_request_id, make_response,
     pb::{
         BlockWithTrustedDataV4Message, DoneBlocksWithTrustedDataMessage, PruningPointsMessage, TrustedDataChunkMessage,
-        TrustedDataChunksEndMessage, TrustedDataMessage, kaspad_message::Payload,
+        TrustedDataChunksEndMessage, TrustedDataMessage, celeniumd_message::Payload,
     },
 };
 use log::{debug, info, warn};
@@ -185,9 +185,9 @@ fn trusted_data_chunks(
 mod tests {
     use super::*;
     use crate::ibd::trusted_data::receive_trusted_data;
-    use kaspa_consensus_core::{header::Header, trusted::ExternalGhostdagData};
-    use kaspa_hashes::Hash;
-    use kaspa_p2p_lib::{convert::model::trusted::TrustedDataEntry, make_message, pb};
+    use celenium_consensus_core::{header::Header, trusted::ExternalGhostdagData};
+    use celenium_hashes::Hash;
+    use celenium_p2p_lib::{convert::model::trusted::TrustedDataEntry, make_message, pb};
     use prost::Message;
     use tokio::sync::mpsc;
 

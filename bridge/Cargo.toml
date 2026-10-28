@@ -1,6 +1,6 @@
 [package]
-name = "kaspa-stratum-bridge"
-description = "Kaspa Stratum Bridge - Mining connectivity for Kaspa Stratum miners"
+name = "celenium-stratum-bridge"
+description = "Celenium Stratum Bridge - Mining connectivity for Celenium Stratum miners"
 rust-version.workspace = true
 version.workspace = true
 edition.workspace = true
@@ -10,19 +10,19 @@ license.workspace = true
 repository.workspace = true
 
 [dependencies]
-# Kaspa dependencies - using workspace versions
-kaspa-consensus-core = { workspace = true }
-kaspa-hashes = { workspace = true }
-kaspa-pow = { workspace = true }
-kaspa-addresses = { workspace = true }
-kaspa-rpc-core = { workspace = true }
-kaspa-rpc-service = { workspace = true }
-kaspa-grpc-client = { workspace = true }
-kaspa-notify = { workspace = true }
-kaspa-core = { workspace = true }
-kaspa-utils = { workspace = true }
-kaspad = { workspace = true }
-kaspa-alloc = { workspace = true }
+# Celenium dependencies - using workspace versions
+celenium-consensus-core = { workspace = true }
+celenium-hashes = { workspace = true }
+celenium-pow = { workspace = true }
+celenium-addresses = { workspace = true }
+celenium-rpc-core = { workspace = true }
+celenium-rpc-service = { workspace = true }
+celenium-grpc-client = { workspace = true }
+celenium-notify = { workspace = true }
+celenium-core = { workspace = true }
+celenium-utils = { workspace = true }
+celeniumd = { workspace = true }
+celenium-alloc = { workspace = true }
 dirs = { workspace = true }
 
 # External dependencies - using workspace versions where available
@@ -59,7 +59,7 @@ include_dir = "0.7"
 [target.'cfg(windows)'.dependencies]
 windows-sys = { version = "0.52", features = ["Win32_Foundation", "Win32_System_Console"] }
 
-# For musl builds, we declare mimalloc without 'override' to override kaspa-alloc's version
+# For musl builds, we declare mimalloc without 'override' to override celenium-alloc's version
 # The .cargo/config.toml linker flag handles any remaining conflicts
 [target.'cfg(all(not(target_os = "macos"), target_env = "musl"))'.dependencies]
 mimalloc = { version = "0.1.48", default-features = false }

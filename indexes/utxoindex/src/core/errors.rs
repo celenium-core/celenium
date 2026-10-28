@@ -1,9 +1,9 @@
-use kaspa_index_core::indexed_utxos::UtxoPageCursor;
+use celenium_index_core::indexed_utxos::UtxoPageCursor;
 use std::io;
 use thiserror::Error;
 
 use crate::IDENT;
-use kaspa_database::prelude::StoreError;
+use celenium_database::prelude::StoreError;
 
 /// Errors originating from the [`UtxoIndex`](crate::UtxoIndex).
 #[derive(Error, Debug)]

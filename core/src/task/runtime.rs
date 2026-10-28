@@ -1,9 +1,9 @@
 use crate::{signals::Shutdown, task::service::AsyncServiceResult};
 use futures_util::future::{select_all, try_join_all};
-use kaspa_core::core::Core;
-use kaspa_core::service::Service;
-use kaspa_core::task::service::AsyncService;
-use kaspa_core::trace;
+use celenium_core::core::Core;
+use celenium_core::service::Service;
+use celenium_core::task::service::AsyncService;
+use celenium_core::trace;
 use std::{
     sync::{Arc, Mutex},
     thread::{self, JoinHandle as ThreadJoinHandle},

@@ -5,7 +5,7 @@ use super::{
 use crate::tx::{TransactionOutpoint, UtxoEntry, VerifiableTransaction};
 use hashbrown::hash_map::Entry::Vacant;
 #[cfg(feature = "mem_size")]
-use kaspa_utils::mem_size::MemSizeEstimator;
+use celenium_utils::mem_size::MemSizeEstimator;
 use serde::{Deserialize, Serialize};
 
 pub trait ImmutableUtxoDiff {

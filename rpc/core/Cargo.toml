@@ -1,6 +1,6 @@
 [package]
-name = "kaspa-rpc-core"
-description = "Kaspa RPC core"
+name = "celenium-rpc-core"
+description = "Celenium RPC core"
 rust-version.workspace = true
 version.workspace = true
 edition.workspace = true
@@ -11,24 +11,24 @@ repository.workspace = true
 
 [features]
 wasm32-sdk = [
-    "kaspa-consensus-client/wasm32-sdk",
-    "kaspa-consensus-wasm/wasm32-sdk"
+    "celenium-consensus-client/wasm32-sdk",
+    "celenium-consensus-wasm/wasm32-sdk"
 ]
 
 [dependencies]
-kaspa-addresses.workspace = true
-kaspa-consensus-core.workspace = true
-kaspa-consensus-client.workspace = true
-kaspa-consensus-notify.workspace = true
-kaspa-consensus-wasm.workspace = true
-kaspa-core.workspace = true
-kaspa-hashes.workspace = true
-kaspa-index-core.workspace = true
-kaspa-math = { workspace = true, features = ["std"] }
-kaspa-mining-errors.workspace = true
-kaspa-notify.workspace = true
-kaspa-txscript.workspace = true
-kaspa-rpc-macros.workspace = true
+celenium-addresses.workspace = true
+celenium-consensus-core.workspace = true
+celenium-consensus-client.workspace = true
+celenium-consensus-notify.workspace = true
+celenium-consensus-wasm.workspace = true
+celenium-core.workspace = true
+celenium-hashes.workspace = true
+celenium-index-core.workspace = true
+celenium-math = { workspace = true, features = ["std"] }
+celenium-mining-errors.workspace = true
+celenium-notify.workspace = true
+celenium-txscript.workspace = true
+celenium-rpc-macros.workspace = true
 
 async-channel.workspace = true
 async-trait.workspace = true
@@ -51,7 +51,7 @@ wasm-bindgen.workspace = true
 workflow-core.workspace = true
 workflow-serializer.workspace = true
 workflow-wasm.workspace = true
-kaspa-utils = { workspace = true, features = ["peer-id"] }
+celenium-utils = { workspace = true, features = ["peer-id"] }
 
 [dev-dependencies]
 serde_json.workspace = true

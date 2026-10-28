@@ -1,12 +1,12 @@
 use std::sync::Arc;
 
-use kaspa_database::prelude::CachePolicy;
-use kaspa_database::prelude::DB;
-use kaspa_database::prelude::StoreResult;
-use kaspa_database::prelude::StoreResultExt;
-use kaspa_database::prelude::{BatchDbWriter, CachedDbItem};
-use kaspa_database::registry::DatabaseStorePrefixes;
-use kaspa_hashes::Hash;
+use celenium_database::prelude::CachePolicy;
+use celenium_database::prelude::DB;
+use celenium_database::prelude::StoreResult;
+use celenium_database::prelude::StoreResultExt;
+use celenium_database::prelude::{BatchDbWriter, CachedDbItem};
+use celenium_database::registry::DatabaseStorePrefixes;
+use celenium_hashes::Hash;
 use rocksdb::WriteBatch;
 
 use super::utxo_set::DbUtxoSetStore;

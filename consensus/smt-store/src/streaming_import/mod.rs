@@ -3,19 +3,19 @@
 //! Processes sorted lanes in chunks: parallel leaf hashing via rayon,
 //! then feeds to [`StreamingSmtBuilder`] with [`DbSink`] for batched DB writes.
 
-use kaspa_smt::SmtHasher;
+use celenium_smt::SmtHasher;
 mod db_sink;
 
 use std::time::Instant;
 
 use std::collections::BTreeMap;
 
-use kaspa_consensus_core::api::ImportLane;
-use kaspa_database::prelude::{BatchDbWriter, DB, StoreError};
-use kaspa_hashes::{Hash, SeqCommitActiveNode};
-use kaspa_seq_commit::hashing::smt_leaf_hash;
-use kaspa_seq_commit::types::SmtLeafInput;
-use kaspa_smt::streaming::{StreamError, StreamingSmtBuilder};
+use celenium_consensus_core::api::ImportLane;
+use celenium_database::prelude::{BatchDbWriter, DB, StoreError};
+use celenium_hashes::{Hash, SeqCommitActiveNode};
+use celenium_seq_commit::hashing::smt_leaf_hash;
+use celenium_seq_commit::types::SmtLeafInput;
+use celenium_smt::streaming::{StreamError, StreamingSmtBuilder};
 use log::info;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use rayon::prelude::IndexedParallelIterator;

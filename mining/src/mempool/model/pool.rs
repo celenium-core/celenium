@@ -9,7 +9,7 @@ use crate::{
         topological_index::TopologicalIndex,
     },
 };
-use kaspa_consensus_core::tx::{MutableTransaction, TransactionId};
+use celenium_consensus_core::tx::{MutableTransaction, TransactionId};
 use std::collections::{HashMap, VecDeque};
 
 pub(crate) type TransactionsEdges = HashMap<TransactionId, TransactionIdSet>;

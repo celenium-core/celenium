@@ -7,10 +7,10 @@
 
 use crate::imports::*;
 use crate::tx::{Fees, GeneratorSummary, PaymentDestination};
-use kaspa_addresses::Address;
-use kaspa_consensus_client::{TransactionOutpoint, UtxoEntry};
-use kaspa_hashes::Hash;
-use kaspa_rpc_core::RpcFeerateBucket;
+use celenium_addresses::Address;
+use celenium_consensus_client::{TransactionOutpoint, UtxoEntry};
+use celenium_hashes::Hash;
+use celenium_rpc_core::RpcFeerateBucket;
 
 #[derive(Clone, Debug, Serialize, Deserialize, BorshSerialize, BorshDeserialize)]
 #[serde(rename_all = "camelCase")]

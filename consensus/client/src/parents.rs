@@ -4,8 +4,8 @@
 //!
 
 use crate::imports::*;
-use kaspa_consensus_core::header as native;
-use kaspa_hashes::Hash;
+use celenium_consensus_core::header as native;
+use celenium_hashes::Hash;
 
 /// An efficient cumulative-sum run-length encoding for the parents-by-level vector in the block header.
 /// @category Consensus
@@ -93,7 +93,7 @@ impl TryCastFromJs for CompressedParents {
 #[cfg(all(test, target_arch = "wasm32"))]
 mod tests {
     use super::*;
-    use kaspa_consensus_core::errors::header::CompressedParentsError;
+    use celenium_consensus_core::errors::header::CompressedParentsError;
     use wasm_bindgen_test::wasm_bindgen_test;
 
     #[wasm_bindgen_test]

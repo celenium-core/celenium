@@ -1,10 +1,10 @@
 use crate::tasks::{Task, subscription::submitter::SubscribeCommand};
 use async_channel::Sender;
 use async_trait::async_trait;
-use kaspa_core::warn;
-use kaspa_grpc_client::GrpcClient;
-use kaspa_notify::scope::Scope;
-use kaspa_utils::triggers::SingleTrigger;
+use celenium_core::warn;
+use celenium_grpc_client::GrpcClient;
+use celenium_notify::scope::Scope;
+use celenium_utils::triggers::SingleTrigger;
 use std::{sync::Arc, time::Duration};
 use tokio::{sync::oneshot::channel, task::JoinHandle, time::sleep};
 

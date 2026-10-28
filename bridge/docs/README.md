@@ -1,6 +1,6 @@
 ## Stratum Bridge Beta
 
-This Stratum Bridge is currently in BETA. Support is available in the Kaspa Discord’s [#mining-and-hardware](https://discord.com/channels/599153230659846165/910178666099646584) channel.
+This Stratum Bridge is currently in BETA. Support is available in the Celenium Discord’s [#mining-and-hardware](https://discord.com/channels/599153230659846165/910178666099646584) channel.
 
 For bug reports or feature request, please open an issue at [`kaspanet/rusty-kaspa` issues](https://github.com/kaspanet/rusty-kaspa/issues) and prefix your issue title with `[Bridge]`.
 
@@ -10,8 +10,8 @@ This repository contains a standalone Stratum bridge binary at:
 
 The bridge can run against:
 
-- **External** node (you run `kaspad` yourself)
-- **In-process** node (the bridge starts `kaspad` in the same process)
+- **External** node (you run `celeniumd` yourself)
+- **In-process** node (the bridge starts `celeniumd` in the same process)
 
 
 ### Running from a release
@@ -44,7 +44,7 @@ For detailed command-line options:
 cargo run --release --bin stratum-bridge -- --help
 ```
 
-This will show all available bridge options and guidance for kaspad arguments.
+This will show all available bridge options and guidance for celeniumd arguments.
 
 ### Default config / ports
 
@@ -53,7 +53,7 @@ The sample configuration file is:
 `bridge/config.yaml`
 
 **Note:** If no config file is found, the bridge uses code defaults:
-- Default `kaspad_address`: `localhost:16110` (code default) or `127.0.0.1:16110` (as in `config.yaml`)
+- Default `celeniumd_address`: `localhost:16110` (code default) or `127.0.0.1:16110` (as in `config.yaml`)
 - Default `node_mode`: `inprocess` (if `--node-mode` is not specified)
 - Default `web_dashboard_port`: empty (dashboard disabled unless configured)
 
@@ -82,17 +82,17 @@ Minimal run (sane defaults, no config file):
 cargo run --bin stratum-bridge --release
 ```
 
-Run in-process with explicit config and kaspad args:
+Run in-process with explicit config and celeniumd args:
 
 ```bash
 cargo run -p kaspa-stratum-bridge --release --bin stratum-bridge -- --config bridge/config.yaml --node-mode inprocess -- --utxoindex --rpclisten=127.0.0.1:16110
 ```
 
-**Important:** Use `--` separator before kaspad arguments. Arguments starting with hyphens must come after the `--` separator.
+**Important:** Use `--` separator before celeniumd arguments. Arguments starting with hyphens must come after the `--` separator.
 
 **Examples:**
 ```bash
-# ✓ Correct - bridge args first, then --, then kaspad args
+# ✓ Correct - bridge args first, then --, then celeniumd args
 cargo run --release --bin stratum-bridge -- --config config.yaml --node-mode inprocess -- --utxoindex --rpclisten=127.0.0.1:16110
 
 # ✗ Incorrect - will show error message
@@ -100,7 +100,7 @@ cargo run --release --bin stratum-bridge -- --rpclisten=127.0.0.1:16110 --config
 # Error: tip: to pass '--rpclisten' as a value, use '-- --rpclisten'
 ```
 
-**Note:** In-process mode uses a separate app directory by default to avoid RocksDB lock conflicts with an existing `kaspad`.
+**Note:** In-process mode uses a separate app directory by default to avoid RocksDB lock conflicts with an existing `celeniumd`.
 
 If you want to override it, pass `--appdir` to the bridge (before the `--` separator):
 
@@ -113,7 +113,7 @@ cargo run --release --bin stratum-bridge -- --config bridge/config.yaml --node-m
 Terminal A (node):
 
 ```bash
-cargo run --release --bin kaspad -- --utxoindex --rpclisten=127.0.0.1:16110
+cargo run --release --bin celeniumd -- --utxoindex --rpclisten=127.0.0.1:16110
 ```
 
 Terminal B (bridge):
@@ -137,7 +137,7 @@ Recommended setup:
 Example (external bridge on `:3031` + Stratum `:16120`):
 
 ```bash
-cargo run -p kaspa-stratum-bridge --release --features rkstratum_cpu_miner --bin stratum-bridge -- --config config.yaml --web-dashboard-port :3031 --node-mode external --kaspad-address 127.0.0.1:16210 --instance "port=:16120,diff=1" --internal-cpu-miner --internal-cpu-miner-address "kaspatest:address" --internal-cpu-miner-threads 1
+cargo run -p kaspa-stratum-bridge --release --features rkstratum_cpu_miner --bin stratum-bridge -- --config config.yaml --web-dashboard-port :3031 --node-mode external --celeniumd-address 127.0.0.1:16210 --instance "port=:16120,diff=1" --internal-cpu-miner --internal-cpu-miner-address "kaspatest:address" --internal-cpu-miner-threads 1
 ```
 
 Open:

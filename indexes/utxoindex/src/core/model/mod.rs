@@ -1,3 +1,3 @@
 mod supply;
 
-pub use {kaspa_index_core::indexed_utxos::*, supply::*};
+pub use {celenium_index_core::indexed_utxos::*, supply::*};

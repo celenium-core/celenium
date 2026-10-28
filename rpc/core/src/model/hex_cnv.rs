@@ -1,8 +1,8 @@
-use kaspa_consensus_core::BlueWorkType;
+use celenium_consensus_core::BlueWorkType;
 use smallvec::{SmallVec, smallvec};
 use std::str;
 
-// TODO combine this with kaspa-utils::hex
+// TODO combine this with celenium-utils::hex
 
 pub trait ToRpcHex {
     fn to_rpc_hex(&self) -> String;

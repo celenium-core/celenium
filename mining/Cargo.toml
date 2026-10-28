@@ -1,6 +1,6 @@
 [package]
-name = "kaspa-mining"
-description = "Kaspa mining"
+name = "celenium-mining"
+description = "Celenium mining"
 rust-version.workspace = true
 version.workspace = true
 edition.workspace = true
@@ -10,15 +10,15 @@ license.workspace = true
 repository.workspace = true
 
 [dependencies]
-kaspa-addresses.workspace = true
-kaspa-consensus-core.workspace = true
-kaspa-consensusmanager.workspace = true
-kaspa-core.workspace = true
-kaspa-hashes.workspace = true
-kaspa-mining-errors.workspace = true
-kaspa-muhash = { workspace = true, features = ["std"] }
-kaspa-txscript.workspace = true
-kaspa-utils.workspace = true
+celenium-addresses.workspace = true
+celenium-consensus-core.workspace = true
+celenium-consensusmanager.workspace = true
+celenium-core.workspace = true
+celenium-hashes.workspace = true
+celenium-mining-errors.workspace = true
+celenium-muhash = { workspace = true, features = ["std"] }
+celenium-txscript.workspace = true
+celenium-utils.workspace = true
 
 futures-util.workspace = true
 itertools.workspace = true
@@ -32,7 +32,7 @@ thiserror.workspace = true
 tokio = { workspace = true, features = ["rt-multi-thread", "macros", "signal"] }
 
 [dev-dependencies]
-kaspa-txscript.workspace = true
+celenium-txscript.workspace = true
 criterion.workspace = true
 secp256k1 = { workspace = true, features = ["std", "global-context", "rand-std", "serde"] }
 

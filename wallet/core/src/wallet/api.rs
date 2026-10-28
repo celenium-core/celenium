@@ -9,8 +9,8 @@ use crate::result::Result;
 use crate::storage::Binding;
 use crate::storage::interface::TransactionRangeResult;
 use crate::tx::Fees;
-use kaspa_rpc_core::RpcFeeEstimate;
-use kaspa_wallet_pskt::bundle::Bundle;
+use celenium_rpc_core::RpcFeeEstimate;
+use celenium_wallet_pskt::bundle::Bundle;
 use workflow_core::channel::Receiver;
 #[async_trait]
 impl WalletApi for super::Wallet {

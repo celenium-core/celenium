@@ -1,6 +1,6 @@
 [package]
-name = "kaspa-rpc-service"
-description = "Kaspa RPC service"
+name = "celenium-rpc-service"
+description = "Celenium RPC service"
 rust-version.workspace = true
 version.workspace = true
 edition.workspace = true
@@ -10,26 +10,26 @@ license.workspace = true
 repository.workspace = true
 
 [dependencies]
-kaspa-addresses.workspace = true
-kaspa-consensus-core.workspace = true
-kaspa-consensus-notify.workspace = true
-kaspa-consensusmanager.workspace = true
-kaspa-core.workspace = true
-kaspa-hashes.workspace = true
-kaspa-index-core.workspace = true
-kaspa-math = { workspace = true, features = ["std"] }
-kaspa-mining.workspace = true
-kaspa-notify.workspace = true
-kaspa-p2p-flows.workspace = true
-kaspa-p2p-lib.workspace = true
-kaspa-p2p-mining.workspace = true
-kaspa-perf-monitor.workspace = true
-kaspa-rpc-core.workspace = true
-kaspa-system-info.workspace = true
-kaspa-txscript.workspace = true
-kaspa-utils = { workspace = true, features = ["expiring-cache", "triggers"] }
-kaspa-utils-tower.workspace = true
-kaspa-utxoindex.workspace = true
+celenium-addresses.workspace = true
+celenium-consensus-core.workspace = true
+celenium-consensus-notify.workspace = true
+celenium-consensusmanager.workspace = true
+celenium-core.workspace = true
+celenium-hashes.workspace = true
+celenium-index-core.workspace = true
+celenium-math = { workspace = true, features = ["std"] }
+celenium-mining.workspace = true
+celenium-notify.workspace = true
+celenium-p2p-flows.workspace = true
+celenium-p2p-lib.workspace = true
+celenium-p2p-mining.workspace = true
+celenium-perf-monitor.workspace = true
+celenium-rpc-core.workspace = true
+celenium-system-info.workspace = true
+celenium-txscript.workspace = true
+celenium-utils = { workspace = true, features = ["expiring-cache", "triggers"] }
+celenium-utils-tower.workspace = true
+celenium-utxoindex.workspace = true
 
 async-trait.workspace = true
 log.workspace = true

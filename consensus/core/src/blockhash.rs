@@ -1,7 +1,7 @@
 use crate::{BlockHashSet, HashMapCustomHasher};
 use alloc::sync::Arc;
 use alloc::vec::Vec;
-use kaspa_hashes::{HASH_SIZE, Hash};
+use celenium_hashes::{HASH_SIZE, Hash};
 
 pub type BlockHashes = Arc<Vec<Hash>>;
 

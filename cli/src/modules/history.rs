@@ -1,14 +1,14 @@
 use crate::imports::*;
-use kaspa_consensus_core::tx::TransactionId;
-use kaspa_wallet_core::error::Error as WalletError;
-use kaspa_wallet_core::storage::Binding;
+use celenium_consensus_core::tx::TransactionId;
+use celenium_wallet_core::error::Error as WalletError;
+use celenium_wallet_core::storage::Binding;
 #[derive(Default, Handler)]
 #[help("Display transaction history")]
 pub struct History;
 
 impl History {
     async fn main(self: Arc<Self>, ctx: &Arc<dyn Context>, mut argv: Vec<String>, _cmd: &str) -> Result<()> {
-        let ctx = ctx.clone().downcast_arc::<KaspaCli>()?;
+        let ctx = ctx.clone().downcast_arc::<CeleniumCli>()?;
 
         let guard = ctx.wallet().guard();
         let guard = guard.lock().await;
@@ -139,7 +139,7 @@ impl History {
         Ok(())
     }
 
-    async fn display_help(self: Arc<Self>, ctx: Arc<KaspaCli>, _argv: Vec<String>) -> Result<()> {
+    async fn display_help(self: Arc<Self>, ctx: Arc<CeleniumCli>, _argv: Vec<String>) -> Result<()> {
         ctx.term().help(
             &[
                 ("list [<last N transactions>]", "List transactions"),

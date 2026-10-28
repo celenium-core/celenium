@@ -1,8 +1,8 @@
 use crate::processes::ghostdag::ordering::SortableBlock;
-use kaspa_consensus_core::BlockHasher;
-use kaspa_database::prelude::{Cache, CachePolicy};
-use kaspa_hashes::Hash;
-use kaspa_utils::mem_size::MemSizeEstimator;
+use celenium_consensus_core::BlockHasher;
+use celenium_database::prelude::{Cache, CachePolicy};
+use celenium_hashes::Hash;
+use celenium_utils::mem_size::MemSizeEstimator;
 use std::{
     cmp::Reverse,
     collections::BinaryHeap,

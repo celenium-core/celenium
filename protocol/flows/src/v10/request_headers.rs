@@ -1,13 +1,13 @@
 use std::{cmp::max, mem::size_of, sync::Arc};
 
-use kaspa_consensus_core::{api::ConsensusApi, header::Header};
-use kaspa_core::warn;
-use kaspa_hashes::Hash;
-use kaspa_p2p_lib::{
+use celenium_consensus_core::{api::ConsensusApi, header::Header};
+use celenium_core::warn;
+use celenium_hashes::Hash;
+use celenium_p2p_lib::{
     IncomingRoute, Router,
     common::ProtocolError,
     dequeue, dequeue_with_request_id, make_response,
-    pb::{self, BlockHeadersMessage, DoneHeadersMessage, kaspad_message::Payload},
+    pb::{self, BlockHeadersMessage, DoneHeadersMessage, celeniumd_message::Payload},
 };
 use log::debug;
 
@@ -188,7 +188,7 @@ pub(crate) fn header_chunks<T: AsRef<Header>>(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use kaspa_consensus_core::BlueWorkType;
+    use celenium_consensus_core::BlueWorkType;
     use prost::Message;
 
     #[test]

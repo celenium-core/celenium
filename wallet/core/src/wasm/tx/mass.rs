@@ -1,11 +1,11 @@
 use crate::result::Result;
 use crate::tx::{MAXIMUM_STANDARD_TRANSACTION_MASS, mass};
 use js_sys::Array;
-use kaspa_consensus_client::*;
-use kaspa_consensus_core::config::params::Params;
-use kaspa_consensus_core::mass::{UtxoCell, calc_storage_mass};
-use kaspa_consensus_core::network::{NetworkId, NetworkIdT};
-use kaspa_wasm_core::types::NumberArray;
+use celenium_consensus_client::*;
+use celenium_consensus_core::config::params::Params;
+use celenium_consensus_core::mass::{UtxoCell, calc_storage_mass};
+use celenium_consensus_core::network::{NetworkId, NetworkIdT};
+use celenium_wasm_core::types::NumberArray;
 use wasm_bindgen::prelude::*;
 use workflow_wasm::convert::*;
 
@@ -130,8 +130,8 @@ pub fn calculate_storage_mass(network_id: NetworkIdT, input_values: &NumberArray
 #[cfg(all(test, target_arch = "wasm32"))]
 mod tests {
     use super::*;
-    use kaspa_consensus_core::{network::NetworkType, subnets::SUBNETWORK_ID_NATIVE, tx::ScriptPublicKey};
-    use kaspa_hashes::Hash;
+    use celenium_consensus_core::{network::NetworkType, subnets::SUBNETWORK_ID_NATIVE, tx::ScriptPublicKey};
+    use celenium_hashes::Hash;
     use wasm_bindgen::{JsCast, JsValue};
     use wasm_bindgen_test::wasm_bindgen_test;
 

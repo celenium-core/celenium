@@ -1,9 +1,9 @@
-use kaspa_consensus_core::{BlockLevel, pruning::PruningPointProof};
-use kaspa_p2p_lib::{
+use celenium_consensus_core::{BlockLevel, pruning::PruningPointProof};
+use celenium_p2p_lib::{
     IncomingRoute,
     common::{DEFAULT_TIMEOUT, ProtocolError},
     dequeue_with_timeout,
-    pb::{PruningPointProofHeaderArray, PruningPointProofMessage, kaspad_message::Payload},
+    pb::{PruningPointProofHeaderArray, PruningPointProofMessage, celeniumd_message::Payload},
 };
 use log::info;
 use prost::Message;
@@ -93,8 +93,8 @@ pub(super) async fn receive_pruning_point_proof(
 #[allow(clippy::arithmetic_side_effects)]
 mod tests {
     use super::*;
-    use kaspa_consensus_core::header::Header;
-    use kaspa_p2p_lib::{
+    use celenium_consensus_core::header::Header;
+    use celenium_p2p_lib::{
         make_message,
         pb::{PruningPointProofChunkMessage, PruningPointProofChunksEndMessage},
     };

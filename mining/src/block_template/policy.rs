@@ -1,4 +1,4 @@
-use kaspa_consensus_core::mass::BlockLaneLimits;
+use celenium_consensus_core::mass::BlockLaneLimits;
 
 /// Policy houses the policy (configuration parameters) which is used to control
 /// the generation of block templates. See the documentation for

@@ -1,11 +1,11 @@
 use crate::{
-    IncomingRoute, KaspadMessagePayloadType, Router,
+    IncomingRoute, CeleniumdMessagePayloadType, Router,
     common::ProtocolError,
     core::adaptor::ConnectionInitializer,
-    handshake::KaspadHandshake,
+    handshake::CeleniumdHandshake,
     pb::{self, VersionMessage},
 };
-use kaspa_core::{debug, time::unix_now, trace, warn};
+use celenium_core::{debug, time::unix_now, trace, warn};
 use std::sync::Arc;
 use tonic::async_trait;
 use uuid::Uuid;
@@ -21,49 +21,49 @@ impl EchoFlow {
         // Subscribe to messages
         trace!("EchoFlow, subscribe to all p2p messages");
         let receiver = router.subscribe(vec![
-            KaspadMessagePayloadType::Addresses,
-            KaspadMessagePayloadType::Block,
-            KaspadMessagePayloadType::Transaction,
-            KaspadMessagePayloadType::BlockLocator,
-            KaspadMessagePayloadType::RequestAddresses,
-            KaspadMessagePayloadType::RequestRelayBlocks,
-            KaspadMessagePayloadType::RequestTransactions,
-            KaspadMessagePayloadType::IbdBlock,
-            KaspadMessagePayloadType::InvRelayBlock,
-            KaspadMessagePayloadType::InvTransactions,
-            KaspadMessagePayloadType::Ping,
-            KaspadMessagePayloadType::Pong,
-            // KaspadMessagePayloadType::Verack,
-            // KaspadMessagePayloadType::Version,
-            // KaspadMessagePayloadType::Ready,
-            KaspadMessagePayloadType::TransactionNotFound,
-            KaspadMessagePayloadType::Reject,
-            KaspadMessagePayloadType::PruningPointUtxoSetChunk,
-            KaspadMessagePayloadType::RequestIbdBlocks,
-            KaspadMessagePayloadType::UnexpectedPruningPoint,
-            KaspadMessagePayloadType::IbdBlockLocator,
-            KaspadMessagePayloadType::IbdBlockLocatorHighestHash,
-            KaspadMessagePayloadType::RequestNextPruningPointUtxoSetChunk,
-            KaspadMessagePayloadType::DonePruningPointUtxoSetChunks,
-            KaspadMessagePayloadType::IbdBlockLocatorHighestHashNotFound,
-            KaspadMessagePayloadType::BlockWithTrustedData,
-            KaspadMessagePayloadType::DoneBlocksWithTrustedData,
-            KaspadMessagePayloadType::RequestPruningPointAndItsAnticone,
-            KaspadMessagePayloadType::BlockHeaders,
-            KaspadMessagePayloadType::RequestNextHeaders,
-            KaspadMessagePayloadType::DoneHeaders,
-            KaspadMessagePayloadType::RequestPruningPointUtxoSet,
-            KaspadMessagePayloadType::RequestHeaders,
-            KaspadMessagePayloadType::RequestBlockLocator,
-            KaspadMessagePayloadType::PruningPoints,
-            KaspadMessagePayloadType::RequestPruningPointProof,
-            KaspadMessagePayloadType::PruningPointProof,
-            KaspadMessagePayloadType::BlockWithTrustedDataV4,
-            KaspadMessagePayloadType::TrustedData,
-            KaspadMessagePayloadType::RequestIbdChainBlockLocator,
-            KaspadMessagePayloadType::IbdChainBlockLocator,
-            KaspadMessagePayloadType::RequestAntipast,
-            KaspadMessagePayloadType::RequestNextPruningPointAndItsAnticoneBlocks,
+            CeleniumdMessagePayloadType::Addresses,
+            CeleniumdMessagePayloadType::Block,
+            CeleniumdMessagePayloadType::Transaction,
+            CeleniumdMessagePayloadType::BlockLocator,
+            CeleniumdMessagePayloadType::RequestAddresses,
+            CeleniumdMessagePayloadType::RequestRelayBlocks,
+            CeleniumdMessagePayloadType::RequestTransactions,
+            CeleniumdMessagePayloadType::IbdBlock,
+            CeleniumdMessagePayloadType::InvRelayBlock,
+            CeleniumdMessagePayloadType::InvTransactions,
+            CeleniumdMessagePayloadType::Ping,
+            CeleniumdMessagePayloadType::Pong,
+            // CeleniumdMessagePayloadType::Verack,
+            // CeleniumdMessagePayloadType::Version,
+            // CeleniumdMessagePayloadType::Ready,
+            CeleniumdMessagePayloadType::TransactionNotFound,
+            CeleniumdMessagePayloadType::Reject,
+            CeleniumdMessagePayloadType::PruningPointUtxoSetChunk,
+            CeleniumdMessagePayloadType::RequestIbdBlocks,
+            CeleniumdMessagePayloadType::UnexpectedPruningPoint,
+            CeleniumdMessagePayloadType::IbdBlockLocator,
+            CeleniumdMessagePayloadType::IbdBlockLocatorHighestHash,
+            CeleniumdMessagePayloadType::RequestNextPruningPointUtxoSetChunk,
+            CeleniumdMessagePayloadType::DonePruningPointUtxoSetChunks,
+            CeleniumdMessagePayloadType::IbdBlockLocatorHighestHashNotFound,
+            CeleniumdMessagePayloadType::BlockWithTrustedData,
+            CeleniumdMessagePayloadType::DoneBlocksWithTrustedData,
+            CeleniumdMessagePayloadType::RequestPruningPointAndItsAnticone,
+            CeleniumdMessagePayloadType::BlockHeaders,
+            CeleniumdMessagePayloadType::RequestNextHeaders,
+            CeleniumdMessagePayloadType::DoneHeaders,
+            CeleniumdMessagePayloadType::RequestPruningPointUtxoSet,
+            CeleniumdMessagePayloadType::RequestHeaders,
+            CeleniumdMessagePayloadType::RequestBlockLocator,
+            CeleniumdMessagePayloadType::PruningPoints,
+            CeleniumdMessagePayloadType::RequestPruningPointProof,
+            CeleniumdMessagePayloadType::PruningPointProof,
+            CeleniumdMessagePayloadType::BlockWithTrustedDataV4,
+            CeleniumdMessagePayloadType::TrustedData,
+            CeleniumdMessagePayloadType::RequestIbdChainBlockLocator,
+            CeleniumdMessagePayloadType::IbdChainBlockLocator,
+            CeleniumdMessagePayloadType::RequestAntipast,
+            CeleniumdMessagePayloadType::RequestNextPruningPointAndItsAnticoneBlocks,
         ]);
         let mut echo_flow = EchoFlow { router, receiver };
         debug!("EchoFlow, start app-layer receiving loop");
@@ -79,7 +79,7 @@ impl EchoFlow {
         });
     }
 
-    async fn call(&self, msg: pb::KaspadMessage) -> bool {
+    async fn call(&self, msg: pb::CeleniumdMessage) -> bool {
         // echo
         trace!("EchoFlow, got message:{:?}", msg);
         self.router.enqueue(msg).await.is_ok()
@@ -100,7 +100,7 @@ fn build_dummy_version_message() -> VersionMessage {
         user_agent: String::new(),
         disable_relay_tx: false,
         subnetwork_id: None,
-        network: "kaspa-mainnet".to_string(),
+        network: "celenium-mainnet".to_string(),
     }
 }
 
@@ -114,11 +114,11 @@ impl EchoFlowInitializer {
 impl ConnectionInitializer for EchoFlowInitializer {
     async fn initialize_connection(&self, router: Arc<Router>) -> Result<(), ProtocolError> {
         //
-        // Example code to illustrate kaspa P2P handshaking
+        // Example code to illustrate celenium P2P handshaking
         //
 
         // Build the handshake object and subscribe to handshake messages
-        let mut handshake = KaspadHandshake::new(&router);
+        let mut handshake = CeleniumdHandshake::new(&router);
 
         // We start the router receive loop only after we registered to handshake routes
         router.start();
@@ -149,12 +149,12 @@ mod tests {
 
     use super::*;
     use crate::{Adaptor, Hub};
-    use kaspa_core::debug;
-    use kaspa_utils::networking::NetAddress;
+    use celenium_core::debug;
+    use celenium_utils::networking::NetAddress;
 
     #[tokio::test]
     async fn test_handshake() {
-        kaspa_core::log::try_init_logger("debug");
+        celenium_core::log::try_init_logger("debug");
 
         let address1 = NetAddress::from_str("[::1]:50053").unwrap();
         let adaptor1 = Adaptor::bidirectional(address1, Hub::new(), Arc::new(EchoFlowInitializer::new()), Default::default()).unwrap();

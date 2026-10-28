@@ -1,5 +1,5 @@
 //!
-//! Client-side WASM wrapper for [`kaspa_consensus_core::tx::ComputeCommit`].
+//! Client-side WASM wrapper for [`celenium_consensus_core::tx::ComputeCommit`].
 //!
 
 #![allow(non_snake_case)]
@@ -8,8 +8,8 @@ use crate::error::Error as ClientError;
 use crate::imports::*;
 use crate::result::Result as ClientResult;
 use borsh::{BorshDeserialize, BorshSerialize};
-use kaspa_consensus_core::mass::{ComputeBudget, SigopCount};
-use kaspa_consensus_core::tx::ComputeCommit as CoreComputeCommit;
+use celenium_consensus_core::mass::{ComputeBudget, SigopCount};
+use celenium_consensus_core::tx::ComputeCommit as CoreComputeCommit;
 use workflow_wasm::error::Error as WasmError;
 
 const COMPUTE_COMMIT_TYPE_SIG_OP_COUNT: &str = "sigOpCount";

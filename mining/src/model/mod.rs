@@ -1,5 +1,5 @@
-use kaspa_consensus_core::HashSet;
-use kaspa_consensus_core::tx::TransactionId;
+use celenium_consensus_core::HashSet;
+use celenium_consensus_core::tx::TransactionId;
 
 pub mod candidate_tx;
 pub mod owner_txs;

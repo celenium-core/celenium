@@ -4,9 +4,9 @@
 //! roundtrip. Run with `--no-default-features` as well; both builds share
 //! the union decoding path these tests exercise.
 
-use kaspa_consensus_core::Hash;
-use kaspa_consensus_core::subnets::SUBNETWORK_ID_NATIVE;
-use kaspa_consensus_core::tx::{
+use celenium_consensus_core::Hash;
+use celenium_consensus_core::subnets::SUBNETWORK_ID_NATIVE;
+use celenium_consensus_core::tx::{
     CovenantBinding, ScriptPublicKey, Transaction, TransactionInput, TransactionOutpoint, TransactionOutput,
 };
 use serde_json::Value;

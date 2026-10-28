@@ -17,7 +17,7 @@ use core::{
     hash::{Hash as CoreHash, Hasher as CoreHasher},
     str::{self, FromStr},
 };
-use kaspa_utils::{
+use celenium_utils::{
     hex::{FromHex, ToHex},
     serde_impl_deser_fixed_bytes_ref, serde_impl_ser_fixed_bytes_ref,
 };
@@ -201,7 +201,7 @@ impl FromHex for Hash {
 }
 
 #[cfg(feature = "mem_size")]
-impl kaspa_utils::mem_size::MemSizeEstimator for Hash {}
+impl celenium_utils::mem_size::MemSizeEstimator for Hash {}
 
 #[wasm_bindgen]
 impl Hash {

@@ -1,13 +1,13 @@
 use async_channel::{Receiver, unbounded};
 use async_trait::async_trait;
-use kaspa_notify::events::EVENT_TYPE_ARRAY;
-use kaspa_notify::listener::{ListenerId, ListenerLifespan};
-use kaspa_notify::notifier::{Notifier, Notify};
-use kaspa_notify::scope::Scope;
-use kaspa_notify::subscription::context::SubscriptionContext;
-use kaspa_notify::subscription::{MutationPolicies, UtxosChangedMutationPolicy};
-use kaspa_rpc_core::{RpcResult, notify::connection::ChannelConnection};
-use kaspa_rpc_core::{api::connection::DynRpcConnection, api::rpc::RpcApi, *};
+use celenium_notify::events::EVENT_TYPE_ARRAY;
+use celenium_notify::listener::{ListenerId, ListenerLifespan};
+use celenium_notify::notifier::{Notifier, Notify};
+use celenium_notify::scope::Scope;
+use celenium_notify::subscription::context::SubscriptionContext;
+use celenium_notify::subscription::{MutationPolicies, UtxosChangedMutationPolicy};
+use celenium_rpc_core::{RpcResult, notify::connection::ChannelConnection};
+use celenium_rpc_core::{api::connection::DynRpcConnection, api::rpc::RpcApi, *};
 use std::sync::Arc;
 
 pub(super) type RpcCoreNotifier = Notifier<Notification, ChannelConnection>;
@@ -44,7 +44,7 @@ impl RpcCoreMock {
     }
 
     #[allow(dead_code)]
-    pub(super) fn notify_new_block_template(&self) -> kaspa_notify::error::Result<()> {
+    pub(super) fn notify_new_block_template(&self) -> celenium_notify::error::Result<()> {
         let notification = Notification::NewBlockTemplate(NewBlockTemplateNotification {});
         self.core_notifier.notify(notification)
     }

@@ -7,13 +7,13 @@ pub use fragments::{R0SuccinctWitnessParts, prepare_r0_groth16_proof_wasm, prepa
 use crate::zk_to_script::{
     BoundedR0Groth16Script, BoundedR0SuccinctScript, UnboundedR0Script, ZkScriptBuilder as NativeZkScriptBuilder,
 };
-use kaspa_txscript::EngineFlags;
-use kaspa_txscript::error::Error;
-use kaspa_txscript::result::Result;
-use kaspa_txscript::script_builder::ScriptBuilder;
-use kaspa_txscript::wasm::builder::ScriptBuilderOptions;
-use kaspa_txscript::zk_precompiles::risc0::rcpt::HashFnId;
-use kaspa_wasm_core::types::HexString;
+use celenium_txscript::EngineFlags;
+use celenium_txscript::error::Error;
+use celenium_txscript::result::Result;
+use celenium_txscript::script_builder::ScriptBuilder;
+use celenium_txscript::wasm::builder::ScriptBuilderOptions;
+use celenium_txscript::zk_precompiles::risc0::rcpt::HashFnId;
+use celenium_wasm_core::types::HexString;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 /// Runtime mirror of the native compile-time type-state. `Taken` is a

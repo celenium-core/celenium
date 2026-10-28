@@ -1,7 +1,7 @@
 pub mod error;
 
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
-use kaspa_txscript_errors::SerializationError;
+use celenium_txscript_errors::SerializationError;
 use smallvec::SmallVec;
 
 use crate::{

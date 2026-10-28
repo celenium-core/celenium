@@ -1,12 +1,12 @@
 use std::sync::Arc;
 
-use kaspa_consensus_core::BlockHasher;
-use kaspa_database::prelude::CachePolicy;
-use kaspa_database::prelude::DB;
-use kaspa_database::prelude::StoreError;
-use kaspa_database::prelude::{BatchDbWriter, CachedDbAccess, DirectDbWriter};
-use kaspa_database::registry::DatabaseStorePrefixes;
-use kaspa_hashes::Hash;
+use celenium_consensus_core::BlockHasher;
+use celenium_database::prelude::CachePolicy;
+use celenium_database::prelude::DB;
+use celenium_database::prelude::StoreError;
+use celenium_database::prelude::{BatchDbWriter, CachedDbAccess, DirectDbWriter};
+use celenium_database::registry::DatabaseStorePrefixes;
+use celenium_hashes::Hash;
 use rocksdb::WriteBatch;
 
 pub trait PruningSamplesStoreReader {

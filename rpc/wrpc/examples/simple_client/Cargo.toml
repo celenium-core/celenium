@@ -1,6 +1,6 @@
 [package]
-name = "kaspa-wrpc-simple-client-example"
-description = "Kaspa wRPC simple client example"
+name = "celenium-wrpc-simple-client-example"
+description = "Celenium wRPC simple client example"
 publish = false
 rust-version.workspace = true
 version.workspace = true
@@ -12,8 +12,8 @@ repository.workspace = true
 
 [dependencies]
 futures.workspace = true
-kaspa-rpc-core.workspace = true
-kaspa-wrpc-client.workspace = true
+celenium-rpc-core.workspace = true
+celenium-wrpc-client.workspace = true
 tokio.workspace = true
 
 

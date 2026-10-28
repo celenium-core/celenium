@@ -2,14 +2,14 @@
 
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use itertools::Itertools;
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     muhash::MuHashExtensions,
     subnets::SUBNETWORK_ID_NATIVE,
     tx::{ScriptPublicKey, SignableTransaction, Transaction, TransactionInput, TransactionOutpoint, TransactionOutput, UtxoEntry},
 };
-use kaspa_hashes::TransactionID;
-use kaspa_muhash::MuHash;
-use kaspa_utils::iter::parallelism_in_power_steps;
+use celenium_hashes::TransactionID;
+use celenium_muhash::MuHash;
+use celenium_utils::iter::parallelism_in_power_steps;
 use rayon::prelude::*;
 
 fn generate_transaction(ins: usize, outs: usize, randomness: u64) -> SignableTransaction {

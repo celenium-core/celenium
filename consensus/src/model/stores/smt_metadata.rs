@@ -1,8 +1,8 @@
-use kaspa_consensus_core::BlockHasher;
-use kaspa_database::prelude::{BatchDbWriter, CachePolicy, CachedDbAccess, DB, DirectDbWriter, StoreResult};
-use kaspa_database::registry::DatabaseStorePrefixes;
-use kaspa_hashes::Hash;
-use kaspa_utils::mem_size::MemSizeEstimator;
+use celenium_consensus_core::BlockHasher;
+use celenium_database::prelude::{BatchDbWriter, CachePolicy, CachedDbAccess, DB, DirectDbWriter, StoreResult};
+use celenium_database::registry::DatabaseStorePrefixes;
+use celenium_hashes::Hash;
+use celenium_utils::mem_size::MemSizeEstimator;
 use rocksdb::WriteBatch;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -75,8 +75,8 @@ impl DbSmtMetadataStore {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use kaspa_database::create_temp_db;
-    use kaspa_database::prelude::ConnBuilder;
+    use celenium_database::create_temp_db;
+    use celenium_database::prelude::ConnBuilder;
 
     fn row_key(hash: Hash) -> Vec<u8> {
         let mut key = vec![DatabaseStorePrefixes::SmtSeqCommitMeta.into()];

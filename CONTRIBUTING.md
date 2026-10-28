@@ -1,6 +1,6 @@
-# Contributing to Kaspa
+# Contributing to Celenium
 
-Thanks for your interest in contributing to Kaspa!
+Thanks for your interest in contributing to Celenium!
 
 We welcome contributions of all sizes and there are many opportunities to contribute at any level — from clarifying documentation and fixing small bugs to implementing full features and reviewing pull requests.
 
@@ -70,4 +70,4 @@ Be respectful and constructive in discussions. We expect contributors to follow 
 
 ## Thank You
 
-Thanks for helping make Kaspa better. If you have questions, reach out to the channels described at the top of this document
+Thanks for helping make Celenium better. If you have questions, reach out to the channels described at the top of this document

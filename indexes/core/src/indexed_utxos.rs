@@ -1,6 +1,6 @@
-use kaspa_consensus_core::tx::{ScriptPublicKey, TransactionOutpoint, UtxoEntry};
-use kaspa_hashes::Hash;
-use kaspa_utils::mem_size::MemSizeEstimator;
+use celenium_consensus_core::tx::{ScriptPublicKey, TransactionOutpoint, UtxoEntry};
+use celenium_hashes::Hash;
+use celenium_utils::mem_size::MemSizeEstimator;
 use serde::de::{Error as DeError, SeqAccess, Visitor};
 use serde::{Deserialize, Deserializer, Serialize};
 use std::collections::HashMap;
@@ -90,7 +90,7 @@ pub type UtxoSetByScriptPublicKey = HashMap<ScriptPublicKey, CompactUtxoCollecti
 /// A map of balance by script public key
 pub type BalanceByScriptPublicKey = HashMap<ScriptPublicKey, u64>;
 
-// Note: memory optimization compared to go-lang kaspad:
+// Note: memory optimization compared to go-lang celeniumd:
 // Unlike `consensus_core::tx::UtxoEntry` the utxoindex utilizes a compacted utxo form, where `script_public_key` field is removed.
 // This utxo structure can be utilized in the utxoindex, since utxos are implicitly key'd via its script public key (and outpoint) at all times.
 // furthermore, the daa_score is also added to the key (for range queries) and thus is removed from the value as well. This results in a more compact representation of the utxo entry, which is more suitable for storage in the utxoindex.

@@ -1,12 +1,12 @@
 use crate::log_colors::LogColors;
-use crate::share_handler::KaspaApiTrait;
+use crate::share_handler::CeleniumApiTrait;
 use anyhow::{Context, Result};
-use kaspa_addresses::Address;
-use kaspa_consensus_core::block::Block;
-use kaspa_grpc_client::GrpcClient;
-use kaspa_notify::{listener::ListenerId, scope::NewBlockTemplateScope};
-use kaspa_rpc_core::notify::mode::NotificationMode;
-use kaspa_rpc_core::{
+use celenium_addresses::Address;
+use celenium_consensus_core::block::Block;
+use celenium_grpc_client::GrpcClient;
+use celenium_notify::{listener::ListenerId, scope::NewBlockTemplateScope};
+use celenium_rpc_core::notify::mode::NotificationMode;
+use celenium_rpc_core::{
     GetBlockDagInfoRequest, GetBlockTemplateRequest, GetConnectedPeerInfoRequest, GetCurrentBlockColorRequest, GetInfoRequest,
     GetServerInfoRequest, Notification, RpcHash, RpcRawBlock, SubmitBlockRequest, SubmitBlockResponse, api::rpc::RpcApi,
 };
@@ -128,30 +128,30 @@ pub struct NodeStatusSnapshot {
 
 pub static NODE_STATUS: Lazy<Mutex<NodeStatusSnapshot>> = Lazy::new(|| Mutex::new(NodeStatusSnapshot::default()));
 
-/// Kaspa API client wrapper using RPC client
+/// Celenium API client wrapper using RPC client
 /// Both use gRPC under the hood, but through an RPC client wrapper abstraction
-pub struct KaspaApi {
+pub struct CeleniumApi {
     client: Arc<GrpcClient>,
     notification_rx: Arc<Mutex<Option<mpsc::UnboundedReceiver<Notification>>>>,
     connected: Arc<Mutex<bool>>,
     coinbase_tag: Vec<u8>,
 }
 
-impl KaspaApi {
-    /// Create a new Kaspa API client
+impl CeleniumApi {
+    /// Create a new Celenium API client
     pub async fn new(
         address: String,
         coinbase_tag_suffix: Option<String>,
         mut shutdown_rx: watch::Receiver<bool>,
     ) -> Result<Arc<Self>> {
-        info!("Connecting to Kaspa node at {}", address);
+        info!("Connecting to Celenium node at {}", address);
 
         // GrpcClient requires explicit "grpc://" prefix for connection
         // Always add it if not present (avoids unnecessary connection failure)
         let grpc_address = if address.starts_with("grpc://") { address.clone() } else { format!("grpc://{}", address) };
 
         // Log connection attempt (detailed logs moved to debug)
-        debug!("{} {}", LogColors::api("[API]"), LogColors::label("Establishing RPC connection to Kaspa node:"));
+        debug!("{} {}", LogColors::api("[API]"), LogColors::label("Establishing RPC connection to Celenium node:"));
         debug!("{} {} {}", LogColors::api("[API]"), LogColors::label("  - Address:"), &grpc_address);
         debug!("{} {} {}", LogColors::api("[API]"), LogColors::label("  - Protocol:"), "gRPC (via RPC client wrapper)");
 
@@ -186,7 +186,7 @@ impl KaspaApi {
                 Err(e) => {
                     let backoff = Duration::from_millis(backoff_ms);
                     warn!(
-                        "failed to connect to kaspa node at {} (attempt {}): {}, retrying in {:.2}s",
+                        "failed to connect to celenium node at {} (attempt {}): {}, retrying in {:.2}s",
                         grpc_address,
                         attempt,
                         e,
@@ -291,7 +291,7 @@ impl KaspaApi {
     /// Fetches network stats every 30 seconds and records them in Prometheus
     async fn start_stats_thread(self: Arc<Self>) {
         use crate::prom::record_network_stats;
-        use kaspa_rpc_core::{EstimateNetworkHashesPerSecondRequest, GetBlockDagInfoRequest};
+        use celenium_rpc_core::{EstimateNetworkHashesPerSecondRequest, GetBlockDagInfoRequest};
 
         let mut interval = tokio::time::interval(Duration::from_secs(30));
         loop {
@@ -302,7 +302,7 @@ impl KaspaApi {
             let dag_response = match self.client.get_block_dag_info_call(None, GetBlockDagInfoRequest {}).await {
                 Ok(r) => r,
                 Err(e) => {
-                    warn!("failed to get network hashrate from kaspa, prom stats will be out of date: {}", e);
+                    warn!("failed to get network hashrate from celenium, prom stats will be out of date: {}", e);
                     continue;
                 }
             };
@@ -327,7 +327,7 @@ impl KaspaApi {
             {
                 Ok(r) => r,
                 Err(e) => {
-                    warn!("failed to get network hashrate from kaspa, prom stats will be out of date: {}", e);
+                    warn!("failed to get network hashrate from celenium, prom stats will be out of date: {}", e);
                     continue;
                 }
             };
@@ -390,9 +390,9 @@ impl KaspaApi {
 
     /// Submit a block
     pub async fn submit_block(&self, block: Block) -> Result<SubmitBlockResponse> {
-        // Use kaspa_consensus_core::hashing::header::hash() for block hash calculation
-        // In Kaspa, the block hash is the header hash (transactions are represented by hash_merkle_root in header)
-        use kaspa_consensus_core::hashing::header;
+        // Use celenium_consensus_core::hashing::header::hash() for block hash calculation
+        // In Celenium, the block hash is the header hash (transactions are represented by hash_merkle_root in header)
+        use celenium_consensus_core::hashing::header;
         let block_hash = header::hash(&block.header).to_string();
         let blue_score = block.header.blue_score;
         let timestamp = block.header.timestamp;
@@ -409,7 +409,7 @@ impl KaspaApi {
         debug!(
             "{} {}",
             LogColors::api("[API]"),
-            LogColors::api(&format!("===== ATTEMPTING BLOCK SUBMISSION TO KASPA NODE ===== Hash: {}", block_hash))
+            LogColors::api(&format!("===== ATTEMPTING BLOCK SUBMISSION TO CELENIUM NODE ===== Hash: {}", block_hash))
         );
         debug!("{} {}", LogColors::api("[API]"), LogColors::label("Block Details:"));
         debug!("{} {} {}", LogColors::api("[API]"), LogColors::label("  - Hash:"), block_hash);
@@ -448,7 +448,7 @@ impl KaspaApi {
                     warn!(
                         "{} {}",
                         LogColors::api("[API]"),
-                        LogColors::validation(&format!("===== BLOCK REJECTED BY KASPA NODE ===== Hash: {}", block_hash))
+                        LogColors::validation(&format!("===== BLOCK REJECTED BY CELENIUM NODE ===== Hash: {}", block_hash))
                     );
                     warn!(
                         "{} {} {}",
@@ -469,7 +469,7 @@ impl KaspaApi {
                 info!(
                     "{} {}",
                     LogColors::api("[API]"),
-                    LogColors::block(&format!("===== BLOCK ACCEPTED BY KASPA NODE ===== Hash: {}", block_hash))
+                    LogColors::block(&format!("===== BLOCK ACCEPTED BY CELENIUM NODE ===== Hash: {}", block_hash))
                 );
                 // Detailed acceptance logs moved to debug
                 debug!(
@@ -541,7 +541,7 @@ impl KaspaApi {
                     warn!(
                         "{} {}",
                         LogColors::api("[API]"),
-                        LogColors::validation(&format!("===== BLOCK REJECTED BY KASPA NODE: STALE ===== Hash: {}", block_hash))
+                        LogColors::validation(&format!("===== BLOCK REJECTED BY CELENIUM NODE: STALE ===== Hash: {}", block_hash))
                     );
                     warn!(
                         "{} {} {}",
@@ -562,7 +562,7 @@ impl KaspaApi {
                     error!(
                         "{} {}",
                         LogColors::api("[API]"),
-                        LogColors::error(&format!("===== BLOCK REJECTED BY KASPA NODE: INVALID ===== Hash: {}", block_hash))
+                        LogColors::error(&format!("===== BLOCK REJECTED BY CELENIUM NODE: INVALID ===== Hash: {}", block_hash))
                     );
                     error!("{} {} {}", LogColors::api("[API]"), LogColors::label("REJECTION REASON:"), "Block failed node validation");
                     error!("{} {}", LogColors::api("[API]"), LogColors::label("  - Possible validation failures:"));
@@ -606,7 +606,7 @@ impl KaspaApi {
     }
 
     pub async fn wait_for_sync_with_shutdown(&self, mut shutdown_rx: watch::Receiver<bool>) -> Result<()> {
-        debug!("checking kaspad sync state");
+        debug!("checking celeniumd sync state");
 
         loop {
             let sync_fut = self.client.get_sync_status();
@@ -620,7 +620,7 @@ impl KaspaApi {
             match sync_res {
                 Ok(is_synced) => {
                     if is_synced {
-                        debug!("kaspad synced, starting server");
+                        debug!("celeniumd synced, starting server");
                         break;
                     }
                 }
@@ -629,7 +629,7 @@ impl KaspaApi {
                 }
             }
 
-            warn!("Kaspa is not synced, waiting for sync before starting bridge");
+            warn!("Celenium is not synced, waiting for sync before starting bridge");
 
             tokio::select! {
                 _ = shutdown_rx.wait_for(|v| *v) => {
@@ -753,7 +753,7 @@ impl KaspaApi {
                     // If the error contains "Odd number of digits", provide more context
                     if error_str.contains("Odd number of digits") {
                         return Err(anyhow::anyhow!(
-                            "Failed to convert RPC block to Block after {} attempts: {} - This usually indicates a malformed hash field in the block template from the Kaspa node. The block may have a hash with an odd-length hex string.",
+                            "Failed to convert RPC block to Block after {} attempts: {} - This usually indicates a malformed hash field in the block template from the Celenium node. The block may have a hash with an odd-length hex string.",
                             max_retries,
                             error_str
                         ));
@@ -776,7 +776,7 @@ impl KaspaApi {
 
         let utxos = self
             .client
-            .get_utxos_by_addresses_call(None, kaspa_rpc_core::GetUtxosByAddressesRequest::new(addresses))
+            .get_utxos_by_addresses_call(None, celenium_rpc_core::GetUtxosByAddressesRequest::new(addresses))
             .await
             .context("Failed to get UTXOs by addresses")?;
 
@@ -824,7 +824,7 @@ impl KaspaApi {
             loop {
                 // Check sync state and reconnect if needed
                 if let Err(e) = api_clone.wait_for_sync().await {
-                    error!("error checking kaspad sync state, attempting reconnect: {}", e);
+                    error!("error checking celeniumd sync state, attempting reconnect: {}", e);
                     // Note: gRPC client handles reconnection automatically, but we log it
                     // In Go, reconnect() is called explicitly, but Rust gRPC handles it
                     tokio::time::sleep(Duration::from_secs(5)).await;
@@ -901,7 +901,7 @@ impl KaspaApi {
                 }
 
                 if let Err(e) = api_clone.wait_for_sync().await {
-                    error!("error checking kaspad sync state, attempting reconnect: {}", e);
+                    error!("error checking celeniumd sync state, attempting reconnect: {}", e);
                     tokio::time::sleep(Duration::from_secs(5)).await;
                     restart_channel = true;
                 }
@@ -943,14 +943,14 @@ impl KaspaApi {
 }
 
 #[async_trait::async_trait]
-impl KaspaApiTrait for KaspaApi {
+impl CeleniumApiTrait for CeleniumApi {
     async fn get_block_template(
         &self,
         wallet_addr: &str,
         _remote_app: &str,
         _canxium_addr: &str,
     ) -> Result<Block, Box<dyn std::error::Error + Send + Sync>> {
-        KaspaApi::get_block_template(self, wallet_addr, "", "").await.map_err(|e| {
+        CeleniumApi::get_block_template(self, wallet_addr, "", "").await.map_err(|e| {
             let error_msg = e.to_string();
             Box::new(std::io::Error::other(error_msg)) as Box<dyn std::error::Error + Send + Sync>
         })
@@ -959,8 +959,8 @@ impl KaspaApiTrait for KaspaApi {
     async fn submit_block(
         &self,
         block: Block,
-    ) -> Result<kaspa_rpc_core::SubmitBlockResponse, Box<dyn std::error::Error + Send + Sync>> {
-        KaspaApi::submit_block(self, block)
+    ) -> Result<celenium_rpc_core::SubmitBlockResponse, Box<dyn std::error::Error + Send + Sync>> {
+        CeleniumApi::submit_block(self, block)
             .await
             .map_err(|e| Box::new(std::io::Error::other(e.to_string())) as Box<dyn std::error::Error + Send + Sync>)
     }
@@ -969,13 +969,13 @@ impl KaspaApiTrait for KaspaApi {
         &self,
         addresses: &[String],
     ) -> Result<Vec<(String, u64)>, Box<dyn std::error::Error + Send + Sync>> {
-        KaspaApi::get_balances_by_addresses(self, addresses)
+        CeleniumApi::get_balances_by_addresses(self, addresses)
             .await
             .map_err(|e| Box::new(std::io::Error::other(e.to_string())) as Box<dyn std::error::Error + Send + Sync>)
     }
 
     async fn get_current_block_color(&self, block_hash: &str) -> Result<bool, Box<dyn std::error::Error + Send + Sync>> {
-        KaspaApi::get_current_block_color(self, block_hash)
+        CeleniumApi::get_current_block_color(self, block_hash)
             .await
             .map_err(|e| Box::new(std::io::Error::other(e.to_string())) as Box<dyn std::error::Error + Send + Sync>)
     }

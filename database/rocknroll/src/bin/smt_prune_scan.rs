@@ -4,18 +4,18 @@ use std::{
 };
 
 use clap::Parser;
-use kaspa_consensus::model::stores::{
+use celenium_consensus::model::stores::{
     headers::{DbHeadersStore, HeaderStoreReader},
     pruning::{DbPruningStore, PruningStoreReader},
 };
-use kaspa_consensus::{config::ConfigBuilder, params::Params};
-use kaspa_database::prelude::CachePolicy;
-use kaspa_rocknroll::{
+use celenium_consensus::{config::ConfigBuilder, params::Params};
+use celenium_database::prelude::CachePolicy;
+use celenium_rocknroll::{
     Result,
     args::DbSourceArgs,
     db::{ResolvedConsensusDb, resolve_consensus_db},
 };
-use kaspa_smt_store::processor::{SmtStores, StaleSmtEntriesCount};
+use celenium_smt_store::processor::{SmtStores, StaleSmtEntriesCount};
 
 #[derive(Parser, Debug)]
 #[command(about = "Scan a consensus DB for stale SMT pruning entries")]

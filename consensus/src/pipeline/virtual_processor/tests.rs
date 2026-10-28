@@ -1,5 +1,5 @@
 use crate::{consensus::test_consensus::TestConsensus, model::services::reachability::ReachabilityService};
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     BlockHashSet,
     api::ConsensusApi,
     block::{Block, BlockTemplate, MutableBlock, TemplateBuildMode, TemplateTransactionSelector},
@@ -10,7 +10,7 @@ use kaspa_consensus_core::{
     constants::BLOCK_VERSION,
     tx::{ScriptPublicKey, ScriptVec, Transaction},
 };
-use kaspa_hashes::Hash;
+use celenium_hashes::Hash;
 use std::{collections::VecDeque, thread::JoinHandle};
 
 struct OnetimeTxSelector {
@@ -28,7 +28,7 @@ impl TemplateTransactionSelector for OnetimeTxSelector {
         self.txs.take().unwrap()
     }
 
-    fn reject_selection(&mut self, _tx_id: kaspa_consensus_core::tx::TransactionId) {
+    fn reject_selection(&mut self, _tx_id: celenium_consensus_core::tx::TransactionId) {
         unimplemented!()
     }
 
@@ -214,7 +214,7 @@ async fn antichain_merge_test() {
 
 #[tokio::test]
 async fn basic_utxo_disqualified_test() {
-    kaspa_core::log::try_init_logger("info");
+    celenium_core::log::try_init_logger("info");
     let config = ConfigBuilder::new(MAINNET_PARAMS)
         .skip_proof_of_work()
         .edit_consensus_params(|p| {
@@ -246,7 +246,7 @@ async fn basic_utxo_disqualified_test() {
 async fn double_search_disqualified_test() {
     // TODO: add non-coinbase transactions and concurrency in order to complicate the test
 
-    kaspa_core::log::try_init_logger("info");
+    celenium_core::log::try_init_logger("info");
     let config = ConfigBuilder::new(MAINNET_PARAMS)
         .skip_proof_of_work()
         .edit_consensus_params(|p| {
@@ -320,7 +320,7 @@ fn new_miner_data() -> MinerData {
     MinerData::new(ScriptPublicKey::new(0, script), vec![])
 }
 
-fn inactivity_shortcut_config() -> kaspa_consensus_core::config::Config {
+fn inactivity_shortcut_config() -> celenium_consensus_core::config::Config {
     ConfigBuilder::new(MAINNET_PARAMS)
         .skip_proof_of_work()
         .edit_consensus_params(|p| {

@@ -4,8 +4,8 @@ use core::str::{self, FromStr};
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
 use borsh::{BorshDeserialize, BorshSerialize};
-use kaspa_utils::hex::{FromHex, ToHex};
-use kaspa_utils::{serde_impl_deser_fixed_bytes_ref, serde_impl_ser_fixed_bytes_ref};
+use celenium_utils::hex::{FromHex, ToHex};
+use celenium_utils::{serde_impl_deser_fixed_bytes_ref, serde_impl_ser_fixed_bytes_ref};
 use thiserror::Error;
 
 /// The size of the array used to store subnetwork IDs.

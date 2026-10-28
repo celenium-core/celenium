@@ -2,11 +2,11 @@
 
 use std::collections::HashMap;
 
-use kaspa_database::prelude::{BatchDbWriter, DB, StoreError, StoreResult};
-use kaspa_hashes::{Hash, SeqCommitActiveNode};
-use kaspa_smt::store::{BranchKey, CollapsedLeaf, Node};
-use kaspa_smt::streaming::{ChildInfo, MergeSink};
-use kaspa_smt::{DEPTH, SmtHasher, bit_at, hash_node};
+use celenium_database::prelude::{BatchDbWriter, DB, StoreError, StoreResult};
+use celenium_hashes::{Hash, SeqCommitActiveNode};
+use celenium_smt::store::{BranchKey, CollapsedLeaf, Node};
+use celenium_smt::streaming::{ChildInfo, MergeSink};
+use celenium_smt::{DEPTH, SmtHasher, bit_at, hash_node};
 use rocksdb::WriteBatch;
 
 use crate::BlockHash;

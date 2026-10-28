@@ -1,13 +1,12 @@
-#[cfg(feature = "devnet-prealloc")]
 use super::utxo_set_override::{set_genesis_utxo_commitment_from_config, set_initial_utxo_set};
 use super::{Consensus, ctl::Ctl};
 use crate::{model::stores::U64Key, pipeline::ProcessingCounters};
 use itertools::Itertools;
-use kaspa_consensus_core::{api::ConsensusApi, config::Config, mining_rules::MiningRules};
-use kaspa_consensus_notify::root::ConsensusNotificationRoot;
-use kaspa_consensusmanager::{ConsensusFactory, ConsensusInstance, DynConsensusCtl, SessionLock};
-use kaspa_core::{debug, time::unix_now, warn};
-use kaspa_database::{
+use celenium_consensus_core::{api::ConsensusApi, config::Config, mining_rules::MiningRules};
+use celenium_consensus_notify::root::ConsensusNotificationRoot;
+use celenium_consensusmanager::{ConsensusFactory, ConsensusInstance, DynConsensusCtl, SessionLock};
+use celenium_core::{debug, time::unix_now, warn};
+use celenium_database::{
     prelude::{
         BatchDbWriter, CachePolicy, CachedDbAccess, CachedDbItem, DB, DirectDbWriter, RocksDbPreset, StoreError, StoreResult,
         StoreResultExt,
@@ -15,8 +14,8 @@ use kaspa_database::{
     registry::DatabaseStorePrefixes,
 };
 
-use kaspa_txscript::caches::TxScriptCacheCounters;
-use kaspa_utils::mem_size::MemSizeEstimator;
+use celenium_txscript::caches::TxScriptCacheCounters;
+use celenium_utils::mem_size::MemSizeEstimator;
 use parking_lot::RwLock;
 use rocksdb::WriteBatch;
 use serde::{Deserialize, Serialize};
@@ -284,7 +283,6 @@ impl Factory {
     ) -> Self {
         assert!(fd_budget > 0, "fd_budget has to be positive");
         let mut config = config.clone();
-        #[cfg(feature = "devnet-prealloc")]
         set_genesis_utxo_commitment_from_config(&mut config);
         config.process_genesis = false;
         let management_store = Arc::new(RwLock::new(MultiConsensusManagementStore::new(management_db)));
@@ -329,7 +327,7 @@ impl ConsensusFactory for Factory {
         };
 
         let dir = self.db_root_dir.join(entry.directory_name.clone());
-        let db = kaspa_database::prelude::ConnBuilder::default()
+        let db = celenium_database::prelude::ConnBuilder::default()
             .with_db_path(dir)
             .with_parallelism(self.db_parallelism)
             .with_files_limit(self.fd_budget / 2) // active and staging consensuses should have equal budgets
@@ -355,8 +353,7 @@ impl ConsensusFactory for Factory {
         // We write the new active entry only once the instance was created successfully.
         // This way we can safely avoid processing genesis in future process runs
         if is_new_consensus {
-            #[cfg(feature = "devnet-prealloc")]
-            set_initial_utxo_set(&self.config.initial_utxo_set, consensus.clone(), self.config.params.genesis.hash);
+            set_initial_utxo_set(&self.config, consensus.clone(), self.config.params.genesis.hash);
             self.management_store.write().save_new_active_consensus(entry).unwrap();
         }
 
@@ -368,7 +365,7 @@ impl ConsensusFactory for Factory {
 
         let entry = self.management_store.write().new_staging_consensus_entry().unwrap();
         let dir = self.db_root_dir.join(entry.directory_name);
-        let db = kaspa_database::prelude::ConnBuilder::default()
+        let db = celenium_database::prelude::ConnBuilder::default()
             .with_db_path(dir)
             .with_parallelism(self.db_parallelism)
             .with_files_limit(self.fd_budget / 2) // active and staging consensuses should have equal budgets
@@ -457,11 +454,11 @@ impl ConsensusFactory for Factory {
 #[cfg(test)]
 mod tests {
     use super::MultiConsensusManagementStore;
-    use kaspa_database::{prelude::ConnBuilder, utils::get_kaspa_tempdir};
+    use celenium_database::{prelude::ConnBuilder, utils::get_celenium_tempdir};
 
     #[test]
     fn archival_node_flag_persists_after_reopen() {
-        let db_tempdir = get_kaspa_tempdir();
+        let db_tempdir = get_celenium_tempdir();
         let db_path = db_tempdir.path().to_owned();
         let db = ConnBuilder::default().with_db_path(db_path.clone()).with_files_limit(10).build().unwrap();
         let mut store = MultiConsensusManagementStore::new(db.clone());

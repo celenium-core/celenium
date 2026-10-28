@@ -1,5 +1,5 @@
 use alloc::vec::Vec;
-use kaspa_hashes::Hash;
+use celenium_hashes::Hash;
 use thiserror::Error;
 
 use crate::tx::{TransactionId, TransactionOutpoint};

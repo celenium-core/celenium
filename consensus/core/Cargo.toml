@@ -1,6 +1,6 @@
 [package]
-name = "kaspa-consensus-core"
-description = "Kaspa consensus core"
+name = "celenium-consensus-core"
+description = "Celenium consensus core"
 rust-version.workspace = true
 version.workspace = true
 edition.workspace = true
@@ -15,13 +15,13 @@ std = [
     "borsh/std",
     "faster-hex/std",
     "futures-util/std",
-    "kaspa-addresses/std",
-    "kaspa-hashes/std",
-    "kaspa-math/std",
-    "kaspa-muhash/std",
-    "kaspa-smt/std",
-    "kaspa-txscript-errors/std",
-    "kaspa-utils/std",
+    "celenium-addresses/std",
+    "celenium-hashes/std",
+    "celenium-math/std",
+    "celenium-muhash/std",
+    "celenium-smt/std",
+    "celenium-txscript-errors/std",
+    "celenium-utils/std",
     "mem_size",
     "serde/std",
     "thiserror/std",
@@ -29,8 +29,8 @@ std = [
 # Heap-size estimation for cache accounting. Pulls in the `mem_size` modules of
 # the hash/util dependencies (which currently require their `std` builds).
 mem_size = [
-    "kaspa-hashes/mem_size",
-    "kaspa-utils/mem_size",
+    "celenium-hashes/mem_size",
+    "celenium-utils/mem_size",
 ]
 # Transaction signing helpers. These rely on secp256k1's global context, which
 # requires `std`, so the feature is kept separate from the no_std-friendly core.
@@ -46,7 +46,7 @@ sighash-sync = ["std", "dep:arc-swap"]
 workflow = ["std", "dep:workflow-serializer"]
 wasm32-sdk = [
     "std",
-    "kaspa-addresses/wasm32-sdk",
+    "celenium-addresses/wasm32-sdk",
     "dep:getrandom",
     "dep:wasm-bindgen",
     "dep:js-sys",
@@ -72,14 +72,14 @@ faster-hex.workspace = true
 futures-util.workspace = true
 hashbrown.workspace = true
 itertools = { workspace = true, features = ["use_alloc"] }
-kaspa-addresses.workspace = true
-kaspa-hashes.workspace = true
-kaspa-math.workspace = true
-kaspa-smt.workspace = true
-kaspa-merkle.workspace = true
-kaspa-muhash.workspace = true
-kaspa-txscript-errors.workspace = true
-kaspa-utils.workspace = true
+celenium-addresses.workspace = true
+celenium-hashes.workspace = true
+celenium-math.workspace = true
+celenium-smt.workspace = true
+celenium-merkle.workspace = true
+celenium-muhash.workspace = true
+celenium-txscript-errors.workspace = true
+celenium-utils.workspace = true
 serde.workspace = true
 smallvec.workspace = true
 thiserror.workspace = true

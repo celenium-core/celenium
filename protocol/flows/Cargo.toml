@@ -1,6 +1,6 @@
 [package]
-name = "kaspa-p2p-flows"
-description = "Kaspa p2p flows"
+name = "celenium-p2p-flows"
+description = "Celenium p2p flows"
 rust-version.workspace = true
 version.workspace = true
 edition.workspace = true
@@ -10,22 +10,22 @@ license.workspace = true
 repository.workspace = true
 
 [dependencies]
-kaspa-core.workspace = true
-kaspa-consensus-core.workspace = true
-kaspa-consensus-notify.workspace = true
-kaspa-p2p-lib.workspace = true
-kaspa-p2p-mining.workspace = true
-kaspa-utils = { workspace = true, features = ["fd_budget"]}
-kaspa-utils-tower.workspace = true
-kaspa-hashes.workspace = true
-kaspa-muhash = { workspace = true, features = ["std"] }
-kaspa-seq-commit.workspace = true
-kaspa-smt.workspace = true
-kaspa-connectionmanager.workspace = true
-kaspa-addressmanager.workspace = true
-kaspa-consensusmanager.workspace = true
-kaspa-mining.workspace = true
-kaspa-notify.workspace = true
+celenium-core.workspace = true
+celenium-consensus-core.workspace = true
+celenium-consensus-notify.workspace = true
+celenium-p2p-lib.workspace = true
+celenium-p2p-mining.workspace = true
+celenium-utils = { workspace = true, features = ["fd_budget"]}
+celenium-utils-tower.workspace = true
+celenium-hashes.workspace = true
+celenium-muhash = { workspace = true, features = ["std"] }
+celenium-seq-commit.workspace = true
+celenium-smt.workspace = true
+celenium-connectionmanager.workspace = true
+celenium-addressmanager.workspace = true
+celenium-consensusmanager.workspace = true
+celenium-mining.workspace = true
+celenium-notify.workspace = true
 
 async-trait.workspace = true
 futures = { workspace = true, features = ["alloc"] }

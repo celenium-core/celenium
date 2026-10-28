@@ -1,12 +1,12 @@
 use crate::protowire::{self};
 use crate::{from, try_from};
-use kaspa_rpc_core::RpcError;
+use celenium_rpc_core::RpcError;
 
 // ----------------------------------------------------------------------------
 // rpc_core to protowire
 // ----------------------------------------------------------------------------
 
-from!(item: &kaspa_rpc_core::RpcGetUtxosByAddressesCursor, protowire::RpcGetUtxosByAddressesCursor, {
+from!(item: &celenium_rpc_core::RpcGetUtxosByAddressesCursor, protowire::RpcGetUtxosByAddressesCursor, {
     Self {
         start_address: item.start_address.as_ref().map(|address| address.to_string()),
         start_daa_score: item.start_daa_score,
@@ -18,7 +18,7 @@ from!(item: &kaspa_rpc_core::RpcGetUtxosByAddressesCursor, protowire::RpcGetUtxo
 // protowire to rpc_core
 // ----------------------------------------------------------------------------
 
-try_from!(item: protowire::RpcGetUtxosByAddressesCursor, kaspa_rpc_core::RpcGetUtxosByAddressesCursor, {
+try_from!(item: protowire::RpcGetUtxosByAddressesCursor, celenium_rpc_core::RpcGetUtxosByAddressesCursor, {
     Self {
         start_address: item.start_address.as_deref().map(|address| address.try_into()).transpose()?,
         start_daa_score: item.start_daa_score,

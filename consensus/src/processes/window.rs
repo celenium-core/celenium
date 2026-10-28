@@ -8,14 +8,14 @@ use crate::{
     },
     processes::ghostdag::ordering::SortableBlock,
 };
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     BlockHashSet, BlueWorkType, HashMapCustomHasher,
     blockhash::{BlockHashExtensions, ORIGIN},
     config::genesis::GenesisBlock,
     errors::difficulty::DifficultyResult,
 };
-use kaspa_hashes::Hash;
-use kaspa_math::Uint256;
+use celenium_hashes::Hash;
+use celenium_math::Uint256;
 use once_cell::unsync::Lazy;
 use std::{
     cmp::Reverse,
@@ -65,7 +65,7 @@ enum SampledBlock {
     NonDaa(Hash),
 }
 
-/// A sampled window manager implementing [KIP-0004](https://github.com/kaspanet/kips/blob/master/kip-0004.md)
+/// A sampled window manager implementing [KIP-0004](https://github.com/celeniumnet/kips/blob/master/kip-0004.md)
 #[derive(Clone)]
 pub struct SampledWindowManager<
     T: GhostdagStoreReader,

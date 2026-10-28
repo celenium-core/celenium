@@ -16,15 +16,15 @@ use std::sync::Arc;
 
 use parking_lot::Mutex;
 
-use kaspa_database::prelude::{BatchDbWriter, DB, DirectDbWriter, StoreError, StoreResult};
-use kaspa_hashes::{Hash, SeqCommitActiveNode, ZERO_HASH};
-use kaspa_seq_commit::hashing::smt_leaf_hash;
-use kaspa_seq_commit::types::SmtLeafInput;
-use kaspa_smt::proof::OwnedSmtProof;
-use kaspa_smt::store::{BranchKey, CollapsedLeaf, Node, SmtStore, SortedLeafUpdates};
-use kaspa_smt::streaming::{ChildInfo, MergeSink, StreamError, StreamingSmtBuilder};
-use kaspa_smt::tree::{SmtNodeChanges, SparseMerkleTree, compute_root_update};
-use kaspa_smt::{DEPTH, SmtHasher, bit_at, hash_node};
+use celenium_database::prelude::{BatchDbWriter, DB, DirectDbWriter, StoreError, StoreResult};
+use celenium_hashes::{Hash, SeqCommitActiveNode, ZERO_HASH};
+use celenium_seq_commit::hashing::smt_leaf_hash;
+use celenium_seq_commit::types::SmtLeafInput;
+use celenium_smt::proof::OwnedSmtProof;
+use celenium_smt::store::{BranchKey, CollapsedLeaf, Node, SmtStore, SortedLeafUpdates};
+use celenium_smt::streaming::{ChildInfo, MergeSink, StreamError, StreamingSmtBuilder};
+use celenium_smt::tree::{SmtNodeChanges, SparseMerkleTree, compute_root_update};
+use celenium_smt::{DEPTH, SmtHasher, bit_at, hash_node};
 use rocksdb::WriteBatch;
 
 use crate::branch_version_store::DbBranchVersionStore;
@@ -227,11 +227,11 @@ impl SmtStores {
             Some(v) => match *v.data() {
                 Some(Node::Internal(hash)) => hash,
                 Some(Node::Collapsed(cl)) => {
-                    kaspa_smt::hash_node::<kaspa_hashes::SeqCommitActiveCollapsedNode>(cl.lane_key, cl.leaf_hash)
+                    celenium_smt::hash_node::<celenium_hashes::SeqCommitActiveCollapsedNode>(cl.lane_key, cl.leaf_hash)
                 }
-                None => kaspa_hashes::SeqCommitActiveNode::empty_root(),
+                None => celenium_hashes::SeqCommitActiveNode::empty_root(),
             },
-            None => kaspa_hashes::SeqCommitActiveNode::empty_root(),
+            None => celenium_hashes::SeqCommitActiveNode::empty_root(),
         }
     }
 
@@ -621,14 +621,14 @@ impl SmtBuild {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use kaspa_database::create_temp_db;
-    use kaspa_database::prelude::{ConnBuilder, DirectDbWriter};
+    use celenium_database::create_temp_db;
+    use celenium_database::prelude::{ConnBuilder, DirectDbWriter};
 
     fn hash(v: u8) -> Hash {
         Hash::from_bytes([v; 32])
     }
 
-    fn make_stores() -> (kaspa_database::utils::DbLifetime, Arc<DB>, SmtStores) {
+    fn make_stores() -> (celenium_database::utils::DbLifetime, Arc<DB>, SmtStores) {
         let (lifetime, db) = create_temp_db!(ConnBuilder::default().with_files_limit(10));
         let stores = SmtStores::new(db.clone(), 16, 16);
         (lifetime, db, stores)

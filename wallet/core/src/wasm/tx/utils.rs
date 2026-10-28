@@ -2,11 +2,11 @@ use crate::imports::*;
 use crate::result::Result;
 use crate::tx::{IPaymentOutputArray, PaymentOutputs};
 use crate::wasm::tx::generator::*;
-use kaspa_consensus_client::*;
-use kaspa_consensus_core::subnets::SUBNETWORK_ID_NATIVE;
-use kaspa_consensus_core::tx::ComputeCommit as CoreComputeCommit;
-use kaspa_wallet_macros::declare_typescript_wasm_interface as declare;
-use kaspa_wasm_core::types::BinaryT;
+use celenium_consensus_client::*;
+use celenium_consensus_core::subnets::SUBNETWORK_ID_NATIVE;
+use celenium_consensus_core::tx::ComputeCommit as CoreComputeCommit;
+use celenium_wallet_macros::declare_typescript_wasm_interface as declare;
+use celenium_wasm_core::types::BinaryT;
 use workflow_core::runtime::is_web;
 
 /// Create a transaction manually without any mass limit checks.
@@ -165,14 +165,14 @@ pub async fn estimate_transactions_js(settings: IGeneratorSettingsObject) -> Res
 #[cfg(all(test, target_arch = "wasm32"))]
 mod tests {
     use super::*;
-    use kaspa_addresses::Address;
-    use kaspa_hashes::Hash;
+    use celenium_addresses::Address;
+    use celenium_hashes::Hash;
     use wasm_bindgen::JsCast;
     use wasm_bindgen_test::wasm_bindgen_test;
 
     #[wasm_bindgen_test]
     fn test_create_transaction_js_supports_v1_compute_commit_and_covenant_output() {
-        let address = Address::try_from("kaspatest:qqz22l98sf8jun72rwh5rqe2tm8lhwtdxdmynrz4ypwak427qed5juktjt7ju").unwrap();
+        let address = Address::try_from("celeniumtest:qqz22l98sf8jun72rwh5rqe2tm8lhwtdxdmynrz4ypwak427qed5juktjt7ju").unwrap();
         let utxo = UtxoEntryReference::simulated_with_address(2_000, &address);
         let utxos = Array::new();
         utxos.push(&JsValue::from(utxo));

@@ -1,4 +1,4 @@
-use kaspa_txscript_errors::TxScriptError;
+use celenium_txscript_errors::TxScriptError;
 use thiserror::Error;
 
 #[derive(Debug, Error)]

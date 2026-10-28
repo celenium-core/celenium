@@ -4,20 +4,20 @@
 
 use crate::error::Error;
 use crate::result::Result;
-use kaspa_consensus_client as kcc;
-use kaspa_consensus_client::UtxoEntryReference;
-use kaspa_consensus_core::mass::{
+use celenium_consensus_client as kcc;
+use celenium_consensus_client::UtxoEntryReference;
+use celenium_consensus_core::mass::{
     ContextualMasses, Mass, MassCalculator as ConsensusMassCalculator, MassCofactors, NonContextualMasses,
     calc_storage_mass as consensus_calc_storage_mass,
 };
-pub use kaspa_consensus_core::mass::{
+pub use celenium_consensus_core::mass::{
     transaction_estimated_serialized_size as transaction_serialized_byte_size,
     transaction_input_estimated_serialized_size as transaction_input_serialized_byte_size,
     transaction_output_estimated_serialized_size as transaction_output_serialized_byte_size,
 };
-use kaspa_consensus_core::tx::{ComputeCommit, SCRIPT_VECTOR_SIZE, Transaction, TransactionInput, TransactionOutput};
-use kaspa_consensus_core::{config::params::Params, constants::*, subnets::SUBNETWORK_ID_SIZE};
-use kaspa_hashes::HASH_SIZE;
+use celenium_consensus_core::tx::{ComputeCommit, SCRIPT_VECTOR_SIZE, Transaction, TransactionInput, TransactionOutput};
+use celenium_consensus_core::{config::params::Params, constants::*, subnets::SUBNETWORK_ID_SIZE};
+use celenium_hashes::HASH_SIZE;
 
 // pub const ECDSA_SIGNATURE_SIZE: u64 = 64;
 // pub const SCHNORR_SIGNATURE_SIZE: u64 = 64;

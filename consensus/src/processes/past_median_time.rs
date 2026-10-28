@@ -1,9 +1,9 @@
 use crate::errors::RuleError;
 use crate::model::stores::{block_window_cache::BlockWindowHeap, headers::HeaderStoreReader};
-use kaspa_hashes::Hash;
+use celenium_hashes::Hash;
 use std::sync::Arc;
 
-/// A past median time manager based on sampled block windows, implementing [KIP-0004](https://github.com/kaspanet/kips/blob/master/kip-0004.md)
+/// A past median time manager based on sampled block windows, implementing [KIP-0004](https://github.com/celeniumnet/kips/blob/master/kip-0004.md)
 #[derive(Clone)]
 pub struct SampledPastMedianTimeManager<T: HeaderStoreReader> {
     headers_store: Arc<T>,

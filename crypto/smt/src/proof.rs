@@ -32,7 +32,7 @@
 //! - [`OwnedSmtProof`] — owned, delegates to `SmtProof` via `as_proof()`.
 
 use alloc::vec::Vec;
-use kaspa_hashes::{Hash, ZERO_HASH};
+use celenium_hashes::{Hash, ZERO_HASH};
 
 use crate::store::{BranchKey, CollapsedLeaf};
 /// Cache of already-computed branch hashes, keyed by `(depth, key_prefix)`.

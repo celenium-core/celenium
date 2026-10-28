@@ -21,11 +21,11 @@
 //! ```
 //!
 
-use kaspa_hashes::{
+use celenium_hashes::{
     Hash, HasherBase, PayloadDigest, SeqCommitActiveLeaf, SeqCommitActivityLeaf, SeqCommitActivityRoot, SeqCommitLaneKey,
     SeqCommitLaneTip, SeqCommitMergesetContext, SeqCommitMerkleBranch, SeqCommitMinerPayloadLeaf,
 };
-use kaspa_merkle::{StreamingMerkleBuilder, calc_merkle_root_with_hasher};
+use celenium_merkle::{StreamingMerkleBuilder, calc_merkle_root_with_hasher};
 
 use crate::types::{LaneId, LaneTipInput, MergesetContext, MinerPayloadLeafInput, SeqCommitInput, SeqState, SmtLeafInput};
 
@@ -100,13 +100,13 @@ pub fn miner_payload_hash(payload: &[u8]) -> Hash {
 }
 
 /// Write blue_work into `hasher` with the same encoding as
-/// `kaspa_consensus_core::hashing::HasherExtensions::write_blue_work`:
+/// `celenium_consensus_core::hashing::HasherExtensions::write_blue_work`:
 /// strip leading zeros from the big-endian bytes, then write
 /// `le_u64(len) || stripped_bytes`.
 ///
 /// Inlined here (rather than reusing the trait method) because
-/// `kaspa-consensus-core` pulls in a std-only dependency tree and
-/// `kaspa-seq-commit` must stay `no_std`-compatible. The
+/// `celenium-consensus-core` pulls in a std-only dependency tree and
+/// `celenium-seq-commit` must stay `no_std`-compatible. The
 /// `miner_payload_leaf_matches_consensus_core_write_blue_work` test locks
 /// the two encodings together.
 #[inline]
@@ -175,8 +175,8 @@ pub fn seq_commit(input: &SeqCommitInput<'_>) -> Hash {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use kaspa_consensus_core::{BlueWorkType, subnets::SUBNETWORK_ID_COINBASE};
-    use kaspa_hashes::ZERO_HASH;
+    use celenium_consensus_core::{BlueWorkType, subnets::SUBNETWORK_ID_COINBASE};
+    use celenium_hashes::ZERO_HASH;
 
     fn h(b: u8) -> Hash {
         let mut bytes = [0u8; 32];
@@ -347,7 +347,7 @@ mod tests {
     #[test]
     fn write_blue_work_be_preimage_matches_consensus_core() {
         use alloc::vec::Vec;
-        use kaspa_consensus_core::hashing::HasherExtensions;
+        use celenium_consensus_core::hashing::HasherExtensions;
 
         #[derive(Default)]
         struct ByteBuffer(Vec<u8>);

@@ -1,6 +1,6 @@
 #![allow(clippy::arithmetic_side_effects)]
 
-use kaspa_hashes::Hash;
+use celenium_hashes::Hash;
 
 pub mod branch_version_store;
 pub mod cache;
@@ -21,7 +21,7 @@ pub type LaneKey = Hash;
 pub type BlockHash = Hash;
 
 /// Re-export node changes map type.
-pub use kaspa_smt::tree::SmtNodeChanges;
+pub use celenium_smt::tree::SmtNodeChanges;
 
 /// Re-export Node enum.
-pub use kaspa_smt::store::Node;
+pub use celenium_smt::store::Node;

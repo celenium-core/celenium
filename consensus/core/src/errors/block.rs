@@ -9,7 +9,7 @@ use crate::{
     tx::{TransactionId, TransactionOutpoint},
 };
 use itertools::Itertools;
-use kaspa_hashes::Hash;
+use celenium_hashes::Hash;
 use thiserror::Error;
 
 #[derive(Clone, Debug)]

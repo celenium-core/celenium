@@ -1,14 +1,14 @@
 use std::sync::Arc;
 
-use kaspa_addressmanager::NetAddress;
-use kaspa_connectionmanager::ConnectionManager;
-use kaspa_core::{
+use celenium_addressmanager::NetAddress;
+use celenium_connectionmanager::ConnectionManager;
+use celenium_core::{
     task::service::{AsyncService, AsyncServiceFuture},
     trace,
 };
-use kaspa_p2p_lib::Adaptor;
-use kaspa_utils::triggers::SingleTrigger;
-use kaspa_utils_tower::counters::TowerConnectionCounters;
+use celenium_p2p_lib::Adaptor;
+use celenium_utils::triggers::SingleTrigger;
+use celenium_utils_tower::counters::TowerConnectionCounters;
 
 use crate::flow_context::FlowContext;
 

@@ -2,7 +2,7 @@
 #![allow(clippy::arithmetic_side_effects)]
 
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
-use kaspa_hashes::*;
+use celenium_hashes::*;
 use rand::{Rng, RngCore, thread_rng};
 use sha3::digest::{ExtendableOutput, Update, XofReader};
 use sha3::{CShake256, CShake256Core};

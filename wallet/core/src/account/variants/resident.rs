@@ -4,10 +4,10 @@
 
 use crate::account::Inner;
 use crate::imports::*;
-use kaspa_addresses::Version;
+use celenium_addresses::Version;
 use secp256k1::{PublicKey, SecretKey};
 
-pub const RESIDENT_ACCOUNT_KIND: &str = "kaspa-resident-standard";
+pub const RESIDENT_ACCOUNT_KIND: &str = "celenium-resident-standard";
 
 pub struct Resident {
     inner: Arc<Inner>,

@@ -1,7 +1,7 @@
 use crate::pb as protowire;
-use kaspa_consensus_core::header::CompressedParents;
-use kaspa_consensus_core::{BlueWorkType, header::Header};
-use kaspa_hashes::Hash;
+use celenium_consensus_core::header::CompressedParents;
+use celenium_consensus_core::{BlueWorkType, header::Header};
+use celenium_hashes::Hash;
 
 use super::error::ConversionError;
 use super::option::TryIntoOptionEx;
@@ -77,7 +77,7 @@ impl TryFrom<protowire::BlockHeader> for Header {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use kaspa_consensus_core::errors::header::CompressedParentsError;
+    use celenium_consensus_core::errors::header::CompressedParentsError;
 
     #[test]
     fn compressed_parents_wire_roundtrip() {

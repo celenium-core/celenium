@@ -1,6 +1,6 @@
 use crate::result::Result;
-use kaspa_txscript::zk_precompiles::risc0::rcpt::HashFnId;
-use kaspa_txscript::{EngineFlags, script_builder::ScriptBuilder};
+use celenium_txscript::zk_precompiles::risc0::rcpt::HashFnId;
+use celenium_txscript::{EngineFlags, script_builder::ScriptBuilder};
 use risc0_binfmt::Digestible;
 use risc0_zkvm::{Groth16Receipt, SuccinctReceipt};
 use std::marker::PhantomData;

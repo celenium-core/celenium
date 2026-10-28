@@ -1,6 +1,6 @@
-# Kaspa Crescendo Hardfork Node Setup Guide
+# Celenium Crescendo Hardfork Node Setup Guide
 
-Kaspa is about to take a significant leap with the **Crescendo Hardfork**, as detailed in [KIP14](https://github.com/kaspanet/kips/blob/master/kip-0014.md), transitioning from 1 to 10 blocks per second. The hardfork is scheduled to activate on mainnet at DAA Score `110,165,000` which is roughly `2025-05-05 1500 UTC`.
+Celenium is about to take a significant leap with the **Crescendo Hardfork**, as detailed in [KIP14](https://github.com/kaspanet/kips/blob/master/kip-0014.md), transitioning from 1 to 10 blocks per second. The hardfork is scheduled to activate on mainnet at DAA Score `110,165,000` which is roughly `2025-05-05 1500 UTC`.
 
 ## Recommended Hardware Specifications
 
@@ -22,23 +22,23 @@ If you are a pool operator, it is _strongly recommended_ that you pick specs tha
 
 ## Running Your Node
 
-1. **Obtain Kaspa v1.0.0 binaries**  
+1. **Obtain Celenium v1.0.0 binaries**  
     Download and extract the official [1.0.0 release](https://github.com/kaspanet/rusty-kaspa/releases/tag/v1.0.0), or build from the `master` branch by following the instructions in the project README.
 
 2. **Launch the Node**  
     ```
-    kaspad --utxoindex
+    celeniumd --utxoindex
     ```
 
     *(If running from source code:)*  
     ```
-    cargo run --bin kaspad --release -- --utxoindex
+    cargo run --bin celeniumd --release -- --utxoindex
     ```
 
     To run on testnet, simply add `--testnet` at the end. For example:
 
     ```
-    kaspad --utxoindex --testnet
+    celeniumd --utxoindex --testnet
     ```
 
 Leave this process running. Closing it will stop your node. If you have other flags that you use for your current node, you may continue to use those.
@@ -48,7 +48,7 @@ Leave this process running. Closing it will stop your node. If you have other fl
   - `--rpclisten=0.0.0.0` to listen for RPC connections on all network interfaces (public RPC). Use `--rpclisten=127.0.0.1` if you are running your pool/exchange software on the same machine
   - `--rpclisten-borsh` for local borsh RPC access from the `kaspa-cli` binary.
   - `--unsaferpc` for allowing P2P peer query and management via RPC (recommended to use only if **not** exposing RPC publicly).
-  - `--perf-metrics --loglevel=info,kaspad_lib::daemon=debug,kaspa_mining::monitor=debug` for detailed performance logs.
+  - `--perf-metrics --loglevel=info,celeniumd_lib::daemon=debug,kaspa_mining::monitor=debug` for detailed performance logs.
   - `--loglevel=kaspa_grpc_server=warn` for suppressing most RPC connect/disconnect log reports.
   - `--ram-scale=3.0` for increasing cache size threefold (relevant for utilizing large RAM; can be set between 0.1 and 10).
 
@@ -64,9 +64,9 @@ Ensure your pool/stratum is updated to preserve this field in the transactions b
 
 Make sure that you get the updated `message.proto` and `rpc.proto` from the rusty-kaspa repo at https://github.com/kaspanet/rusty-kaspa/tree/master/rpc/grpc/core/proto
 
-#### Using the golang Kaspad repo as an SDK
+#### Using the golang Celeniumd repo as an SDK
 
-If you use the golang Kaspad repo as an SDK, a new tag [v0.12.20](https://github.com/kaspanet/kaspad/releases/tag/v0.12.20) has been made which contains the changes you would need to get your pool/stratum updated. Update your dependency on the old repo to that tag.
+If you use the golang Celeniumd repo as an SDK, a new tag [v0.12.20](https://github.com/kaspanet/celeniumd/releases/tag/v0.12.20) has been made which contains the changes you would need to get your pool/stratum updated. Update your dependency on the old repo to that tag.
 
 ### What happens if I don't update my pool/stratum?
 

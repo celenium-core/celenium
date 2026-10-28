@@ -196,7 +196,7 @@ mod tests {
         create_temp_db,
         prelude::{BatchDbWriter, ConnBuilder, DirectDbWriter},
     };
-    use kaspa_hashes::Hash;
+    use celenium_hashes::Hash;
     use rocksdb::WriteBatch;
 
     #[test]

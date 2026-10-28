@@ -1,6 +1,6 @@
 [package]
 name = "simpa"
-description = "Kaspa Network Simulator"
+description = "Celenium Network Simulator"
 publish = false
 rust-version.workspace = true
 version.workspace = true
@@ -11,15 +11,15 @@ license.workspace = true
 repository.workspace = true
 
 [dependencies]
-kaspa-alloc.workspace = true            # This changes the global allocator for all of the next dependencies so should be kept first
-kaspa-consensus-core.workspace = true
-kaspa-consensus-notify.workspace = true
-kaspa-consensus.workspace = true
-kaspa-core.workspace = true
-kaspa-database.workspace = true
-kaspa-hashes.workspace = true
-kaspa-perf-monitor.workspace = true
-kaspa-utils.workspace = true
+celenium-alloc.workspace = true            # This changes the global allocator for all of the next dependencies so should be kept first
+celenium-consensus-core.workspace = true
+celenium-consensus-notify.workspace = true
+celenium-consensus.workspace = true
+celenium-core.workspace = true
+celenium-database.workspace = true
+celenium-hashes.workspace = true
+celenium-perf-monitor.workspace = true
+celenium-utils.workspace = true
 
 async-channel.workspace = true
 cfg-if.workspace = true
@@ -40,15 +40,15 @@ tokio = { workspace = true, features = ["rt", "macros", "rt-multi-thread"] }
 serde_json.workspace = true
 serde.workspace = true
 faster-hex.workspace = true
-kaspa-testing-integration.workspace = true
+celenium-testing-integration.workspace = true
 
 [dev-dependencies]
-kaspa-consensus = { workspace = true, features = ["test-smt-pruning-diagnostics"] }
-kaspa-smt-store = { workspace = true, features = ["test-smt-pruning-diagnostics"] }
+celenium-consensus = { workspace = true, features = ["test-smt-pruning-diagnostics"] }
+celenium-smt-store = { workspace = true, features = ["test-smt-pruning-diagnostics"] }
 
 [features]
-heap = ["dhat", "kaspa-alloc/heap"]
-semaphore-trace = ["kaspa-utils/semaphore-trace"]
+heap = ["dhat", "celenium-alloc/heap"]
+semaphore-trace = ["celenium-utils/semaphore-trace"]
 
 [lints]
 workspace = true

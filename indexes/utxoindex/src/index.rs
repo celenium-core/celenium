@@ -6,17 +6,17 @@ use crate::{
     stores::store_manager::Store,
     update_container::UtxoIndexChanges,
 };
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     BlockHashSet,
     tx::{ScriptPublicKey, ScriptPublicKeys},
     utxo::utxo_diff::UtxoDiff,
 };
-use kaspa_consensusmanager::{ConsensusManager, ConsensusResetHandler};
-use kaspa_core::{info, trace};
-use kaspa_database::prelude::{DB, StoreError, StoreResult};
-use kaspa_hashes::Hash;
-use kaspa_index_core::indexed_utxos::{BalanceByScriptPublicKey, OrderedUtxoEntriesPage, UtxoPageCursor};
-use kaspa_utils::arc::ArcExtensions;
+use celenium_consensusmanager::{ConsensusManager, ConsensusResetHandler};
+use celenium_core::{info, trace};
+use celenium_database::prelude::{DB, StoreError, StoreResult};
+use celenium_hashes::Hash;
+use celenium_index_core::indexed_utxos::{BalanceByScriptPublicKey, OrderedUtxoEntriesPage, UtxoPageCursor};
+use celenium_utils::arc::ArcExtensions;
 use parking_lot::RwLock;
 use std::{
     fmt::Debug,
@@ -24,9 +24,9 @@ use std::{
     sync::{Arc, Weak},
 };
 
-const RESYNC_CHUNK_SIZE: usize = 2048; // Increased from 1k (used in go-kaspad), for quicker resets, while still having a low memory footprint.
+const RESYNC_CHUNK_SIZE: usize = 2048; // Increased from 1k (used in go-celeniumd), for quicker resets, while still having a low memory footprint.
 
-/// UtxoIndex indexes `CompactUtxoEntryCollections` by [`ScriptPublicKey`](kaspa_consensus_core::tx::ScriptPublicKey),
+/// UtxoIndex indexes `CompactUtxoEntryCollections` by [`ScriptPublicKey`](celenium_consensus_core::tx::ScriptPublicKey),
 /// commits them to its owns store, and emits changes.
 /// Note: The UtxoIndex struct by itself is not thread safe, only correct usage of the supplied RwLock via `new` makes it so.
 /// please follow guidelines found in the comments under `utxoindex::core::api::UtxoIndexApi` for proper thread safety.
@@ -212,7 +212,7 @@ impl UtxoIndexApi for UtxoIndex {
     }
 
     // This can have a big memory footprint, so it should be used only for tests.
-    fn get_all_outpoints(&self) -> StoreResult<std::collections::HashSet<kaspa_consensus_core::tx::TransactionOutpoint>> {
+    fn get_all_outpoints(&self) -> StoreResult<std::collections::HashSet<celenium_consensus_core::tx::TransactionOutpoint>> {
         self.store.get_all_outpoints()
     }
 }
@@ -249,7 +249,7 @@ mod tests {
         model::{CirculatingSupply, UtxoEntryKeySuffixRecord},
         testutils::virtual_change_emulator::VirtualChangeEmulator,
     };
-    use kaspa_consensus::{
+    use celenium_consensus::{
         config::Config,
         consensus::test_consensus::TestConsensus,
         model::stores::{
@@ -258,21 +258,21 @@ mod tests {
         },
         params::DEVNET_PARAMS,
     };
-    use kaspa_consensus_core::{
+    use celenium_consensus_core::{
         api::ConsensusApi,
         tx::ScriptPublicKeys,
         utxo::{utxo_collection::UtxoCollection, utxo_diff::UtxoDiff},
     };
-    use kaspa_consensusmanager::ConsensusManager;
-    use kaspa_core::info;
-    use kaspa_database::create_temp_db;
-    use kaspa_database::prelude::ConnBuilder;
+    use celenium_consensusmanager::ConsensusManager;
+    use celenium_core::info;
+    use celenium_database::create_temp_db;
+    use celenium_database::prelude::ConnBuilder;
     use std::{sync::Arc, time::Instant};
 
     /// TODO: use proper Simnet when implemented.
     #[test]
     fn test_utxoindex() {
-        kaspa_core::log::try_init_logger("INFO");
+        celenium_core::log::try_init_logger("INFO");
 
         let resync_utxo_collection_size = 10_000;
         let update_utxo_collection_size = 1_000;

@@ -5,7 +5,6 @@ pub mod services;
 pub mod storage;
 pub mod test_consensus;
 
-#[cfg(feature = "devnet-prealloc")]
 mod utxo_set_override;
 
 use crate::{
@@ -43,7 +42,7 @@ use crate::{
         window::{WindowManager, WindowType},
     },
 };
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     BlockHashSet, BlueWorkType, ChainPath, HashMapCustomHasher,
     acceptance_data::{AcceptanceData, MergedBlockContext, MergesetBlockAcceptanceData},
     api::{
@@ -76,30 +75,30 @@ use kaspa_consensus_core::{
         TransactionQueryResult, TransactionType, UtxoEntry,
     },
 };
-use kaspa_consensus_notify::root::ConsensusNotificationRoot;
+use celenium_consensus_notify::root::ConsensusNotificationRoot;
 
 use crossbeam_channel::{
     Receiver as CrossbeamReceiver, Sender as CrossbeamSender, bounded as bounded_crossbeam, unbounded as unbounded_crossbeam,
 };
 use itertools::Itertools;
-use kaspa_consensusmanager::{SessionLock, SessionReadGuard};
+use celenium_consensusmanager::{SessionLock, SessionReadGuard};
 
-use kaspa_core::info;
+use celenium_core::info;
 #[cfg(feature = "test-smt-pruning-diagnostics")]
-use kaspa_database::prelude::StoreResult;
-use kaspa_database::prelude::StoreResultExt;
-use kaspa_hashes::Hash;
-use kaspa_muhash::MuHash;
-use kaspa_smt_store::processor::SmtReadBounds;
+use celenium_database::prelude::StoreResult;
+use celenium_database::prelude::StoreResultExt;
+use celenium_hashes::Hash;
+use celenium_muhash::MuHash;
+use celenium_smt_store::processor::SmtReadBounds;
 #[cfg(feature = "test-smt-pruning-diagnostics")]
-use kaspa_smt_store::processor::StaleSmtEntriesCount;
-use kaspa_txscript::caches::TxScriptCacheCounters;
-use kaspa_utils::arc::ArcExtensions;
+use celenium_smt_store::processor::StaleSmtEntriesCount;
+use celenium_txscript::caches::TxScriptCacheCounters;
+use celenium_utils::arc::ArcExtensions;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use rocksdb::WriteBatch;
 
 use self::{services::ConsensusServices, storage::ConsensusStorage};
-use kaspa_consensus_core::api::SeqCommitLaneEntry;
+use celenium_consensus_core::api::SeqCommitLaneEntry;
 use std::{
     cmp,
     cmp::Reverse,
@@ -798,7 +797,7 @@ impl ConsensusApi for Consensus {
                     // Note: because we are doing a topological BFS up (from `hash` towards virtual), the first chain block
                     // found must also be our merging block, so hash will be either in blues or in reds, rendering this line
                     // unreachable.
-                    kaspa_core::warn!("DAG topology inconsistency: {decedent} is expected to be a merging block of {hash}");
+                    celenium_core::warn!("DAG topology inconsistency: {decedent} is expected to be a merging block of {hash}");
                     None
                 });
             }
@@ -881,8 +880,8 @@ impl ConsensusApi for Consensus {
         // Part 1: Add samples from pruning point headers:
         if self.config.net.network_type == NetworkType::Mainnet {
             // For mainnet, we add extra data (16 pp headers) from before checkpoint genesis.
-            // Source: https://github.com/kaspagang/kaspad-py-explorer/blob/main/src/tx_timestamp_estimation.ipynb
-            // For context see also: https://github.com/kaspagang/kaspad-py-explorer/blob/main/src/genesis_proof.ipynb
+            // Source: https://github.com/celeniumgang/celeniumd-py-explorer/blob/main/src/tx_timestamp_estimation.ipynb
+            // For context see also: https://github.com/celeniumgang/celeniumd-py-explorer/blob/main/src/genesis_proof.ipynb
             const POINTS: &[DaaScoreTimestamp] = &[
                 DaaScoreTimestamp { daa_score: 0, timestamp: 1636298787842 },
                 DaaScoreTimestamp { daa_score: 87133, timestamp: 1636386662010 },
@@ -1158,15 +1157,15 @@ impl ConsensusApi for Consensus {
     fn import_pruning_point_smt(
         &self,
         new_pruning_point: Hash,
-        metadata: kaspa_consensus_core::api::SmtExportMetadata,
+        metadata: celenium_consensus_core::api::SmtExportMetadata,
         inactivity_shortcut_block: Hash,
         lane_batches: ImportLaneBatchIterator<'_>,
     ) -> PruningImportResult<()> {
         use crate::model::stores::smt_metadata::SmtBlockMetadata;
-        use kaspa_hashes::ZERO_HASH;
-        use kaspa_smt_store::streaming_import::streaming_import;
+        use celenium_hashes::ZERO_HASH;
+        use celenium_smt_store::streaming_import::streaming_import;
 
-        let kaspa_consensus_core::api::SmtExportMetadata { lanes_root, payload_and_ctx_digest, active_lanes_count, .. } = metadata;
+        let celenium_consensus_core::api::SmtExportMetadata { lanes_root, payload_and_ctx_digest, active_lanes_count, .. } = metadata;
         let expected_lane_count = active_lanes_count;
 
         // `inactivity_shortcut_block` was already resolved by the caller during metadata verification.
@@ -1210,7 +1209,7 @@ impl ConsensusApi for Consensus {
     fn get_pruning_point_smt_metadata(
         &self,
         expected_pruning_point: Hash,
-    ) -> ConsensusResult<kaspa_consensus_core::api::SmtExportMetadata> {
+    ) -> ConsensusResult<celenium_consensus_core::api::SmtExportMetadata> {
         self.virtual_processor.get_pruning_point_smt_metadata(expected_pruning_point)
     }
 
@@ -1221,8 +1220,8 @@ impl ConsensusApi for Consensus {
     fn open_pruning_point_smt_lane_stream(
         &self,
         expected_pruning_point: Hash,
-    ) -> ConsensusResult<Box<dyn Iterator<Item = ConsensusResult<kaspa_consensus_core::api::ImportLane>> + Send + 'static>> {
-        use kaspa_consensus_core::api::{ImportLane, SMT_PROOF_INTERVAL};
+    ) -> ConsensusResult<Box<dyn Iterator<Item = ConsensusResult<celenium_consensus_core::api::ImportLane>> + Send + 'static>> {
+        use celenium_consensus_core::api::{ImportLane, SMT_PROOF_INTERVAL};
 
         let pp = self.pruning_point_store.read().pruning_point().unwrap();
         if pp != expected_pruning_point {
@@ -1561,8 +1560,8 @@ impl ConsensusApi for Consensus {
         // In debug builds, verify the proof is consistent with the stored lanes_root
         // and that metadata chains to the header's seq_commit.
         debug_assert!({
-            use kaspa_hashes::SeqCommitActiveNode;
-            use kaspa_seq_commit::{
+            use celenium_hashes::SeqCommitActiveNode;
+            use celenium_seq_commit::{
                 hashing::smt_leaf_hash,
                 types::SmtLeafInput,
                 verify::{SmtMetadata, verify_smt_metadata},

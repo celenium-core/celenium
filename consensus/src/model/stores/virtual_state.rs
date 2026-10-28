@@ -4,18 +4,18 @@ use std::sync::Arc;
 use super::ghostdag::GhostdagData;
 use super::utxo_set::DbUtxoSetStore;
 use arc_swap::ArcSwap;
-use kaspa_consensus_core::api::stats::VirtualStateStats;
-use kaspa_consensus_core::utxo::pre_toccata::PreToccataUtxoDiff;
-use kaspa_consensus_core::{
+use celenium_consensus_core::api::stats::VirtualStateStats;
+use celenium_consensus_core::utxo::pre_toccata::PreToccataUtxoDiff;
+use celenium_consensus_core::{
     BlockHashMap, BlockHashSet, HashMapCustomHasher, block::VirtualStateApproxId, coinbase::BlockRewardData,
     config::genesis::GenesisBlock, utxo::utxo_diff::UtxoDiff,
 };
-use kaspa_database::prelude::{BatchDbWriter, CachedDbItem, DirectDbWriter, StoreResultExt};
-use kaspa_database::prelude::{CachePolicy, StoreResult};
-use kaspa_database::prelude::{DB, StoreError};
-use kaspa_database::registry::DatabaseStorePrefixes;
-use kaspa_hashes::Hash;
-use kaspa_muhash::MuHash;
+use celenium_database::prelude::{BatchDbWriter, CachedDbItem, DirectDbWriter, StoreResultExt};
+use celenium_database::prelude::{CachePolicy, StoreResult};
+use celenium_database::prelude::{DB, StoreError};
+use celenium_database::registry::DatabaseStorePrefixes;
+use celenium_hashes::Hash;
+use celenium_muhash::MuHash;
 use rocksdb::WriteBatch;
 use serde::de::{Error as _, SeqAccess, Visitor};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
@@ -267,7 +267,7 @@ pub trait VirtualStateStore: VirtualStateStoreReader {
 /// handle both layouts: when no versioned row is present the unversioned
 /// `[prefix]` row is decoded via [`PreToccataVirtualState`] and converted
 /// to `Arc<VirtualState>` with every nested UTXO entry's `covenant_id`
-/// defaulting to `None`. See `kaspa_database::prelude::CachedDbItem` for
+/// defaulting to `None`. See `celenium_database::prelude::CachedDbItem` for
 /// the full semantics.
 #[derive(Clone)]
 pub struct DbVirtualStateStore {
@@ -331,7 +331,7 @@ mod seq_commit_tests {
     //! one-element `Vec<Hash>` it replaced, and tolerate the empty vector that the
     //! placeholder `VirtualState::default()` used to persist.
     use super::*;
-    use kaspa_hashes::ZERO_HASH;
+    use celenium_hashes::ZERO_HASH;
 
     fn hash(byte: u8) -> Hash {
         Hash::from_bytes([byte; 32])
@@ -388,13 +388,13 @@ mod tests {
     //! `CachedDbItem`, the `PreToccataVirtualState` shadow decoder, and
     //! the row-level key layout.
     use super::*;
-    use kaspa_consensus_core::HashMap;
-    use kaspa_consensus_core::tx::{ScriptPublicKey, TransactionOutpoint, UtxoEntry};
-    use kaspa_consensus_core::utxo::pre_toccata::{PreToccataUtxoDiff, PreToccataUtxoEntry};
-    use kaspa_consensus_core::utxo::utxo_diff::UtxoDiff;
-    use kaspa_database::create_temp_db;
-    use kaspa_database::prelude::ConnBuilder;
-    use kaspa_hashes::Hash;
+    use celenium_consensus_core::HashMap;
+    use celenium_consensus_core::tx::{ScriptPublicKey, TransactionOutpoint, UtxoEntry};
+    use celenium_consensus_core::utxo::pre_toccata::{PreToccataUtxoDiff, PreToccataUtxoEntry};
+    use celenium_consensus_core::utxo::utxo_diff::UtxoDiff;
+    use celenium_database::create_temp_db;
+    use celenium_database::prelude::ConnBuilder;
+    use celenium_hashes::Hash;
 
     fn legacy_row_key() -> Vec<u8> {
         DatabaseStorePrefixes::VirtualState.into()

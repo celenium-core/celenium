@@ -1,12 +1,12 @@
 use std::{collections::HashSet, ops::RangeInclusive, sync::Arc};
 
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     BlockHashSet,
     tx::{ScriptPublicKey, ScriptPublicKeys, TransactionOutpoint},
 };
-use kaspa_core::trace;
-use kaspa_database::prelude::{CachePolicy, DB, StoreResult};
-use kaspa_index_core::indexed_utxos::{BalanceByScriptPublicKey, OrderedUtxoEntriesPage, UtxoPageCursor};
+use celenium_core::trace;
+use celenium_database::prelude::{CachePolicy, DB, StoreResult};
+use celenium_index_core::indexed_utxos::{BalanceByScriptPublicKey, OrderedUtxoEntriesPage, UtxoPageCursor};
 
 use crate::{
     IDENT,
@@ -49,19 +49,19 @@ impl Store {
         // whether the UTXO index DB has already been populated.
         let tips_exist = match self.utxoindex_tips_store.get() {
             Ok(_) => true,
-            Err(kaspa_database::prelude::StoreError::KeyNotFound(_)) => false,
+            Err(celenium_database::prelude::StoreError::KeyNotFound(_)) => false,
             Err(err) => return Err(UtxoIndexError::StoreAccessError(err)),
         };
 
         let supply_exists = match self.circulating_supply_store.get() {
             Ok(_) => true,
-            Err(kaspa_database::prelude::StoreError::KeyNotFound(_)) => false,
+            Err(celenium_database::prelude::StoreError::KeyNotFound(_)) => false,
             Err(err) => return Err(UtxoIndexError::StoreAccessError(err)),
         };
 
         match self.db_version_store.get() {
             Ok(meta) => Ok(meta.version != UTXOINDEX_DB_VERSION),
-            Err(kaspa_database::prelude::StoreError::KeyNotFound(_)) => Ok(tips_exist || supply_exists),
+            Err(celenium_database::prelude::StoreError::KeyNotFound(_)) => Ok(tips_exist || supply_exists),
             Err(err) => Err(UtxoIndexError::StoreAccessError(err)),
         }
     }
@@ -69,7 +69,7 @@ impl Store {
     pub fn ensure_db_version_current(&mut self) -> UtxoIndexResult<()> {
         match self.db_version_store.get() {
             Ok(meta) if meta.version == UTXOINDEX_DB_VERSION => Ok(()),
-            Ok(_) | Err(kaspa_database::prelude::StoreError::KeyNotFound(_)) => {
+            Ok(_) | Err(celenium_database::prelude::StoreError::KeyNotFound(_)) => {
                 self.db_version_store.set(UtxoIndexDbMetaData { version: UTXOINDEX_DB_VERSION })?;
                 Ok(())
             }

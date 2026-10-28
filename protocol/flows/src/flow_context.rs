@@ -7,38 +7,38 @@ use crate::user_agent_rule::{UserAgentRuleRejectReason, UserAgentRuleSet};
 use crate::{v10, v11};
 use async_trait::async_trait;
 use futures::future::join_all;
-use kaspa_addressmanager::AddressManager;
-use kaspa_connectionmanager::ConnectionManager;
-use kaspa_consensus_core::api::{BlockValidationFuture, BlockValidationFutures};
-use kaspa_consensus_core::block::Block;
-use kaspa_consensus_core::config::Config;
-use kaspa_consensus_core::errors::block::RuleError;
-use kaspa_consensus_core::tx::{Transaction, TransactionId};
-use kaspa_consensus_notify::{
+use celenium_addressmanager::AddressManager;
+use celenium_connectionmanager::ConnectionManager;
+use celenium_consensus_core::api::{BlockValidationFuture, BlockValidationFutures};
+use celenium_consensus_core::block::Block;
+use celenium_consensus_core::config::Config;
+use celenium_consensus_core::errors::block::RuleError;
+use celenium_consensus_core::tx::{Transaction, TransactionId};
+use celenium_consensus_notify::{
     notification::{Notification, PruningPointUtxoSetOverrideNotification},
     root::ConsensusNotificationRoot,
 };
-use kaspa_consensusmanager::{BlockProcessingBatch, ConsensusInstance, ConsensusManager, ConsensusProxy, ConsensusSessionOwned};
-use kaspa_core::{
+use celenium_consensusmanager::{BlockProcessingBatch, ConsensusInstance, ConsensusManager, ConsensusProxy, ConsensusSessionOwned};
+use celenium_core::{
     debug, info,
-    kaspad_env::{name, version},
+    celeniumd_env::{name, version},
     task::tick::TickService,
 };
-use kaspa_core::{time::unix_now, warn};
-use kaspa_hashes::Hash;
-use kaspa_mining::mempool::tx::{Orphan, Priority};
-use kaspa_mining::{manager::MiningManagerProxy, mempool::tx::RbfPolicy};
-use kaspa_notify::notifier::Notify;
-use kaspa_p2p_lib::{
-    ConnectionInitializer, Hub, KaspadHandshake, PeerKey, PeerProperties, Router,
+use celenium_core::{time::unix_now, warn};
+use celenium_hashes::Hash;
+use celenium_mining::mempool::tx::{Orphan, Priority};
+use celenium_mining::{manager::MiningManagerProxy, mempool::tx::RbfPolicy};
+use celenium_notify::notifier::Notify;
+use celenium_p2p_lib::{
+    ConnectionInitializer, Hub, CeleniumdHandshake, PeerKey, PeerProperties, Router,
     common::ProtocolError,
     convert::model::version::Version,
     make_message,
-    pb::{InvRelayBlockMessage, kaspad_message::Payload},
+    pb::{InvRelayBlockMessage, celeniumd_message::Payload},
 };
-use kaspa_p2p_mining::rule_engine::MiningRuleEngine;
-use kaspa_utils::iter::IterExtensions;
-use kaspa_utils::networking::PeerId;
+use celenium_p2p_mining::rule_engine::MiningRuleEngine;
+use celenium_utils::iter::IterExtensions;
+use celenium_utils::networking::PeerId;
 use parking_lot::{Mutex, RwLock};
 use std::collections::HashMap;
 use std::time::Instant;
@@ -570,7 +570,7 @@ impl FlowContext {
     /// Updates the mempool after a new block arrival, relays newly unorphaned transactions
     /// and possibly rebroadcast manually added transactions when not in IBD.
     ///
-    /// _GO-KASPAD: OnNewBlock + broadcastTransactionsAfterBlockAdded_
+    /// _GO-CELENIUMD: OnNewBlock + broadcastTransactionsAfterBlockAdded_
     pub async fn on_new_block(
         &self,
         consensus: &ConsensusProxy,
@@ -759,7 +759,7 @@ impl ConnectionInitializer for FlowContext {
         }
 
         // Build the handshake object and subscribe to handshake messages
-        let mut handshake = KaspadHandshake::new(&router);
+        let mut handshake = CeleniumdHandshake::new(&router);
 
         // We start the router receive loop only after we registered to handshake routes
         router.start();

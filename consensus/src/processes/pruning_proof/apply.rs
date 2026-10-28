@@ -6,7 +6,7 @@ use std::{
 };
 
 use itertools::Itertools;
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     BlockHashMap, BlockHashSet, HashMapCustomHasher,
     blockhash::{BlockHashes, ORIGIN},
     errors::pruning::{PruningImportError, PruningImportResult},
@@ -14,11 +14,11 @@ use kaspa_consensus_core::{
     pruning::PruningPointProof,
     trusted::TrustedBlock,
 };
-use kaspa_core::{debug, trace};
-use kaspa_database::prelude::StoreResultUnitExt;
-use kaspa_hashes::Hash;
-use kaspa_pow::calc_block_level;
-use kaspa_utils::{binary_heap::BinaryHeapExtensions, vec::VecExtensions};
+use celenium_core::{debug, trace};
+use celenium_database::prelude::StoreResultUnitExt;
+use celenium_hashes::Hash;
+use celenium_pow::calc_block_level;
+use celenium_utils::{binary_heap::BinaryHeapExtensions, vec::VecExtensions};
 use rocksdb::WriteBatch;
 
 use crate::{

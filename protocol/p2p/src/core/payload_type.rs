@@ -1,8 +1,8 @@
-use crate::pb::kaspad_message::Payload as KaspadMessagePayload;
+use crate::pb::celeniumd_message::Payload as CeleniumdMessagePayload;
 
 #[repr(u8)]
 #[derive(Debug, Copy, Clone, Eq, Hash, PartialEq)]
-pub enum KaspadMessagePayloadType {
+pub enum CeleniumdMessagePayloadType {
     Addresses = 0,
     Block,
     Transaction,
@@ -58,68 +58,68 @@ pub enum KaspadMessagePayloadType {
     TrustedDataChunksEnd,
 }
 
-impl From<&KaspadMessagePayload> for KaspadMessagePayloadType {
-    fn from(payload: &KaspadMessagePayload) -> Self {
+impl From<&CeleniumdMessagePayload> for CeleniumdMessagePayloadType {
+    fn from(payload: &CeleniumdMessagePayload) -> Self {
         match payload {
-            KaspadMessagePayload::Addresses(_) => KaspadMessagePayloadType::Addresses,
-            KaspadMessagePayload::Block(_) => KaspadMessagePayloadType::Block,
-            KaspadMessagePayload::Transaction(_) => KaspadMessagePayloadType::Transaction,
-            KaspadMessagePayload::BlockLocator(_) => KaspadMessagePayloadType::BlockLocator,
-            KaspadMessagePayload::RequestAddresses(_) => KaspadMessagePayloadType::RequestAddresses,
-            KaspadMessagePayload::RequestRelayBlocks(_) => KaspadMessagePayloadType::RequestRelayBlocks,
-            KaspadMessagePayload::RequestTransactions(_) => KaspadMessagePayloadType::RequestTransactions,
-            KaspadMessagePayload::IbdBlock(_) => KaspadMessagePayloadType::IbdBlock,
-            KaspadMessagePayload::InvRelayBlock(_) => KaspadMessagePayloadType::InvRelayBlock,
-            KaspadMessagePayload::InvTransactions(_) => KaspadMessagePayloadType::InvTransactions,
-            KaspadMessagePayload::Ping(_) => KaspadMessagePayloadType::Ping,
-            KaspadMessagePayload::Pong(_) => KaspadMessagePayloadType::Pong,
-            KaspadMessagePayload::Verack(_) => KaspadMessagePayloadType::Verack,
-            KaspadMessagePayload::Version(_) => KaspadMessagePayloadType::Version,
-            KaspadMessagePayload::TransactionNotFound(_) => KaspadMessagePayloadType::TransactionNotFound,
-            KaspadMessagePayload::Reject(_) => KaspadMessagePayloadType::Reject,
-            KaspadMessagePayload::PruningPointUtxoSetChunk(_) => KaspadMessagePayloadType::PruningPointUtxoSetChunk,
-            KaspadMessagePayload::RequestIbdBlocks(_) => KaspadMessagePayloadType::RequestIbdBlocks,
-            KaspadMessagePayload::UnexpectedPruningPoint(_) => KaspadMessagePayloadType::UnexpectedPruningPoint,
-            KaspadMessagePayload::IbdBlockLocator(_) => KaspadMessagePayloadType::IbdBlockLocator,
-            KaspadMessagePayload::IbdBlockLocatorHighestHash(_) => KaspadMessagePayloadType::IbdBlockLocatorHighestHash,
-            KaspadMessagePayload::RequestNextPruningPointUtxoSetChunk(_) => {
-                KaspadMessagePayloadType::RequestNextPruningPointUtxoSetChunk
+            CeleniumdMessagePayload::Addresses(_) => CeleniumdMessagePayloadType::Addresses,
+            CeleniumdMessagePayload::Block(_) => CeleniumdMessagePayloadType::Block,
+            CeleniumdMessagePayload::Transaction(_) => CeleniumdMessagePayloadType::Transaction,
+            CeleniumdMessagePayload::BlockLocator(_) => CeleniumdMessagePayloadType::BlockLocator,
+            CeleniumdMessagePayload::RequestAddresses(_) => CeleniumdMessagePayloadType::RequestAddresses,
+            CeleniumdMessagePayload::RequestRelayBlocks(_) => CeleniumdMessagePayloadType::RequestRelayBlocks,
+            CeleniumdMessagePayload::RequestTransactions(_) => CeleniumdMessagePayloadType::RequestTransactions,
+            CeleniumdMessagePayload::IbdBlock(_) => CeleniumdMessagePayloadType::IbdBlock,
+            CeleniumdMessagePayload::InvRelayBlock(_) => CeleniumdMessagePayloadType::InvRelayBlock,
+            CeleniumdMessagePayload::InvTransactions(_) => CeleniumdMessagePayloadType::InvTransactions,
+            CeleniumdMessagePayload::Ping(_) => CeleniumdMessagePayloadType::Ping,
+            CeleniumdMessagePayload::Pong(_) => CeleniumdMessagePayloadType::Pong,
+            CeleniumdMessagePayload::Verack(_) => CeleniumdMessagePayloadType::Verack,
+            CeleniumdMessagePayload::Version(_) => CeleniumdMessagePayloadType::Version,
+            CeleniumdMessagePayload::TransactionNotFound(_) => CeleniumdMessagePayloadType::TransactionNotFound,
+            CeleniumdMessagePayload::Reject(_) => CeleniumdMessagePayloadType::Reject,
+            CeleniumdMessagePayload::PruningPointUtxoSetChunk(_) => CeleniumdMessagePayloadType::PruningPointUtxoSetChunk,
+            CeleniumdMessagePayload::RequestIbdBlocks(_) => CeleniumdMessagePayloadType::RequestIbdBlocks,
+            CeleniumdMessagePayload::UnexpectedPruningPoint(_) => CeleniumdMessagePayloadType::UnexpectedPruningPoint,
+            CeleniumdMessagePayload::IbdBlockLocator(_) => CeleniumdMessagePayloadType::IbdBlockLocator,
+            CeleniumdMessagePayload::IbdBlockLocatorHighestHash(_) => CeleniumdMessagePayloadType::IbdBlockLocatorHighestHash,
+            CeleniumdMessagePayload::RequestNextPruningPointUtxoSetChunk(_) => {
+                CeleniumdMessagePayloadType::RequestNextPruningPointUtxoSetChunk
             }
-            KaspadMessagePayload::DonePruningPointUtxoSetChunks(_) => KaspadMessagePayloadType::DonePruningPointUtxoSetChunks,
-            KaspadMessagePayload::IbdBlockLocatorHighestHashNotFound(_) => {
-                KaspadMessagePayloadType::IbdBlockLocatorHighestHashNotFound
+            CeleniumdMessagePayload::DonePruningPointUtxoSetChunks(_) => CeleniumdMessagePayloadType::DonePruningPointUtxoSetChunks,
+            CeleniumdMessagePayload::IbdBlockLocatorHighestHashNotFound(_) => {
+                CeleniumdMessagePayloadType::IbdBlockLocatorHighestHashNotFound
             }
-            KaspadMessagePayload::BlockWithTrustedData(_) => KaspadMessagePayloadType::BlockWithTrustedData,
-            KaspadMessagePayload::DoneBlocksWithTrustedData(_) => KaspadMessagePayloadType::DoneBlocksWithTrustedData,
-            KaspadMessagePayload::RequestPruningPointAndItsAnticone(_) => KaspadMessagePayloadType::RequestPruningPointAndItsAnticone,
-            KaspadMessagePayload::BlockHeaders(_) => KaspadMessagePayloadType::BlockHeaders,
-            KaspadMessagePayload::RequestNextHeaders(_) => KaspadMessagePayloadType::RequestNextHeaders,
-            KaspadMessagePayload::DoneHeaders(_) => KaspadMessagePayloadType::DoneHeaders,
-            KaspadMessagePayload::RequestPruningPointUtxoSet(_) => KaspadMessagePayloadType::RequestPruningPointUtxoSet,
-            KaspadMessagePayload::RequestHeaders(_) => KaspadMessagePayloadType::RequestHeaders,
-            KaspadMessagePayload::RequestBlockLocator(_) => KaspadMessagePayloadType::RequestBlockLocator,
-            KaspadMessagePayload::PruningPoints(_) => KaspadMessagePayloadType::PruningPoints,
-            KaspadMessagePayload::RequestPruningPointProof(_) => KaspadMessagePayloadType::RequestPruningPointProof,
-            KaspadMessagePayload::PruningPointProof(_) => KaspadMessagePayloadType::PruningPointProof,
-            KaspadMessagePayload::Ready(_) => KaspadMessagePayloadType::Ready,
-            KaspadMessagePayload::BlockWithTrustedDataV4(_) => KaspadMessagePayloadType::BlockWithTrustedDataV4,
-            KaspadMessagePayload::TrustedData(_) => KaspadMessagePayloadType::TrustedData,
-            KaspadMessagePayload::RequestIbdChainBlockLocator(_) => KaspadMessagePayloadType::RequestIbdChainBlockLocator,
-            KaspadMessagePayload::IbdChainBlockLocator(_) => KaspadMessagePayloadType::IbdChainBlockLocator,
-            KaspadMessagePayload::RequestAntipast(_) => KaspadMessagePayloadType::RequestAntipast,
-            KaspadMessagePayload::RequestNextPruningPointAndItsAnticoneBlocks(_) => {
-                KaspadMessagePayloadType::RequestNextPruningPointAndItsAnticoneBlocks
+            CeleniumdMessagePayload::BlockWithTrustedData(_) => CeleniumdMessagePayloadType::BlockWithTrustedData,
+            CeleniumdMessagePayload::DoneBlocksWithTrustedData(_) => CeleniumdMessagePayloadType::DoneBlocksWithTrustedData,
+            CeleniumdMessagePayload::RequestPruningPointAndItsAnticone(_) => CeleniumdMessagePayloadType::RequestPruningPointAndItsAnticone,
+            CeleniumdMessagePayload::BlockHeaders(_) => CeleniumdMessagePayloadType::BlockHeaders,
+            CeleniumdMessagePayload::RequestNextHeaders(_) => CeleniumdMessagePayloadType::RequestNextHeaders,
+            CeleniumdMessagePayload::DoneHeaders(_) => CeleniumdMessagePayloadType::DoneHeaders,
+            CeleniumdMessagePayload::RequestPruningPointUtxoSet(_) => CeleniumdMessagePayloadType::RequestPruningPointUtxoSet,
+            CeleniumdMessagePayload::RequestHeaders(_) => CeleniumdMessagePayloadType::RequestHeaders,
+            CeleniumdMessagePayload::RequestBlockLocator(_) => CeleniumdMessagePayloadType::RequestBlockLocator,
+            CeleniumdMessagePayload::PruningPoints(_) => CeleniumdMessagePayloadType::PruningPoints,
+            CeleniumdMessagePayload::RequestPruningPointProof(_) => CeleniumdMessagePayloadType::RequestPruningPointProof,
+            CeleniumdMessagePayload::PruningPointProof(_) => CeleniumdMessagePayloadType::PruningPointProof,
+            CeleniumdMessagePayload::Ready(_) => CeleniumdMessagePayloadType::Ready,
+            CeleniumdMessagePayload::BlockWithTrustedDataV4(_) => CeleniumdMessagePayloadType::BlockWithTrustedDataV4,
+            CeleniumdMessagePayload::TrustedData(_) => CeleniumdMessagePayloadType::TrustedData,
+            CeleniumdMessagePayload::RequestIbdChainBlockLocator(_) => CeleniumdMessagePayloadType::RequestIbdChainBlockLocator,
+            CeleniumdMessagePayload::IbdChainBlockLocator(_) => CeleniumdMessagePayloadType::IbdChainBlockLocator,
+            CeleniumdMessagePayload::RequestAntipast(_) => CeleniumdMessagePayloadType::RequestAntipast,
+            CeleniumdMessagePayload::RequestNextPruningPointAndItsAnticoneBlocks(_) => {
+                CeleniumdMessagePayloadType::RequestNextPruningPointAndItsAnticoneBlocks
             }
-            KaspadMessagePayload::BlockBody(_) => KaspadMessagePayloadType::BlockBody,
-            KaspadMessagePayload::RequestBlockBodies(_) => KaspadMessagePayloadType::RequestBlockBodies,
-            KaspadMessagePayload::RequestPruningPointSmtState(_) => KaspadMessagePayloadType::RequestPruningPointSmtState,
-            KaspadMessagePayload::SmtMetadata(_) => KaspadMessagePayloadType::SmtMetadata,
-            KaspadMessagePayload::SmtLaneChunk(_) => KaspadMessagePayloadType::SmtLaneChunk,
-            KaspadMessagePayload::RequestNextPruningPointSmtChunk(_) => KaspadMessagePayloadType::RequestNextPruningPointSmtChunk,
-            KaspadMessagePayload::PruningPointProofChunk(_) => KaspadMessagePayloadType::PruningPointProofChunk,
-            KaspadMessagePayload::PruningPointProofChunksEnd(_) => KaspadMessagePayloadType::PruningPointProofChunksEnd,
-            KaspadMessagePayload::TrustedDataChunk(_) => KaspadMessagePayloadType::TrustedDataChunk,
-            KaspadMessagePayload::TrustedDataChunksEnd(_) => KaspadMessagePayloadType::TrustedDataChunksEnd,
+            CeleniumdMessagePayload::BlockBody(_) => CeleniumdMessagePayloadType::BlockBody,
+            CeleniumdMessagePayload::RequestBlockBodies(_) => CeleniumdMessagePayloadType::RequestBlockBodies,
+            CeleniumdMessagePayload::RequestPruningPointSmtState(_) => CeleniumdMessagePayloadType::RequestPruningPointSmtState,
+            CeleniumdMessagePayload::SmtMetadata(_) => CeleniumdMessagePayloadType::SmtMetadata,
+            CeleniumdMessagePayload::SmtLaneChunk(_) => CeleniumdMessagePayloadType::SmtLaneChunk,
+            CeleniumdMessagePayload::RequestNextPruningPointSmtChunk(_) => CeleniumdMessagePayloadType::RequestNextPruningPointSmtChunk,
+            CeleniumdMessagePayload::PruningPointProofChunk(_) => CeleniumdMessagePayloadType::PruningPointProofChunk,
+            CeleniumdMessagePayload::PruningPointProofChunksEnd(_) => CeleniumdMessagePayloadType::PruningPointProofChunksEnd,
+            CeleniumdMessagePayload::TrustedDataChunk(_) => CeleniumdMessagePayloadType::TrustedDataChunk,
+            CeleniumdMessagePayload::TrustedDataChunksEnd(_) => CeleniumdMessagePayloadType::TrustedDataChunksEnd,
         }
     }
 }

@@ -1,14 +1,14 @@
 use std::time::Duration;
 
 use super::IbdFlow;
-use kaspa_consensus_core::blockstatus::BlockStatus;
-use kaspa_consensusmanager::ConsensusProxy;
-use kaspa_core::{debug, warn};
-use kaspa_hashes::Hash;
-use kaspa_p2p_lib::{
+use celenium_consensus_core::blockstatus::BlockStatus;
+use celenium_consensusmanager::ConsensusProxy;
+use celenium_core::{debug, warn};
+use celenium_hashes::Hash;
+use celenium_p2p_lib::{
     common::{DEFAULT_TIMEOUT, ProtocolError},
     dequeue_with_timeout, make_message,
-    pb::{RequestIbdChainBlockLocatorMessage, kaspad_message::Payload},
+    pb::{RequestIbdChainBlockLocatorMessage, celeniumd_message::Payload},
 };
 
 pub struct ChainNegotiationOutput {

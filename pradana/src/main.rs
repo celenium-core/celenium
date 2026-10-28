@@ -4,10 +4,10 @@ use std::{collections::HashMap, str::FromStr, sync::Arc, time::Duration};
 use clap::{Arg, ArgAction, Command};
 use gas::GasDistribution;
 use itertools::Itertools;
-use kaspa_addresses::{Address, Prefix, Version};
-use kaspa_consensus_core::{
+use celenium_addresses::{Address, Prefix, Version};
+use celenium_consensus_core::{
     config::params::TESTNET_PARAMS,
-    constants::{SOMPI_PER_KASPA, TX_VERSION, TX_VERSION_TOCCATA},
+    constants::{SOMPI_PER_CELENIUM, TX_VERSION, TX_VERSION_TOCCATA},
     hashing::covenant_id::covenant_id,
     network::NetworkType,
     sign::sign,
@@ -17,11 +17,11 @@ use kaspa_consensus_core::{
         UtxoEntry,
     },
 };
-use kaspa_core::{info, kaspad_env::version, time::unix_now, warn};
-use kaspa_grpc_client::{ClientPool, GrpcClient};
-use kaspa_notify::subscription::context::SubscriptionContext;
-use kaspa_rpc_core::{RpcUtxoEntry, api::rpc::RpcApi, notify::mode::NotificationMode};
-use kaspa_txscript::pay_to_address_script;
+use celenium_core::{info, celeniumd_env::version, time::unix_now, warn};
+use celenium_grpc_client::{ClientPool, GrpcClient};
+use celenium_notify::subscription::context::SubscriptionContext;
+use celenium_rpc_core::{RpcUtxoEntry, api::rpc::RpcApi, notify::mode::NotificationMode};
+use celenium_txscript::pay_to_address_script;
 use parking_lot::Mutex;
 use rand::RngCore;
 use rayon::prelude::*;
@@ -33,7 +33,7 @@ use tokio::time::{Instant, MissedTickBehavior, interval};
 
 mod gas;
 
-const DEFAULT_SEND_AMOUNT: u64 = 10 * SOMPI_PER_KASPA;
+const DEFAULT_SEND_AMOUNT: u64 = 10 * SOMPI_PER_CELENIUM;
 const MILLIS_PER_TICK: u64 = 10;
 const ADDRESS_VERSION: Version = Version::PubKey;
 
@@ -95,8 +95,8 @@ impl Args {
 }
 
 pub fn cli() -> Command {
-    Command::new("rothschild")
-        .about(format!("{} (rothschild) v{}", env!("CARGO_PKG_DESCRIPTION"), version()))
+    Command::new("pradana")
+        .about(format!("{} (pradana) v{}", env!("CARGO_PKG_DESCRIPTION"), version()))
         .version(env!("CARGO_PKG_VERSION"))
         .arg(Arg::new("private-key").long("private-key").short('k').value_name("private-key").help("Private key in hex format"))
         .arg(
@@ -235,7 +235,7 @@ struct TxConfig {
 
 #[tokio::main]
 async fn main() {
-    kaspa_core::log::init_logger(None, "");
+    celenium_core::log::init_logger(None, "");
     let args = Args::parse();
 
     let address_prefix = Prefix::from(args.network);
@@ -266,19 +266,19 @@ async fn main() {
         Keypair::from_seckey_slice(secp256k1::SECP256K1, &private_key_bytes).unwrap()
     } else {
         let (sk, pk) = &secp256k1::generate_keypair(&mut thread_rng());
-        let kaspa_addr = Address::new(address_prefix, ADDRESS_VERSION, &pk.x_only_public_key().0.serialize());
+        let celenium_addr = Address::new(address_prefix, ADDRESS_VERSION, &pk.x_only_public_key().0.serialize());
         info!(
-            "Generated private key {} and address {}. Send some funds to this address and rerun rothschild with `--private-key {}`",
+            "Generated private key {} and address {}. Send some funds to this address and rerun pradana with `--private-key {}`",
             sk.display_secret(),
-            String::from(&kaspa_addr),
+            String::from(&celenium_addr),
             sk.display_secret()
         );
         return;
     };
 
-    let kaspa_addr = Address::new(address_prefix, ADDRESS_VERSION, &schnorr_key.x_only_public_key().0.serialize());
+    let celenium_addr = Address::new(address_prefix, ADDRESS_VERSION, &schnorr_key.x_only_public_key().0.serialize());
 
-    let kaspa_to_addr = args.addr.as_ref().map_or_else(|| kaspa_addr.clone(), |addr_str| Address::try_from(addr_str.clone()).unwrap());
+    let celenium_to_addr = args.addr.as_ref().map_or_else(|| celenium_addr.clone(), |addr_str| Address::try_from(addr_str.clone()).unwrap());
 
     (args.payload_size <= 20000).then_some(()).expect("payload-size can be max 20000");
     assert!(args.lps <= args.tps || args.lps == 0, "lps ({}) must be less than tps ({})", args.lps, args.tps);
@@ -308,10 +308,10 @@ async fn main() {
         \tfrom address: {}",
         args.network,
         schnorr_key.display_secret(),
-        String::from(&kaspa_addr)
+        String::from(&celenium_addr)
     );
     if args.addr.is_some() {
-        log_message.push_str(&format!("\n\tto address: {}", String::from(&kaspa_to_addr)));
+        log_message.push_str(&format!("\n\tto address: {}", String::from(&celenium_to_addr)));
     }
     if args.priority_fee != 0 {
         log_message.push_str(&format!(
@@ -394,7 +394,7 @@ async fn main() {
     let target_tps = args.tps.min(if args.unleashed { u64::MAX } else { 100 });
     let should_tick_per_second = target_tps * MILLIS_PER_TICK / 1000 == 0;
     let avg_txs_per_tick = if should_tick_per_second { target_tps } else { target_tps * MILLIS_PER_TICK / 1000 };
-    let mut utxos = refresh_utxos(&rpc_client, kaspa_addr.clone(), &mut pending, coinbase_maturity).await;
+    let mut utxos = refresh_utxos(&rpc_client, celenium_addr.clone(), &mut pending, coinbase_maturity).await;
     let mut ticker = interval(Duration::from_millis(if should_tick_per_second { 1000 } else { MILLIS_PER_TICK }));
     ticker.set_missed_tick_behavior(MissedTickBehavior::Delay);
 
@@ -422,7 +422,7 @@ async fn main() {
         let has_funds = maybe_send_tx(
             txs_to_send,
             &tx_sender,
-            kaspa_to_addr.clone(),
+            celenium_to_addr.clone(),
             &mut utxos,
             &mut pending,
             schnorr_key,
@@ -438,7 +438,7 @@ async fn main() {
         if !has_funds || now - last_refresh > 60_000 {
             info!("Refetching UTXO set");
             tokio::time::sleep(Duration::from_millis(100)).await; // We don't want this operation to be too frequent since its heavy on the node, so we wait some time before executing it.
-            utxos = refresh_utxos(&rpc_client, kaspa_addr.clone(), &mut pending, coinbase_maturity).await;
+            utxos = refresh_utxos(&rpc_client, celenium_addr.clone(), &mut pending, coinbase_maturity).await;
             last_refresh = unix_now();
             next_available_utxo_index = 0;
             pause_if_mempool_is_full(&rpc_client).await;
@@ -479,20 +479,20 @@ async fn pause_if_mempool_is_full(rpc_client: &GrpcClient) {
 
 async fn refresh_utxos(
     rpc_client: &GrpcClient,
-    kaspa_addr: Address,
+    celenium_addr: Address,
     pending: &mut HashMap<TransactionOutpoint, Instant>,
     coinbase_maturity: u64,
 ) -> Vec<(TransactionOutpoint, UtxoEntry)> {
-    populate_pending_outpoints_from_mempool(rpc_client, kaspa_addr.clone(), pending).await;
-    fetch_spendable_utxos(rpc_client, kaspa_addr, coinbase_maturity, pending).await
+    populate_pending_outpoints_from_mempool(rpc_client, celenium_addr.clone(), pending).await;
+    fetch_spendable_utxos(rpc_client, celenium_addr, coinbase_maturity, pending).await
 }
 
 async fn populate_pending_outpoints_from_mempool(
     rpc_client: &GrpcClient,
-    kaspa_addr: Address,
+    celenium_addr: Address,
     pending_outpoints: &mut HashMap<TransactionOutpoint, Instant>,
 ) {
-    let entries = rpc_client.get_mempool_entries_by_addresses(vec![kaspa_addr], true, false).await.unwrap();
+    let entries = rpc_client.get_mempool_entries_by_addresses(vec![celenium_addr], true, false).await.unwrap();
     let now = Instant::now();
 
     for entry in entries {
@@ -506,11 +506,11 @@ async fn populate_pending_outpoints_from_mempool(
 
 async fn fetch_spendable_utxos(
     rpc_client: &GrpcClient,
-    kaspa_addr: Address,
+    celenium_addr: Address,
     coinbase_maturity: u64,
     pending: &mut HashMap<TransactionOutpoint, Instant>,
 ) -> Vec<(TransactionOutpoint, UtxoEntry)> {
-    let resp = rpc_client.get_utxos_by_addresses(vec![kaspa_addr]).await.unwrap();
+    let resp = rpc_client.get_utxos_by_addresses(vec![celenium_addr]).await.unwrap();
     let dag_info = rpc_client.get_block_dag_info().await.unwrap();
 
     let mut utxos = resp.into_iter()
@@ -560,7 +560,7 @@ fn should_use_user_lane<R: Rng + ?Sized>(rng: &mut R, tx_config: &TxConfig) -> b
 async fn maybe_send_tx(
     txs_to_send: u64,
     tx_sender: &async_channel::Sender<ClientPoolArg>,
-    kaspa_addr: Address,
+    celenium_addr: Address,
     utxos: &mut [(TransactionOutpoint, UtxoEntry)],
     pending: &mut HashMap<TransactionOutpoint, Instant>,
     schnorr_key: Keypair,
@@ -602,7 +602,7 @@ async fn maybe_send_tx(
         .into_par_iter()
         .map(|utxo_option| {
             if let Some((selected_utxos, selected_amount)) = utxo_option {
-                let tx = generate_tx(schnorr_key, &selected_utxos, selected_amount, num_outs, &kaspa_addr, tx_config);
+                let tx = generate_tx(schnorr_key, &selected_utxos, selected_amount, num_outs, &celenium_addr, tx_config);
 
                 return Some((tx, selected_utxos.len(), selected_utxos.into_iter().map(|(_, entry)| entry.amount).sum::<u64>()));
             }
@@ -690,7 +690,7 @@ fn generate_tx(
     utxos: &[(TransactionOutpoint, UtxoEntry)],
     send_amount: u64,
     num_outs: u64,
-    kaspa_addr: &Address,
+    celenium_addr: &Address,
     tx_config: &TxConfig,
 ) -> Transaction {
     // set base version according to the usage of covenant or lanes
@@ -699,7 +699,7 @@ fn generate_tx(
         false => TX_VERSION,
     };
 
-    let script_public_key = pay_to_address_script(kaspa_addr);
+    let script_public_key = pay_to_address_script(celenium_addr);
     let inputs = utxos
         .iter()
         .map(|(op, _)| TransactionInput {

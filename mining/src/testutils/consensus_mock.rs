@@ -1,6 +1,6 @@
 #![allow(clippy::arithmetic_side_effects)]
 use super::coinbase_mock::CoinbaseManagerMock;
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     api::{
         ConsensusApi,
         args::{TransactionValidationArgs, TransactionValidationBatchArgs},
@@ -19,8 +19,8 @@ use kaspa_consensus_core::{
     tx::{MutableTransaction, Transaction, TransactionId, TransactionOutpoint, UtxoEntry},
     utxo::utxo_collection::UtxoCollection,
 };
-use kaspa_core::time::unix_now;
-use kaspa_hashes::{Hash, ZERO_HASH};
+use celenium_core::time::unix_now;
+use celenium_hashes::{Hash, ZERO_HASH};
 
 use parking_lot::RwLock;
 use std::{collections::HashMap, sync::Arc};

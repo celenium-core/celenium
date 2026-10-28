@@ -1,19 +1,19 @@
 use crate::processes::reachability::interval::Interval;
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     BlockHashMap, BlockHashSet, BlockHasher, BlockLevel, HashMapCustomHasher,
     blockhash::{self, BlockHashes},
 };
-use kaspa_database::{
+use celenium_database::{
     prelude::{
         BatchDbWriter, Cache, CachePolicy, CachedDbAccess, CachedDbItem, DB, DbKey, DbSetAccess, DbWriter, DirectDbWriter, StoreError,
     },
     registry::{DatabaseStorePrefixes, SEPARATOR},
 };
-use kaspa_hashes::Hash;
+use celenium_hashes::Hash;
 
 use hashbrown::hash_map::Entry::{Occupied, Vacant};
 use itertools::Itertools;
-use kaspa_utils::mem_size::MemSizeEstimator;
+use celenium_utils::mem_size::MemSizeEstimator;
 use parking_lot::{RwLockUpgradableReadGuard, RwLockWriteGuard};
 use rocksdb::WriteBatch;
 use serde::{Deserialize, Serialize};
@@ -628,7 +628,7 @@ impl ReachabilityStoreReader for StagingReachabilityStore<'_> {
             .access
             .iterator()
             .map(|r| r.unwrap().0)
-            .map(|k| <[u8; kaspa_hashes::HASH_SIZE]>::try_from(&k[..]).unwrap())
+            .map(|k| <[u8; celenium_hashes::HASH_SIZE]>::try_from(&k[..]).unwrap())
             .map(Hash::from_bytes)
             .chain(self.staging_writes.keys().copied())
             .collect::<BlockHashSet>()

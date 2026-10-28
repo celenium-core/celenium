@@ -1,4 +1,4 @@
-use kaspa_hashes::{BlockHash, HasherBase};
+use celenium_hashes::{BlockHash, HasherBase};
 use num_bigint::BigUint;
 use num_traits::{CheckedDiv, ToPrimitive, Zero};
 
@@ -19,21 +19,21 @@ fn min_hash() -> f64 {
 /// Big gig (1e9)
 const BIG_GIG: f64 = 1_000_000_000.0;
 
-/// Kaspa difficulty representation
+/// Celenium difficulty representation
 #[derive(Debug, Clone)]
-pub struct KaspaDiff {
+pub struct CeleniumDiff {
     pub hash_value: f64,
     pub diff_value: f64,
     pub target_value: BigUint,
 }
 
-impl Default for KaspaDiff {
+impl Default for CeleniumDiff {
     fn default() -> Self {
         Self { hash_value: 0.0, diff_value: 0.0, target_value: BigUint::zero() }
     }
 }
 
-impl KaspaDiff {
+impl CeleniumDiff {
     pub fn new() -> Self {
         Self::default()
     }
@@ -65,9 +65,9 @@ pub fn diff_to_target_alternative(diff: f64) -> BigUint {
         return <BigUint as Num>::from_str_radix(MAX_TARGET, 16).unwrap();
     }
 
-    // KASPA_MAX_TARGET = 2^64 - 1
-    const KASPA_MAX_TARGET: u64 = 0xFFFFFFFFFFFFFFFF;
-    let max_target_big = BigUint::from(KASPA_MAX_TARGET);
+    // CELENIUM_MAX_TARGET = 2^64 - 1
+    const CELENIUM_MAX_TARGET: u64 = 0xFFFFFFFFFFFFFFFF;
+    let max_target_big = BigUint::from(CELENIUM_MAX_TARGET);
     let difficulty_big = BigUint::from((diff * 1000000.0) as u64);
 
     // Calculate target = max_target * 1000000 / (difficulty * 1000000)
@@ -82,17 +82,17 @@ pub fn diff_to_target_alternative(diff: f64) -> BigUint {
 /// Stratum difficulty to target (IceRiver specific)
 /// Uses: target = (2^64 - 1) * 1000 / (stratum_diff * 1000)
 /// This is the calculation method expected by IceRiver ASICs
-pub fn stratum_difficulty_to_target_kaspa(stratum_diff: u64) -> BigUint {
+pub fn stratum_difficulty_to_target_celenium(stratum_diff: u64) -> BigUint {
     // Handle zero difficulty - return maximum target
     if stratum_diff == 0 {
-        const KASPA_MAX_TARGET: u64 = 0xFFFFFFFFFFFFFFFF;
+        const CELENIUM_MAX_TARGET: u64 = 0xFFFFFFFFFFFFFFFF;
         #[allow(clippy::arithmetic_side_effects, reason = "BigUint can't overflow.")]
-        return BigUint::from(KASPA_MAX_TARGET) * BigUint::from(1000u64);
+        return BigUint::from(CELENIUM_MAX_TARGET) * BigUint::from(1000u64);
     }
 
-    // KASPA_MAX_TARGET = 2^64 - 1
-    const KASPA_MAX_TARGET: u64 = 0xFFFFFFFFFFFFFFFF;
-    let base_target = BigUint::from(KASPA_MAX_TARGET);
+    // CELENIUM_MAX_TARGET = 2^64 - 1
+    const CELENIUM_MAX_TARGET: u64 = 0xFFFFFFFFFFFFFFFF;
+    let base_target = BigUint::from(CELENIUM_MAX_TARGET);
     #[allow(clippy::arithmetic_side_effects, reason = "BigUint can't overflow.")]
     let scaled_diff = BigUint::from(stratum_diff) * BigUint::from(1000u64);
 
@@ -106,7 +106,7 @@ pub fn stratum_difficulty_to_target_kaspa(stratum_diff: u64) -> BigUint {
 /// Convert difficulty to target
 /// Formula: target = (0xffff * 2^208) / difficulty
 /// This matches the WASM calculateTarget implementation used by IceRiver/Bitmain ASICs
-/// Based on: https://github.com/tmrlvi/kaspa-miner/blob/bf361d02a46c580f55f46b5dfa773477634a5753/src/client/stratum.rs#L375
+/// Based on: https://github.com/tmrlvi/celenium-miner/blob/bf361d02a46c580f55f46b5dfa773477634a5753/src/client/stratum.rs#L375
 pub fn diff_to_target(diff: f64) -> BigUint {
     // Check environment variable to use alternative implementation for testing
     let use_alternative = std::env::var("USE_ALTERNATIVE_TARGET_CALC").unwrap_or_default().eq_ignore_ascii_case("true");
@@ -117,7 +117,7 @@ pub fn diff_to_target(diff: f64) -> BigUint {
     if use_stratum_alt {
         // Use stratum-specific calculation (takes u64, which is what ASICs receive)
         let diff_u64 = diff as u64;
-        let stratum_target = stratum_difficulty_to_target_kaspa(diff_u64);
+        let stratum_target = stratum_difficulty_to_target_celenium(diff_u64);
         let standard_target = diff_to_target_standard(diff);
 
         tracing::debug!(
@@ -201,9 +201,9 @@ pub fn diff_to_hash(diff: f64) -> f64 {
 
 /// Serialize block header for mining
 /// This creates the pre-PoW hash (hash WITHOUT timestamp and nonce)
-/// Uses kaspa_hashes::BlockHash to match the working stratum implementation
+/// Uses celenium_hashes::BlockHash to match the working stratum implementation
 /// Returns the Hash type directly (not bytes) to match working stratum code
-pub fn serialize_block_header(block: &kaspa_consensus_core::block::Block) -> Result<kaspa_hashes::Hash, Box<dyn std::error::Error>> {
+pub fn serialize_block_header(block: &celenium_consensus_core::block::Block) -> Result<celenium_hashes::Hash, Box<dyn std::error::Error>> {
     let header = &block.header;
     let mut hasher = BlockHash::new();
 
@@ -288,9 +288,9 @@ pub fn generate_job_header(header_data: &[u8]) -> Vec<u64> {
 /// Format: hash (64 hex chars) + timestamp_le (16 hex chars) = 80 hex chars total
 /// Uses Hash::to_string() to match the working stratum implementation exactly
 ///
-/// NOTE: Timestamp is in MILLISECONDS (as per Kaspa block header format)
+/// NOTE: Timestamp is in MILLISECONDS (as per Celenium block header format)
 /// Pool uses: timestampLE.writeBigUInt64LE(timestamp) which writes u64 in LE
-pub fn generate_iceriver_job_params(pre_pow_hash: &kaspa_hashes::Hash, timestamp: u64) -> String {
+pub fn generate_iceriver_job_params(pre_pow_hash: &celenium_hashes::Hash, timestamp: u64) -> String {
     // Use Hash::to_string() to match working stratum code exactly
     // This produces lowercase hex (64 hex characters)
     // Pool uses: proofOfWork.prePoWHash which is a hex string
@@ -409,7 +409,7 @@ pub fn generate_large_job_params(header_data: &[u8], timestamp: u64) -> String {
 /// Calculate target from bits (compact format)
 /// Bits format: [exponent (1 byte)][mantissa (3 bytes)]
 /// Target = mantissa << (8 * (exponent - 3))
-/// This matches Kaspa's compact difficulty format
+/// This matches Celenium's compact difficulty format
 pub fn calculate_target(bits: u64) -> BigUint {
     let exponent = bits >> 24; // First byte is exponent
     let mantissa = bits & 0xFFFFFF; // Last 3 bytes are mantissa

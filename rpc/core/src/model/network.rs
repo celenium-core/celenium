@@ -1,4 +1,4 @@
-use kaspa_consensus_core::network::{NetworkId, NetworkType};
+use celenium_consensus_core::network::{NetworkId, NetworkType};
 
 pub type RpcNetworkType = NetworkType;
 pub type RpcNetworkId = NetworkId;

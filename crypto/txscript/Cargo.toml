@@ -1,6 +1,6 @@
 [package]
-name = "kaspa-txscript"
-description = "Kaspa txscript engine library"
+name = "celenium-txscript"
+description = "Celenium txscript engine library"
 rust-version.workspace = true
 version.workspace = true
 edition.workspace = true
@@ -13,8 +13,8 @@ repository.workspace = true
 name = "kip-10"
 
 [features]
-wasm32-core = ["dep:js-sys", "dep:kaspa-wasm-core"]
-wasm32-sdk = ["wasm32-core", "kaspa-consensus-core/wasm32-sdk"]
+wasm32-core = ["dep:js-sys", "dep:celenium-wasm-core"]
+wasm32-sdk = ["wasm32-core", "celenium-consensus-core/wasm32-sdk"]
 
 [dependencies]
 ark-bn254.workspace = true
@@ -32,12 +32,12 @@ hexplay.workspace = true
 indexmap.workspace = true
 itertools.workspace = true
 js-sys = { workspace = true, optional = true }
-kaspa-addresses.workspace = true
-kaspa-consensus-core.workspace = true
-kaspa-hashes.workspace = true
-kaspa-txscript-errors = { workspace = true, features = ["std"] }
-kaspa-utils.workspace = true
-kaspa-wasm-core = { workspace = true, optional = true }
+celenium-addresses.workspace = true
+celenium-consensus-core.workspace = true
+celenium-hashes.workspace = true
+celenium-txscript-errors = { workspace = true, features = ["std"] }
+celenium-utils.workspace = true
+celenium-wasm-core = { workspace = true, optional = true }
 log.workspace = true
 parking_lot.workspace = true
 rand.workspace = true
@@ -62,8 +62,8 @@ getrandom_03 = { workspace = true, features = ["wasm_js"] }
 # host stubs (e.g. sys_alloc_aligned as `unimplemented!()`); otherwise the symbol
 # is left `extern "C"` (provided only by the zkVM runtime) and undefined on the
 # host. Unix linkers tolerate that, but MSVC link.exe rejects it when building a
-# cdylib (LNK2019), breaking every Windows cdylib that depends on kaspa-txscript.
-# Kaspa only verifies on the host, so the stub is never actually called.
+# cdylib (LNK2019), breaking every Windows cdylib that depends on celenium-txscript.
+# Celenium only verifies on the host, so the stub is never actually called.
 [target.'cfg(windows)'.dependencies]
 risc0-zkvm-platform = { workspace = true, features = ["export-syscalls"] }
 
@@ -71,7 +71,7 @@ risc0-zkvm-platform = { workspace = true, features = ["export-syscalls"] }
 bytemuck.workspace = true
 criterion.workspace = true
 rayon.workspace = true
-kaspa-core.workspace = true
+celenium-core.workspace = true
 serde_json.workspace = true
 smallvec.workspace = true
 wasm-bindgen-test.workspace = true

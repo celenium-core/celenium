@@ -2,27 +2,27 @@ use std::{str::FromStr, sync::Arc, time::Duration};
 
 use crate::common::{client_notify::ChannelNotify, daemon::Daemon};
 use futures_util::future::try_join_all;
-use kaspa_addresses::{Address, Prefix, Version};
-use kaspa_consensus::params::SIMNET_GENESIS;
-use kaspa_consensus_core::{
+use celenium_addresses::{Address, Prefix, Version};
+use celenium_consensus::params::SIMNET_GENESIS;
+use celenium_consensus_core::{
     constants::MAX_SOMPI,
     header::Header,
     subnets::{SUBNETWORK_ID_COINBASE, SubnetworkId},
     tx::Transaction,
 };
-use kaspa_core::{assert_match, info};
-use kaspa_grpc_core::ops::KaspadPayloadOps;
-use kaspa_hashes::Hash;
-use kaspa_notify::{
+use celenium_core::{assert_match, info};
+use celenium_grpc_core::ops::CeleniumdPayloadOps;
+use celenium_hashes::Hash;
+use celenium_notify::{
     connection::{ChannelConnection, ChannelType},
     scope::{
         BlockAddedScope, FinalityConflictScope, NewBlockTemplateScope, PruningPointUtxoSetOverrideScope, Scope,
         SinkBlueScoreChangedScope, UtxosChangedScope, VirtualChainChangedScope, VirtualDaaScoreChangedScope,
     },
 };
-use kaspa_rpc_core::{Notification, api::rpc::RpcApi, model::*};
-use kaspa_utils::{fd_budget, networking::ContextualNetAddress};
-use kaspad_lib::args::Args;
+use celenium_rpc_core::{Notification, api::rpc::RpcApi, model::*};
+use celenium_utils::{fd_budget, networking::ContextualNetAddress};
+use celeniumd_lib::args::Args;
 use tokio::task::JoinHandle;
 
 #[macro_export]
@@ -41,12 +41,12 @@ macro_rules! tst {
     };
 }
 
-/// `cargo test --release --package kaspa-testing-integration --lib -- rpc_tests::sanity_test`
+/// `cargo test --release --package celenium-testing-integration --lib -- rpc_tests::sanity_test`
 #[tokio::test]
 async fn sanity_test() {
-    kaspa_core::log::try_init_logger("info");
+    celenium_core::log::try_init_logger("info");
     // As we log the panic, we want to set it up after the logger
-    kaspa_core::panic::configure_panic();
+    celenium_core::panic::configure_panic();
 
     let args = Args {
         simnet: true,
@@ -69,10 +69,10 @@ async fn sanity_test() {
     // The intent of this for/match design (emphasizing the absence of an arm with fallback pattern in the match)
     // is to force any implementor of a new RpcApi method to add a matching arm here and to strongly incentivize
     // the adding of an actual sanity test of said new method.
-    for op in KaspadPayloadOps::iter() {
+    for op in CeleniumdPayloadOps::iter() {
         let network_id = daemon.network;
         let task: JoinHandle<()> = match op {
-            KaspadPayloadOps::SubmitBlock => {
+            CeleniumdPayloadOps::SubmitBlock => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     // Register to basic virtual events in order to keep track of block submission
@@ -199,15 +199,15 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::GetBlockTemplate => {
+            CeleniumdPayloadOps::GetBlockTemplate => {
                 tst!(op, "see SubmitBlock")
             }
 
-            KaspadPayloadOps::GetCurrentBlockColor => {
+            CeleniumdPayloadOps::GetCurrentBlockColor => {
                 tst!(op, "see SubmitBlock")
             }
 
-            KaspadPayloadOps::GetBlockRewardInfo => {
+            CeleniumdPayloadOps::GetBlockRewardInfo => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let response = rpc_client
@@ -220,7 +220,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::GetCurrentNetwork => {
+            CeleniumdPayloadOps::GetCurrentNetwork => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let response = rpc_client.get_current_network_call(None, GetCurrentNetworkRequest {}).await.unwrap();
@@ -228,7 +228,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::GetBlock => {
+            CeleniumdPayloadOps::GetBlock => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let result =
@@ -243,7 +243,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::GetBlocks => {
+            CeleniumdPayloadOps::GetBlocks => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let response = rpc_client
@@ -256,11 +256,11 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::GetInfo => {
+            CeleniumdPayloadOps::GetInfo => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let response = rpc_client.get_info_call(None, GetInfoRequest {}).await.unwrap();
-                    assert_eq!(response.server_version, kaspa_core::kaspad_env::version().to_string());
+                    assert_eq!(response.server_version, celenium_core::celeniumd_env::version().to_string());
                     assert_eq!(response.mempool_size, 0);
                     assert!(response.is_utxo_indexed);
                     assert!(response.has_message_id);
@@ -268,21 +268,21 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::Shutdown => {
+            CeleniumdPayloadOps::Shutdown => {
                 // This test is purposely left blank since shutdown can only be tested after all other
                 // tests completed
                 tst!(op, "must be run in the end")
             }
 
-            KaspadPayloadOps::GetPeerAddresses => {
+            CeleniumdPayloadOps::GetPeerAddresses => {
                 tst!(op, "see AddPeer, Ban")
             }
 
-            KaspadPayloadOps::GetSink => {
+            CeleniumdPayloadOps::GetSink => {
                 tst!(op, "see SubmitBlock")
             }
 
-            KaspadPayloadOps::GetMempoolEntry => {
+            CeleniumdPayloadOps::GetMempoolEntry => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let response_result = rpc_client
@@ -301,7 +301,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::GetMempoolEntries => {
+            CeleniumdPayloadOps::GetMempoolEntries => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let response = rpc_client
@@ -315,7 +315,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::GetConnectedPeerInfo => {
+            CeleniumdPayloadOps::GetConnectedPeerInfo => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let response = rpc_client.get_connected_peer_info_call(None, GetConnectedPeerInfoRequest {}).await.unwrap();
@@ -323,7 +323,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::AddPeer => {
+            CeleniumdPayloadOps::AddPeer => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let peer_address = ContextualNetAddress::from_str("1.2.3.4").unwrap();
@@ -337,7 +337,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::Ban => {
+            CeleniumdPayloadOps::Ban => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let peer_address = ContextualNetAddress::from_str("5.6.7.8").unwrap();
@@ -355,11 +355,11 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::Unban => {
+            CeleniumdPayloadOps::Unban => {
                 tst!(op, "see Ban")
             }
 
-            KaspadPayloadOps::SubmitTransaction => {
+            CeleniumdPayloadOps::SubmitTransaction => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     // Build an erroneous transaction...
@@ -370,7 +370,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::SubmitTransactionReplacement => {
+            CeleniumdPayloadOps::SubmitTransactionReplacement => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     // Build an erroneous transaction...
@@ -381,7 +381,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::GetSubnetwork => {
+            CeleniumdPayloadOps::GetSubnetwork => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let result =
@@ -392,15 +392,15 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::GetVirtualChainFromBlock => {
+            CeleniumdPayloadOps::GetVirtualChainFromBlock => {
                 tst!(op, "see SubmitBlock")
             }
 
-            KaspadPayloadOps::GetBlockCount => {
+            CeleniumdPayloadOps::GetBlockCount => {
                 tst!(op, "see SubmitBlock")
             }
 
-            KaspadPayloadOps::GetBlockDagInfo => {
+            CeleniumdPayloadOps::GetBlockDagInfo => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let response = rpc_client.get_block_dag_info_call(None, GetBlockDagInfoRequest {}).await.unwrap();
@@ -408,7 +408,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::ResolveFinalityConflict => {
+            CeleniumdPayloadOps::ResolveFinalityConflict => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let response_result = rpc_client
@@ -423,7 +423,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::GetHeaders => {
+            CeleniumdPayloadOps::GetHeaders => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let response_result = rpc_client
@@ -435,7 +435,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::GetUtxosByAddresses => {
+            CeleniumdPayloadOps::GetUtxosByAddresses => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let addresses = vec![Address::new(Prefix::Simnet, Version::PubKey, &[0u8; 32])];
@@ -445,7 +445,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::GetUtxosByAddressesV2 => {
+            CeleniumdPayloadOps::GetUtxosByAddressesV2 => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let addresses = vec![Address::new(Prefix::Simnet, Version::PubKey, &[0u8; 32])];
@@ -457,7 +457,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::GetBalanceByAddress => {
+            CeleniumdPayloadOps::GetBalanceByAddress => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let response = rpc_client
@@ -471,7 +471,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::GetBalancesByAddresses => {
+            CeleniumdPayloadOps::GetBalancesByAddresses => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let addresses = vec![Address::new(Prefix::Simnet, Version::PubKey, &[1u8; 32])];
@@ -489,7 +489,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::GetSinkBlueScore => {
+            CeleniumdPayloadOps::GetSinkBlueScore => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let response = rpc_client.get_sink_blue_score_call(None, GetSinkBlueScoreRequest {}).await.unwrap();
@@ -498,7 +498,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::EstimateNetworkHashesPerSecond => {
+            CeleniumdPayloadOps::EstimateNetworkHashesPerSecond => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let response_result = rpc_client
@@ -512,7 +512,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::GetMempoolEntriesByAddresses => {
+            CeleniumdPayloadOps::GetMempoolEntriesByAddresses => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let addresses = vec![Address::new(Prefix::Simnet, Version::PubKey, &[0u8; 32])];
@@ -530,7 +530,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::GetCoinSupply => {
+            CeleniumdPayloadOps::GetCoinSupply => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let response = rpc_client.get_coin_supply_call(None, GetCoinSupplyRequest {}).await.unwrap();
@@ -539,21 +539,21 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::Ping => {
+            CeleniumdPayloadOps::Ping => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let _ = rpc_client.ping_call(None, PingRequest {}).await.unwrap();
                 })
             }
 
-            KaspadPayloadOps::GetConnections => {
+            CeleniumdPayloadOps::GetConnections => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let _ = rpc_client.get_connections_call(None, GetConnectionsRequest { include_profile_data: true }).await.unwrap();
                 })
             }
 
-            KaspadPayloadOps::GetMetrics => {
+            CeleniumdPayloadOps::GetMetrics => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let get_metrics_call_response = rpc_client
@@ -626,14 +626,14 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::GetSystemInfo => {
+            CeleniumdPayloadOps::GetSystemInfo => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let _response = rpc_client.get_system_info_call(None, GetSystemInfoRequest {}).await.unwrap();
                 })
             }
 
-            KaspadPayloadOps::GetServerInfo => {
+            CeleniumdPayloadOps::GetServerInfo => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let response = rpc_client.get_server_info_call(None, GetServerInfoRequest {}).await.unwrap();
@@ -642,14 +642,14 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::GetSyncStatus => {
+            CeleniumdPayloadOps::GetSyncStatus => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let _ = rpc_client.get_sync_status_call(None, GetSyncStatusRequest {}).await.unwrap();
                 })
             }
 
-            KaspadPayloadOps::GetDaaScoreTimestampEstimate => {
+            CeleniumdPayloadOps::GetDaaScoreTimestampEstimate => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let results = rpc_client
@@ -675,7 +675,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::GetFeeEstimate => {
+            CeleniumdPayloadOps::GetFeeEstimate => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let response = rpc_client.get_fee_estimate().await.unwrap();
@@ -688,7 +688,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::GetFeeEstimateExperimental => {
+            CeleniumdPayloadOps::GetFeeEstimateExperimental => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let response = rpc_client.get_fee_estimate_experimental(true).await.unwrap();
@@ -702,14 +702,14 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::GetUtxoReturnAddress => {
+            CeleniumdPayloadOps::GetUtxoReturnAddress => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let results = rpc_client.get_utxo_return_address(RpcHash::from_bytes([0; 32]), 1000).await;
 
                     assert!(results.is_err_and(|err| {
                         match err {
-                            kaspa_rpc_core::RpcError::General(msg) => {
+                            celenium_rpc_core::RpcError::General(msg) => {
                                 info!("Expected error message: {}", msg);
                                 true
                             }
@@ -719,7 +719,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::GetVirtualChainFromBlockV2 => {
+            CeleniumdPayloadOps::GetVirtualChainFromBlockV2 => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     let response = rpc_client
@@ -738,7 +738,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::GetSeqCommitLaneProof => {
+            CeleniumdPayloadOps::GetSeqCommitLaneProof => {
                 let rpc_client = client.clone();
                 tst!(op, {
                     // A non-existent block must yield an error.
@@ -752,7 +752,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::NotifyBlockAdded => {
+            CeleniumdPayloadOps::NotifyBlockAdded => {
                 let rpc_client = client.clone();
                 let id = listener_id;
                 tst!(op, {
@@ -760,7 +760,7 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::NotifyNewBlockTemplate => {
+            CeleniumdPayloadOps::NotifyNewBlockTemplate => {
                 let rpc_client = client.clone();
                 let id = listener_id;
                 tst!(op, {
@@ -768,42 +768,42 @@ async fn sanity_test() {
                 })
             }
 
-            KaspadPayloadOps::NotifyFinalityConflict => {
+            CeleniumdPayloadOps::NotifyFinalityConflict => {
                 let rpc_client = client.clone();
                 let id = listener_id;
                 tst!(op, {
                     rpc_client.start_notify(id, FinalityConflictScope {}.into()).await.unwrap();
                 })
             }
-            KaspadPayloadOps::NotifyUtxosChanged => {
+            CeleniumdPayloadOps::NotifyUtxosChanged => {
                 let rpc_client = client.clone();
                 let id = listener_id;
                 tst!(op, {
                     rpc_client.start_notify(id, UtxosChangedScope::new(vec![]).into()).await.unwrap();
                 })
             }
-            KaspadPayloadOps::NotifySinkBlueScoreChanged => {
+            CeleniumdPayloadOps::NotifySinkBlueScoreChanged => {
                 let rpc_client = client.clone();
                 let id = listener_id;
                 tst!(op, {
                     rpc_client.start_notify(id, SinkBlueScoreChangedScope {}.into()).await.unwrap();
                 })
             }
-            KaspadPayloadOps::NotifyPruningPointUtxoSetOverride => {
+            CeleniumdPayloadOps::NotifyPruningPointUtxoSetOverride => {
                 let rpc_client = client.clone();
                 let id = listener_id;
                 tst!(op, {
                     rpc_client.start_notify(id, PruningPointUtxoSetOverrideScope {}.into()).await.unwrap();
                 })
             }
-            KaspadPayloadOps::NotifyVirtualDaaScoreChanged => {
+            CeleniumdPayloadOps::NotifyVirtualDaaScoreChanged => {
                 let rpc_client = client.clone();
                 let id = listener_id;
                 tst!(op, {
                     rpc_client.start_notify(id, VirtualDaaScoreChangedScope {}.into()).await.unwrap();
                 })
             }
-            KaspadPayloadOps::NotifyVirtualChainChanged => {
+            CeleniumdPayloadOps::NotifyVirtualChainChanged => {
                 let rpc_client = client.clone();
                 let id = listener_id;
                 tst!(op, {
@@ -813,14 +813,14 @@ async fn sanity_test() {
                         .unwrap();
                 })
             }
-            KaspadPayloadOps::StopNotifyingUtxosChanged => {
+            CeleniumdPayloadOps::StopNotifyingUtxosChanged => {
                 let rpc_client = client.clone();
                 let id = listener_id;
                 tst!(op, {
                     rpc_client.stop_notify(id, UtxosChangedScope::new(vec![]).into()).await.unwrap();
                 })
             }
-            KaspadPayloadOps::StopNotifyingPruningPointUtxoSetOverride => {
+            CeleniumdPayloadOps::StopNotifyingPruningPointUtxoSetOverride => {
                 let rpc_client = client.clone();
                 let id = listener_id;
                 tst!(op, {
@@ -850,11 +850,11 @@ async fn sanity_test() {
 
 /// End-to-end test for `get_seq_commit_lane_proof` over both gRPC and wRPC.
 ///
-/// `cargo test --release --package kaspa-testing-integration --lib -- rpc_tests::seq_commit_lane_proof_test`
+/// `cargo test --release --package celenium-testing-integration --lib -- rpc_tests::seq_commit_lane_proof_test`
 #[tokio::test]
 async fn seq_commit_lane_proof_test() {
-    kaspa_core::log::try_init_logger("info");
-    kaspa_core::panic::configure_panic();
+    celenium_core::log::try_init_logger("info");
+    celenium_core::panic::configure_panic();
 
     let args = Args {
         simnet: true,
@@ -880,7 +880,7 @@ async fn seq_commit_lane_proof_test() {
     let header: Header = (&block.header).try_into().unwrap();
     let block_hash = header.hash;
     let submit = grpc.submit_block(block, false).await.unwrap();
-    assert_eq!(submit.report, kaspa_rpc_core::SubmitBlockReport::Success);
+    assert_eq!(submit.report, celenium_rpc_core::SubmitBlockReport::Success);
 
     // Wait for the submitted block to become the sink.
     for _ in 0..50 {
@@ -893,7 +893,7 @@ async fn seq_commit_lane_proof_test() {
     assert_eq!(grpc.get_sink_call(None, GetSinkRequest {}).await.unwrap().sink, block_hash);
 
     // Pick an arbitrary lane key. If the lane is absent, we still get a valid non-inclusion proof.
-    let lane_key = kaspa_seq_commit::hashing::lane_key(&[0x77; 20]);
+    let lane_key = celenium_seq_commit::hashing::lane_key(&[0x77; 20]);
 
     // ---- gRPC path ----
     let grpc_proof = grpc.get_seq_commit_lane_proof_call(None, GetSeqCommitLaneProofRequest { block_hash, lane_key }).await.unwrap();
@@ -901,9 +901,9 @@ async fn seq_commit_lane_proof_test() {
 
     // ---- wRPC path ----
     let wrpc = daemon.client_manager().new_wrpc_client();
-    wrpc.connect(Some(kaspa_wrpc_client::prelude::ConnectOptions {
+    wrpc.connect(Some(celenium_wrpc_client::prelude::ConnectOptions {
         block_async_connect: true,
-        strategy: kaspa_wrpc_client::prelude::ConnectStrategy::Retry,
+        strategy: celenium_wrpc_client::prelude::ConnectStrategy::Retry,
         ..Default::default()
     }))
     .await
@@ -924,7 +924,7 @@ async fn seq_commit_lane_proof_test() {
     let unknown = Hash::from_bytes([0xDE; 32]);
     let err =
         grpc.get_seq_commit_lane_proof_call(None, GetSeqCommitLaneProofRequest { block_hash: unknown, lane_key }).await.unwrap_err();
-    let kaspa_rpc_core::RpcError::General(msg) = &err else {
+    let celenium_rpc_core::RpcError::General(msg) = &err else {
         panic!("unexpected error: {err:?}");
     };
     assert!(msg.contains("cannot find header"), "unexpected message: {msg}");
@@ -935,7 +935,7 @@ async fn seq_commit_lane_proof_test() {
         .get_seq_commit_lane_proof_call(None, GetSeqCommitLaneProofRequest { block_hash: SIMNET_GENESIS.hash, lane_key })
         .await
         .unwrap_err();
-    let kaspa_rpc_core::RpcError::General(msg) = &err else {
+    let celenium_rpc_core::RpcError::General(msg) = &err else {
         panic!("unexpected error: {err:?}");
     };
     assert!(msg.contains("is genesis"), "unexpected message: {msg}");
@@ -952,7 +952,7 @@ async fn seq_commit_lane_proof_test() {
     let header2: Header = (&block2.header).try_into().unwrap();
     let block_hash2 = header2.hash;
     let submit2 = grpc.submit_block(block2, false).await.unwrap();
-    assert_eq!(submit2.report, kaspa_rpc_core::SubmitBlockReport::Success);
+    assert_eq!(submit2.report, celenium_rpc_core::SubmitBlockReport::Success);
     for _ in 0..50 {
         let sink = grpc.get_sink_call(None, GetSinkRequest {}).await.unwrap().sink;
         if sink == block_hash2 {
@@ -963,7 +963,7 @@ async fn seq_commit_lane_proof_test() {
     assert_eq!(grpc.get_sink_call(None, GetSinkRequest {}).await.unwrap().sink, block_hash2);
 
     // Inclusion proof for the coinbase lane at B2.
-    let coinbase_lane_key = kaspa_seq_commit::hashing::lane_key(SUBNETWORK_ID_COINBASE.as_bytes());
+    let coinbase_lane_key = celenium_seq_commit::hashing::lane_key(SUBNETWORK_ID_COINBASE.as_bytes());
     let coinbase_proof = grpc
         .get_seq_commit_lane_proof_call(None, GetSeqCommitLaneProofRequest { block_hash: block_hash2, lane_key: coinbase_lane_key })
         .await
@@ -979,13 +979,13 @@ async fn seq_commit_lane_proof_test() {
 }
 
 fn verify_lane_proof_locally(header: &Header, lane_key: Hash, response: &GetSeqCommitLaneProofResponse) {
-    use kaspa_hashes::SeqCommitActiveNode;
-    use kaspa_seq_commit::{
+    use celenium_hashes::SeqCommitActiveNode;
+    use celenium_seq_commit::{
         hashing::smt_leaf_hash,
         types::SmtLeafInput,
         verify::{SmtMetadata, verify_smt_metadata},
     };
-    use kaspa_smt::proof::OwnedSmtProof;
+    use celenium_smt::proof::OwnedSmtProof;
 
     // Parse wire-format proof.
     let proof = OwnedSmtProof::from_bytes(&response.smt_proof).expect("proof wire format");

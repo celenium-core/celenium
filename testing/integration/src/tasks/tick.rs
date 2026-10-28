@@ -1,7 +1,7 @@
 use crate::tasks::Task;
 use async_trait::async_trait;
-use kaspa_core::{task::tick::TickService, warn};
-use kaspa_utils::triggers::SingleTrigger;
+use celenium_core::{task::tick::TickService, warn};
+use celenium_utils::triggers::SingleTrigger;
 use std::sync::Arc;
 use tokio::task::JoinHandle;
 

@@ -5,11 +5,9 @@ pub mod params;
 
 use alloc::string::String;
 use alloc::vec::Vec;
-use kaspa_utils::networking::{ContextualNetAddress, NetAddress};
+use celenium_utils::networking::{ContextualNetAddress, NetAddress};
 
-#[cfg(feature = "devnet-prealloc")]
 use crate::utxo::utxo_collection::UtxoCollection;
-#[cfg(feature = "devnet-prealloc")]
 use alloc::sync::Arc;
 
 use core::ops::Deref;
@@ -66,7 +64,6 @@ pub struct Config {
 
     pub block_template_cache_lifetime: Option<u64>,
 
-    #[cfg(feature = "devnet-prealloc")]
     pub initial_utxo_set: Arc<UtxoCollection>,
 
     pub disable_upnp: bool,
@@ -100,7 +97,6 @@ impl Config {
             p2p_listen_address: ContextualNetAddress::unspecified(),
             block_template_cache_lifetime: None,
 
-            #[cfg(feature = "devnet-prealloc")]
             initial_utxo_set: Default::default(),
             disable_upnp: false,
             ram_scale: 1.0,

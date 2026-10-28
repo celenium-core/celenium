@@ -1,11 +1,11 @@
 use std::sync::Arc;
 
-use kaspa_database::{
+use celenium_database::{
     prelude::{CachedDbItem, DB, DirectDbWriter, StoreError, StoreResult},
     registry::DatabaseStorePrefixes,
 };
 
-use kaspa_consensus_core::BlockHashSet;
+use celenium_consensus_core::BlockHashSet;
 
 /// Reader API for `UtxoIndexTipsStore`.
 pub trait UtxoIndexTipsStoreReader {

@@ -1,11 +1,11 @@
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     block::Block,
     header::Header,
     subnets::SubnetworkId,
     tx::{ScriptPublicKey, ScriptVec, Transaction, TransactionInput, TransactionOutpoint, TransactionOutput, UtxoEntry},
     utxo::utxo_collection::UtxoCollection,
 };
-use kaspa_hashes::{HASH_SIZE, Hash};
+use celenium_hashes::{HASH_SIZE, Hash};
 use rand::{Rng, rngs::SmallRng, seq::SliceRandom};
 
 pub fn header_from_precomputed_hash(hash: Hash, parents: Vec<Hash>) -> Header {
@@ -161,4 +161,4 @@ pub fn generate_random_transaction_outpoint(rng: &mut SmallRng) -> TransactionOu
     TransactionOutpoint::new(generate_random_hash(rng), rng.r#gen())
 }
 
-//TODO: create `assert_eq_<kaspa-sturct>!()` helper macros in `consensus::test_helpers`
+//TODO: create `assert_eq_<celenium-sturct>!()` helper macros in `consensus::test_helpers`

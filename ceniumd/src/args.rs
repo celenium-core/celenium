@@ -1,25 +1,21 @@
 use clap::{Arg, ArgAction, Command, arg};
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     config::Config,
     network::{NetworkId, NetworkType},
 };
-use kaspa_core::kaspad_env::version;
-use kaspa_notify::address::tracker::Tracker;
-use kaspa_p2p_flows::user_agent_rule::UserAgentRule;
-use kaspa_utils::networking::ContextualNetAddress;
-use kaspa_wrpc_server::address::WrpcNetAddress;
+use celenium_core::celeniumd_env::version;
+use celenium_notify::address::tracker::Tracker;
+use celenium_p2p_flows::user_agent_rule::UserAgentRule;
+use celenium_utils::networking::ContextualNetAddress;
+use celenium_wrpc_server::address::WrpcNetAddress;
 use serde::Deserialize;
 use serde_with::{DisplayFromStr, serde_as};
 use std::{ffi::OsString, fs};
 use toml::from_str;
 
-#[cfg(feature = "devnet-prealloc")]
-use kaspa_addresses::Address;
-#[cfg(feature = "devnet-prealloc")]
-use kaspa_consensus_core::tx::{TransactionOutpoint, UtxoEntry};
-#[cfg(feature = "devnet-prealloc")]
-use kaspa_txscript::pay_to_address_script;
-#[cfg(feature = "devnet-prealloc")]
+use celenium_addresses::Address;
+use celenium_consensus_core::tx::{TransactionOutpoint, UtxoEntry};
+use celenium_txscript::pay_to_address_script;
 use std::sync::Arc;
 
 #[serde_as]
@@ -79,12 +75,9 @@ pub struct Args {
     pub perf_metrics_interval_sec: u64,
     pub block_template_cache_lifetime: Option<u64>,
 
-    #[cfg(feature = "devnet-prealloc")]
-    pub num_prealloc_utxos: Option<u64>,
-    #[cfg(feature = "devnet-prealloc")]
-    pub prealloc_address: Option<String>,
-    #[cfg(feature = "devnet-prealloc")]
-    pub prealloc_amount: u64,
+        pub num_prealloc_utxos: Option<u64>,
+        pub prealloc_address: Option<String>,
+        pub prealloc_amount: u64,
 
     pub disable_upnp: bool,
     #[serde(rename = "nodnsseed")]
@@ -139,12 +132,9 @@ impl Default for Args {
             externalip: None,
             block_template_cache_lifetime: None,
 
-            #[cfg(feature = "devnet-prealloc")]
-            num_prealloc_utxos: None,
-            #[cfg(feature = "devnet-prealloc")]
-            prealloc_address: None,
-            #[cfg(feature = "devnet-prealloc")]
-            prealloc_amount: 10_000_000_000,
+                        num_prealloc_utxos: None,
+                        prealloc_address: None,
+                        prealloc_amount: 10_000_000_000,
 
             disable_upnp: false,
             disable_dns_seeding: false,
@@ -177,14 +167,12 @@ impl Args {
         config.ram_scale = self.ram_scale;
         config.retention_period_days = self.retention_period_days;
 
-        #[cfg(feature = "devnet-prealloc")]
-        if let Some(num_prealloc_utxos) = self.num_prealloc_utxos {
+                if let Some(num_prealloc_utxos) = self.num_prealloc_utxos {
             config.initial_utxo_set = Arc::new(self.generate_prealloc_utxos(num_prealloc_utxos));
         }
     }
 
-    #[cfg(feature = "devnet-prealloc")]
-    pub fn generate_prealloc_utxos(&self, num_prealloc_utxos: u64) -> kaspa_consensus_core::utxo::utxo_collection::UtxoCollection {
+        pub fn generate_prealloc_utxos(&self, num_prealloc_utxos: u64) -> celenium_consensus_core::utxo::utxo_collection::UtxoCollection {
         let addr = Address::try_from(&self.prealloc_address.as_ref().unwrap()[..]).unwrap();
         let spk = pay_to_address_script(&addr);
         (1..=num_prealloc_utxos)
@@ -218,18 +206,18 @@ pub fn cli() -> Command {
     let defaults: Args = Default::default();
 
     #[allow(clippy::let_and_return)]
-    let cmd = Command::new("kaspad")
-        .about(format!("{} (rusty-kaspa) v{}", env!("CARGO_PKG_DESCRIPTION"), version()))
+    let cmd = Command::new("celeniumd")
+        .about(format!("{} (celenium) v{}", env!("CARGO_PKG_DESCRIPTION"), version()))
         .version(env!("CARGO_PKG_VERSION"))
-        .arg(arg!(-C --configfile <CONFIG_FILE> "Path of config file.").env("KASPAD_CONFIGFILE"))
-        .arg(arg!(-b --appdir <DATA_DIR> "Directory to store data.").env("KASPAD_APPDIR"))
-        .arg(arg!(--logdir <LOG_DIR> "Directory to log output.").env("KASPAD_LOGDIR"))
-        .arg(arg!(--nologfiles "Disable logging to files.").env("KASPAD_NOLOGFILES"))
+        .arg(arg!(-C --configfile <CONFIG_FILE> "Path of config file.").env("CELENIUMD_CONFIGFILE"))
+        .arg(arg!(-b --appdir <DATA_DIR> "Directory to store data.").env("CELENIUMD_APPDIR"))
+        .arg(arg!(--logdir <LOG_DIR> "Directory to log output.").env("CELENIUMD_LOGDIR"))
+        .arg(arg!(--nologfiles "Disable logging to files.").env("CELENIUMD_NOLOGFILES"))
         .arg(
             Arg::new("async_threads")
                 .short('t')
                 .long("async-threads")
-                .env("KASPAD_ASYNC_THREADS")
+                .env("CELENIUMD_ASYNC_THREADS")
                 .value_name("async_threads")
                 .require_equals(true)
                 .value_parser(clap::value_parser!(usize))
@@ -239,7 +227,7 @@ pub fn cli() -> Command {
             Arg::new("log_level")
                 .short('d')
                 .long("loglevel")
-                .env("KASPAD_LOG_LEVEL")
+                .env("CELENIUMD_LOG_LEVEL")
                 .value_name("LEVEL")
                 .default_value("info")
                 .require_equals(true)
@@ -248,17 +236,17 @@ pub fn cli() -> Command {
         .arg(
             Arg::new("rpclisten")
                 .long("rpclisten")
-                .env("KASPAD_RPCLISTEN")
+                .env("CELENIUMD_RPCLISTEN")
                 .value_name("IP[:PORT]")
                 .num_args(0..=1)
                 .require_equals(true)
                 .value_parser(clap::value_parser!(ContextualNetAddress))
-                .help("Interface:port to listen for gRPC connections (default port: 16110, testnet: 16210)."),
+                .help("Interface:port to listen for gRPC connections (default port: 26110, testnet: 16210)."),
         )
         .arg(
             Arg::new("rpclisten-borsh")
                 .long("rpclisten-borsh")
-                .env("KASPAD_RPCLISTEN_BORSH")
+                .env("CELENIUMD_RPCLISTEN_BORSH")
                 .value_name("IP[:PORT]")
                 .num_args(0..=1)
                 .require_equals(true)
@@ -270,7 +258,7 @@ pub fn cli() -> Command {
         .arg(
             Arg::new("rpclisten-json")
                 .long("rpclisten-json")
-                .env("KASPAD_RPCLISTEN_JSON")
+                .env("CELENIUMD_RPCLISTEN_JSON")
                 .value_name("IP[:PORT]")
                 .num_args(0..=1)
                 .require_equals(true)
@@ -278,11 +266,11 @@ pub fn cli() -> Command {
                 .value_parser(clap::value_parser!(WrpcNetAddress))
                 .help("Interface:port to listen for wRPC JSON connections (default port: 18110, testnet: 18210)."),
         )
-        .arg(arg!(--unsaferpc "Enable RPC commands which affect the state of the node").env("KASPAD_UNSAFERPC"))
+        .arg(arg!(--unsaferpc "Enable RPC commands which affect the state of the node").env("CELENIUMD_UNSAFERPC"))
         .arg(
             Arg::new("connect-peers")
                 .long("connect")
-                .env("KASPAD_CONNECTPEERS")
+                .env("CELENIUMD_CONNECTPEERS")
                 .value_name("IP[:PORT]")
                 .action(ArgAction::Append)
                 .require_equals(true)
@@ -292,7 +280,7 @@ pub fn cli() -> Command {
         .arg(
             Arg::new("add-peers")
                 .long("addpeer")
-                .env("KASPAD_ADDPEERS")
+                .env("CELENIUMD_ADDPEERS")
                 .value_name("IP[:PORT]")
                 .action(ArgAction::Append)
                 .require_equals(true)
@@ -302,7 +290,7 @@ pub fn cli() -> Command {
         .arg(
             Arg::new("listen")
                 .long("listen")
-                .env("KASPAD_LISTEN")
+                .env("CELENIUMD_LISTEN")
                 .value_name("IP[:PORT]")
                 .require_equals(true)
                 .value_parser(clap::value_parser!(ContextualNetAddress))
@@ -311,7 +299,7 @@ pub fn cli() -> Command {
         .arg(
             Arg::new("outpeers")
                 .long("outpeers")
-                .env("KASPAD_OUTPEERS")
+                .env("CELENIUMD_OUTPEERS")
                 .value_name("outpeers")
                 .require_equals(true)
                 .value_parser(clap::value_parser!(usize))
@@ -320,7 +308,7 @@ pub fn cli() -> Command {
         .arg(
             Arg::new("maxinpeers")
                 .long("maxinpeers") 
-                .env("KASPAD_MAXINPEERS")
+                .env("CELENIUMD_MAXINPEERS")
                 .value_name("maxinpeers")
                 .require_equals(true)
                 .value_parser(clap::value_parser!(usize))
@@ -329,52 +317,52 @@ pub fn cli() -> Command {
         .arg(
             Arg::new("rpcmaxclients")
                 .long("rpcmaxclients")
-                .env("KASPAD_RPCMAXCLIENTS")
+                .env("CELENIUMD_RPCMAXCLIENTS")
                 .value_name("rpcmaxclients")
                 .require_equals(true)
                 .value_parser(clap::value_parser!(usize))
                 .help("Max number of RPC clients for standard connections (default: 128)."),
         )
-        .arg(arg!(--"reset-db" "Reset database before starting node. It's needed when switching between subnetworks.").env("KASPAD_RESET_DB"))
-        .arg(arg!(--"enable-unsynced-mining" "Allow the node to accept blocks from RPC while not synced (this flag is mainly used for testing)").env("KASPAD_ENABLE_UNSYNCED_MINING"))
+        .arg(arg!(--"reset-db" "Reset database before starting node. It's needed when switching between subnetworks.").env("CELENIUMD_RESET_DB"))
+        .arg(arg!(--"enable-unsynced-mining" "Allow the node to accept blocks from RPC while not synced (this flag is mainly used for testing)").env("CELENIUMD_ENABLE_UNSYNCED_MINING"))
         .arg(
             Arg::new("enable-mainnet-mining")
                 .long("enable-mainnet-mining")
-                .env("KASPAD_ENABLE_MAINNET_MINING")
+                .env("CELENIUMD_ENABLE_MAINNET_MINING")
                 .action(ArgAction::SetTrue)
                 .hide(true)
                 .help("Allow mainnet mining (currently enabled by default while the flag is kept for backwards compatibility)"),
         )
-        .arg(arg!(--utxoindex "Enable the UTXO index").env("KASPAD_UTXOINDEX"))
+        .arg(arg!(--utxoindex "Enable the UTXO index").env("CELENIUMD_UTXOINDEX"))
         .arg(
             Arg::new("max-tracked-addresses")
                 .long("max-tracked-addresses")
-                .env("KASPAD_MAX_TRACKED_ADDRESSES")
+                .env("CELENIUMD_MAX_TRACKED_ADDRESSES")
                 .require_equals(true)
                 .value_parser(clap::value_parser!(usize))
                 .help(format!("Max (preallocated) number of addresses being tracked for UTXO changed events (default: {}, maximum: {}). 
 Setting to 0 prevents the preallocation and sets the maximum to {}, leading to 0 memory footprint as long as unused but to sub-optimal footprint if used.", 
 0, Tracker::MAX_ADDRESS_UPPER_BOUND, Tracker::DEFAULT_MAX_ADDRESSES)),
         )
-        .arg(arg!(--testnet "Use the test network").env("KASPAD_TESTNET"))
+        .arg(arg!(--testnet "Use the test network").env("CELENIUMD_TESTNET"))
         .arg(
             Arg::new("netsuffix")
                 .long("netsuffix")
-                .env("KASPAD_NETSUFFIX")
+                .env("CELENIUMD_NETSUFFIX")
                 .value_name("netsuffix")
                 .require_equals(true)
                 .value_parser(clap::value_parser!(u32))
                 .help("Testnet network suffix number"),
         )
-        .arg(arg!(--devnet "Use the development test network").env("KASPAD_DEVNET"))
-        .arg(arg!(--simnet "Use the simulation test network").env("KASPAD_SIMNET"))
-        .arg(arg!(--archival "Run as an archival node: avoids deleting old block data when moving the pruning point (Warning: heavy disk usage)").env("KASPAD_ARCHIVAL"))
-        .arg(arg!(--sanity "Enable various sanity checks which might be compute-intensive (mostly performed during pruning)").env("KASPAD_SANITY"))
-        .arg(arg!(--yes "Answer yes to all interactive console questions").env("KASPAD_NONINTERACTIVE"))
+        .arg(arg!(--devnet "Use the development test network").env("CELENIUMD_DEVNET"))
+        .arg(arg!(--simnet "Use the simulation test network").env("CELENIUMD_SIMNET"))
+        .arg(arg!(--archival "Run as an archival node: avoids deleting old block data when moving the pruning point (Warning: heavy disk usage)").env("CELENIUMD_ARCHIVAL"))
+        .arg(arg!(--sanity "Enable various sanity checks which might be compute-intensive (mostly performed during pruning)").env("CELENIUMD_SANITY"))
+        .arg(arg!(--yes "Answer yes to all interactive console questions").env("CELENIUMD_NONINTERACTIVE"))
         .arg(
             Arg::new("user_agent_comments")
                 .long("uacomment")
-                .env("KASPAD_USER_AGENT_COMMENTS")
+                .env("CELENIUMD_USER_AGENT_COMMENTS")
                 .action(ArgAction::Append)
                 .require_equals(true)
                 .help("Comment to add to the user agent -- See BIP 14 for more information."),
@@ -382,38 +370,38 @@ Setting to 0 prevents the preallocation and sets the maximum to {}, leading to 0
         .arg(
             Arg::new("ua_rule")
                 .long("ua-rule")
-                .env("KASPAD_UA_RULE")
+                .env("CELENIUMD_UA_RULE")
                 .value_name("RULE")
                 .action(ArgAction::Append)
                 .require_equals(true)
-                .help("User agent admission rule. Forms: allow;regex:<regex>, reject;regex:<regex>, allow;ver:<name><op><version>, reject;ver:<name><op><version>. Version operators: <, <=, >, >=, ==. Example: --ua-rule='reject;ver:kaspad<1.1.1'. Policy: if allow rules exist and none match, reject; if any reject rule matches, reject; otherwise accept."),
+                .help("User agent admission rule. Forms: allow;regex:<regex>, reject;regex:<regex>, allow;ver:<name><op><version>, reject;ver:<name><op><version>. Version operators: <, <=, >, >=, ==. Example: --ua-rule='reject;ver:celeniumd<1.1.1'. Policy: if allow rules exist and none match, reject; if any reject rule matches, reject; otherwise accept."),
         )
         .arg(
             Arg::new("externalip")
                 .long("externalip")
-                .env("KASPAD_EXTERNALIP")
+                .env("CELENIUMD_EXTERNALIP")
                 .value_name("externalip")
                 .require_equals(true)
                 .default_missing_value(None)
                 .value_parser(clap::value_parser!(ContextualNetAddress))
                 .help("Add a socket address(ip:port) to the list of local addresses we claim to listen on to peers"),
         )
-        .arg(arg!(--"perf-metrics" "Enable performance metrics: cpu, memory, disk io usage").env("KASPAD_PERF_METRICS"))
+        .arg(arg!(--"perf-metrics" "Enable performance metrics: cpu, memory, disk io usage").env("CELENIUMD_PERF_METRICS"))
         .arg(
             Arg::new("perf-metrics-interval-sec")
                 .long("perf-metrics-interval-sec")
-                .env("KASPAD_PERF_METRICS_INTERVAL_SEC")
+                .env("CELENIUMD_PERF_METRICS_INTERVAL_SEC")
                 .require_equals(true)
                 .value_parser(clap::value_parser!(u64))
                 .help("Interval in seconds for performance metrics collection."),
         )
-        .arg(arg!(--"disable-upnp" "Disable upnp").env("KASPAD_DISABLE_UPNP"))
-        .arg(arg!(--"nodnsseed" "Disable DNS seeding for peers").env("KASPAD_NODNSSEED"))
-        .arg(arg!(--"nogrpc" "Disable gRPC server").env("KASPAD_NOGRPC"))
+        .arg(arg!(--"disable-upnp" "Disable upnp").env("CELENIUMD_DISABLE_UPNP"))
+        .arg(arg!(--"nodnsseed" "Disable DNS seeding for peers").env("CELENIUMD_NODNSSEED"))
+        .arg(arg!(--"nogrpc" "Disable gRPC server").env("CELENIUMD_NOGRPC"))
         .arg(
             Arg::new("ram-scale")
                 .long("ram-scale")
-                .env("KASPAD_RAM_SCALE")
+                .env("CELENIUMD_RAM_SCALE")
                 .require_equals(true)
                 .value_parser(clap::value_parser!(f64))
                 .help("Apply a scale factor to memory allocation bounds. Nodes with limited RAM (~4-8GB) should set this to ~0.3-0.5 respectively. Nodes with
@@ -436,7 +424,7 @@ a large RAM (~64GB) can set this value to ~3.0-4.0 and gain superior performance
         .arg(
             Arg::new("rocksdb-preset")
                 .long("rocksdb-preset")
-                .env("KASPAD_ROCKSDB_PRESET")
+                .env("CELENIUMD_ROCKSDB_PRESET")
                 .require_equals(true)
                 .value_parser(clap::value_parser!(String))
                 .help("RocksDB configuration preset: 'default' (SSD/NVMe), 'hdd' (optimized for hard disk drives with BlobDB, compression, rate limiting) \
@@ -446,16 +434,16 @@ a large RAM (~64GB) can set this value to ~3.0-4.0 and gain superior performance
         .arg(
             Arg::new("rocksdb-wal-dir")
                 .long("rocksdb-wal-dir")
-                .env("KASPAD_ROCKSDB_WAL_DIR")
+                .env("CELENIUMD_ROCKSDB_WAL_DIR")
                 .require_equals(true)
                 .value_parser(clap::value_parser!(String))
                 .help("Custom WAL (Write-Ahead Log) directory for RocksDB. Useful for hybrid setups: database on HDD, WAL on fast NVMe SSD. \
-                       Example: --rocksdb-wal-dir=/mnt/nvme/kaspa-wal")
+                       Example: --rocksdb-wal-dir=/mnt/nvme/celenium-wal")
         )
         .arg(
             Arg::new("rocksdb-cache-size")
                 .long("rocksdb-cache-size")
-                .env("KASPAD_ROCKSDB_CACHE_SIZE")
+                .env("CELENIUMD_ROCKSDB_CACHE_SIZE")
                 .require_equals(true)
                 .value_parser(clap::value_parser!(usize))
                 .help("RocksDB block cache size in MB. Default: 256MB for HDD preset (scales with --ram-scale). \
@@ -463,8 +451,7 @@ a large RAM (~64GB) can set this value to ~3.0-4.0 and gain superior performance
         )
         ;
 
-    #[cfg(feature = "devnet-prealloc")]
-    let cmd = cmd
+        let cmd = cmd
         .arg(Arg::new("num-prealloc-utxos").long("num-prealloc-utxos").require_equals(true).value_parser(clap::value_parser!(u64)))
         .arg(Arg::new("prealloc-address").long("prealloc-address").require_equals(true).value_parser(clap::value_parser!(String)))
         .arg(Arg::new("prealloc-amount").long("prealloc-amount").require_equals(true).value_parser(clap::value_parser!(u64)));
@@ -543,12 +530,9 @@ impl Args {
             ram_scale: arg_match_unwrap_or::<f64>(&m, "ram-scale", defaults.ram_scale),
             retention_period_days: m.get_one::<f64>("retention-period-days").cloned().or(defaults.retention_period_days),
 
-            #[cfg(feature = "devnet-prealloc")]
-            num_prealloc_utxos: m.get_one::<u64>("num-prealloc-utxos").cloned(),
-            #[cfg(feature = "devnet-prealloc")]
-            prealloc_address: m.get_one::<String>("prealloc-address").cloned(),
-            #[cfg(feature = "devnet-prealloc")]
-            prealloc_amount: arg_match_unwrap_or::<u64>(&m, "prealloc-amount", defaults.prealloc_amount),
+                        num_prealloc_utxos: m.get_one::<u64>("num-prealloc-utxos").cloned(),
+                        prealloc_address: m.get_one::<String>("prealloc-address").cloned(),
+                        prealloc_amount: arg_match_unwrap_or::<u64>(&m, "prealloc-amount", defaults.prealloc_amount),
             override_params_file: m.get_one::<String>("override-params-file").cloned(),
             rocksdb_preset: m.get_one::<String>("rocksdb-preset").cloned().or(defaults.rocksdb_preset),
             rocksdb_wal_dir: m.get_one::<String>("rocksdb-wal-dir").cloned().or(defaults.rocksdb_wal_dir),
@@ -593,14 +577,14 @@ mod tests {
 
     #[test]
     fn parses_ua_rules() {
-        let args = Args::parse(["kaspad", r"--ua-rule=allow;regex:(^|/)kaspad:", r"--ua-rule=reject;ver:kaspad<1.1.1"]).unwrap();
+        let args = Args::parse(["celeniumd", r"--ua-rule=allow;regex:(^|/)celeniumd:", r"--ua-rule=reject;ver:celeniumd<1.1.1"]).unwrap();
 
-        assert_eq!(args.ua_rule, vec![r"allow;regex:(^|/)kaspad:", r"reject;ver:kaspad<1.1.1"]);
+        assert_eq!(args.ua_rule, vec![r"allow;regex:(^|/)celeniumd:", r"reject;ver:celeniumd<1.1.1"]);
     }
 
     #[test]
     fn rejects_invalid_ua_rule() {
-        let err = Args::parse(["kaspad", "--ua-rule=reject;regex:*"]).unwrap_err();
+        let err = Args::parse(["celeniumd", "--ua-rule=reject;regex:*"]).unwrap_err();
 
         assert!(err.to_string().contains("invalid --ua-rule"));
     }
@@ -610,9 +594,9 @@ mod tests {
 
   -V, --version                             Display version information and exit
   -C, --configfile=                         Path to configuration file (default: /Users/aspect/Library/Application
-                                            Support/Kaspad/kaspad.conf)
+                                            Support/Celeniumd/celeniumd.conf)
   -b, --appdir=                             Directory to store data (default: /Users/aspect/Library/Application
-                                            Support/Kaspad)
+                                            Support/Celeniumd)
       --logdir=                             Directory to log output.
   -a, --addpeer=                            Add a peer to connect with at startup
       --connect=                            Connect only to the specified peers at startup
@@ -630,12 +614,12 @@ mod tests {
                                             peers. (default: 100)
       --whitelist=                          Add an IP network or IP that will not be banned. (eg. 192.168.1.0/24 or
                                             ::1)
-      --rpclisten=                          Add an interface/port to listen for RPC connections (default port: 16110,
+      --rpclisten=                          Add an interface/port to listen for RPC connections (default port: 26110,
                                             testnet: 16210)
       --rpccert=                            File containing the certificate file (default:
-                                            /Users/aspect/Library/Application Support/Kaspad/rpc.cert)
+                                            /Users/aspect/Library/Application Support/Celeniumd/rpc.cert)
       --rpckey=                             File containing the certificate key (default:
-                                            /Users/aspect/Library/Application Support/Kaspad/rpc.key)
+                                            /Users/aspect/Library/Application Support/Celeniumd/rpc.key)
       --rpcmaxclients=                      Max number of RPC clients for standard connections (default: 128)
       --rpcmaxwebsockets=                   Max number of RPC websocket connections (default: 25)
       --rpcmaxconcurrentreqs=               Max number of concurrent RPC requests that may be processed concurrently

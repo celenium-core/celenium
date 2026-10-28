@@ -13,9 +13,9 @@ use crate::{
 };
 use ahash::AHashMap;
 use cctx::VerifiableTransaction;
-use kaspa_addresses::Address;
-use kaspa_consensus_core::subnets::SubnetworkId;
-use kaspa_hashes::Hash;
+use celenium_addresses::Address;
+use celenium_consensus_core::subnets::SubnetworkId;
+use celenium_hashes::Hash;
 use workflow_wasm::serde::{from_value, to_value};
 
 pub type SignedTransactionIndexType = u32;

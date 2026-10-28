@@ -28,10 +28,10 @@ use crate::{
 };
 
 use super::cache_policy_builder::CachePolicyBuilder as PolicyBuilder;
-use kaspa_consensus_core::{BlockHashSet, blockstatus::BlockStatus};
-use kaspa_database::registry::DatabaseStorePrefixes;
-use kaspa_hashes::Hash;
-use kaspa_smt_store::processor::SmtStores;
+use celenium_consensus_core::{BlockHashSet, blockstatus::BlockStatus};
+use celenium_database::registry::DatabaseStorePrefixes;
+use celenium_hashes::Hash;
+use celenium_smt_store::processor::SmtStores;
 use parking_lot::RwLock;
 use std::{ops::DerefMut, sync::Arc};
 

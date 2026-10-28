@@ -1,6 +1,6 @@
 use super::{error::ConversionError, option::TryIntoOptionEx};
 use crate::pb as protowire;
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     mass::{ComputeBudget, SigopCount},
     subnets::SubnetworkId,
     tx::{
@@ -8,7 +8,7 @@ use kaspa_consensus_core::{
         TransactionOutput, UtxoEntry,
     },
 };
-use kaspa_hashes::Hash;
+use celenium_hashes::Hash;
 use prost::Message;
 
 // ----------------------------------------------------------------------------
@@ -259,7 +259,7 @@ mod tests {
 
     #[test]
     fn test_p2p_max_transaction_size_larger_than_consensus() {
-        use kaspa_consensus_core::{
+        use celenium_consensus_core::{
             config::params::{DEVNET_PARAMS, MAINNET_PARAMS, SIMNET_PARAMS, TESTNET_PARAMS},
             constants::TRANSIENT_BYTE_TO_MASS_FACTOR,
             subnets::SUBNETWORK_ID_COINBASE,

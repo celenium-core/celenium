@@ -4,12 +4,12 @@ use super::collector::{CollectorFromConsensus, CollectorFromIndex};
 use crate::converter::feerate_estimate::{FeeEstimateConverter, FeeEstimateVerboseConverter};
 use crate::converter::{consensus::ConsensusConverter, index::IndexConverter, protocol::ProtocolConverter};
 use async_trait::async_trait;
-use kaspa_consensus_core::api::counters::ProcessingCounters;
-use kaspa_consensus_core::daa_score_timestamp::DaaScoreTimestamp;
-use kaspa_consensus_core::errors::block::RuleError;
-use kaspa_consensus_core::tx::{TransactionQueryResult, TransactionType};
-use kaspa_consensus_core::utxo::utxo_inquirer::UtxoInquirerError;
-use kaspa_consensus_core::{
+use celenium_consensus_core::api::counters::ProcessingCounters;
+use celenium_consensus_core::daa_score_timestamp::DaaScoreTimestamp;
+use celenium_consensus_core::errors::block::RuleError;
+use celenium_consensus_core::tx::{TransactionQueryResult, TransactionType};
+use celenium_consensus_core::utxo::utxo_inquirer::UtxoInquirerError;
+use celenium_consensus_core::{
     block::Block,
     coinbase::MinerData,
     config::Config,
@@ -17,33 +17,33 @@ use kaspa_consensus_core::{
     network::NetworkType,
     tx::{COINBASE_TRANSACTION_INDEX, Transaction},
 };
-use kaspa_consensus_notify::{
+use celenium_consensus_notify::{
     notifier::ConsensusNotifier,
     {connection::ConsensusChannelConnection, notification::Notification as ConsensusNotification},
 };
-use kaspa_consensusmanager::ConsensusManager;
-use kaspa_core::time::unix_now;
-use kaspa_core::{
+use celenium_consensusmanager::ConsensusManager;
+use celenium_core::time::unix_now;
+use celenium_core::{
     core::Core,
     debug,
-    kaspad_env::version,
+    celeniumd_env::version,
     signals::Shutdown,
     task::service::{AsyncService, AsyncServiceError, AsyncServiceFuture},
     task::tick::TickService,
     trace, warn,
 };
-use kaspa_index_core::indexed_utxos::BalanceByScriptPublicKey;
-use kaspa_index_core::{
+use celenium_index_core::indexed_utxos::BalanceByScriptPublicKey;
+use celenium_index_core::{
     connection::IndexChannelConnection, indexed_utxos::UtxoSetByScriptPublicKey, notification::Notification as IndexNotification,
     notifier::IndexNotifier,
 };
-use kaspa_mining::feerate::FeeEstimateVerbose;
-use kaspa_mining::model::tx_query::TransactionQuery;
-use kaspa_mining::{manager::MiningManagerProxy, mempool::tx::Orphan};
-use kaspa_notify::listener::ListenerLifespan;
-use kaspa_notify::subscription::context::SubscriptionContext;
-use kaspa_notify::subscription::{MutationPolicies, UtxosChangedMutationPolicy};
-use kaspa_notify::{
+use celenium_mining::feerate::FeeEstimateVerbose;
+use celenium_mining::model::tx_query::TransactionQuery;
+use celenium_mining::{manager::MiningManagerProxy, mempool::tx::Orphan};
+use celenium_notify::listener::ListenerLifespan;
+use celenium_notify::subscription::context::SubscriptionContext;
+use celenium_notify::subscription::{MutationPolicies, UtxosChangedMutationPolicy};
+use celenium_notify::{
     collector::DynCollector,
     connection::ChannelType,
     events::{EVENT_TYPE_ARRAY, EventSwitches, EventType},
@@ -52,15 +52,15 @@ use kaspa_notify::{
     scope::Scope,
     subscriber::{Subscriber, SubscriptionManager},
 };
-use kaspa_p2p_flows::flow_context::FlowContext;
-use kaspa_p2p_lib::common::ProtocolError;
-use kaspa_p2p_mining::rule_engine::MiningRuleEngine;
-use kaspa_perf_monitor::{Monitor as PerfMonitor, counters::CountersSnapshot};
-use kaspa_rpc_core::api::rpc::{
+use celenium_p2p_flows::flow_context::FlowContext;
+use celenium_p2p_lib::common::ProtocolError;
+use celenium_p2p_mining::rule_engine::MiningRuleEngine;
+use celenium_perf_monitor::{Monitor as PerfMonitor, counters::CountersSnapshot};
+use celenium_rpc_core::api::rpc::{
     DEFAULT_GET_UTXOS_BY_ADDRESSES_V2_LIMIT, MAX_SAFE_GET_UTXOS_BY_ADDRESSES_V2_ADDRESS_COUNT,
     MAX_SAFE_GET_UTXOS_BY_ADDRESSES_V2_PAGE_SIZE,
 };
-use kaspa_rpc_core::{
+use celenium_rpc_core::{
     Notification, RpcError, RpcResult,
     api::{
         connection::DynRpcConnection,
@@ -70,14 +70,14 @@ use kaspa_rpc_core::{
     model::*,
     notify::connection::ChannelConnection,
 };
-use kaspa_system_info::SystemInfo;
-use kaspa_txscript::{extract_script_pub_key_address, pay_to_address_script};
-use kaspa_utils::expiring_cache::ExpiringCache;
-use kaspa_utils::{channel::Channel, triggers::SingleTrigger};
-use kaspa_utils_tower::counters::TowerConnectionCounters;
-use kaspa_utxoindex::api::UtxoIndexProxy;
-use kaspa_utxoindex::errors::UtxoIndexError;
-use kaspa_utxoindex::model::{OrderedUtxoEntriesPage, UtxoPageCursor};
+use celenium_system_info::SystemInfo;
+use celenium_txscript::{extract_script_pub_key_address, pay_to_address_script};
+use celenium_utils::expiring_cache::ExpiringCache;
+use celenium_utils::{channel::Channel, triggers::SingleTrigger};
+use celenium_utils_tower::counters::TowerConnectionCounters;
+use celenium_utxoindex::api::UtxoIndexProxy;
+use celenium_utxoindex::errors::UtxoIndexError;
+use celenium_utxoindex::model::{OrderedUtxoEntriesPage, UtxoPageCursor};
 use std::ops::RangeInclusive;
 use std::time::Duration;
 use std::{
@@ -89,7 +89,7 @@ use std::{
 use tokio::join;
 use workflow_rpc::server::WebSocketCounters as WrpcServerCounters;
 
-/// A service implementing the Rpc API at kaspa_rpc_core level.
+/// A service implementing the Rpc API at celenium_rpc_core level.
 ///
 /// Collects notifications from the consensus and forwards them to
 /// actual protocol-featured services. Thanks to the subscription pattern,
@@ -127,7 +127,7 @@ pub struct RpcCoreService {
     grpc_tower_counters: Arc<TowerConnectionCounters>,
     system_info: SystemInfo,
     fee_estimate_cache: ExpiringCache<RpcFeeEstimate>,
-    fee_estimate_verbose_cache: ExpiringCache<kaspa_mining::errors::MiningManagerResult<GetFeeEstimateExperimentalResponse>>,
+    fee_estimate_verbose_cache: ExpiringCache<celenium_mining::errors::MiningManagerResult<GetFeeEstimateExperimentalResponse>>,
     mining_rule_engine: Arc<MiningRuleEngine>,
 }
 
@@ -399,7 +399,7 @@ NOTE: This error usually indicates an RPC conversion error between the node and 
 
         // Make sure the pay address prefix matches the config network type
         if request.pay_address.prefix != self.config.prefix() {
-            Err(kaspa_addresses::AddressError::InvalidPrefix(request.pay_address.prefix.to_string()))?;
+            Err(celenium_addresses::AddressError::InvalidPrefix(request.pay_address.prefix.to_string()))?;
         }
 
         // Build block template
@@ -409,7 +409,7 @@ NOTE: This error usually indicates an RPC conversion error between the node and 
         if session.async_is_consensus_in_transitional_ibd_state().await {
             return Err(RpcError::ConsensusInTransitionalIbdState);
         }
-        let script_public_key = kaspa_txscript::pay_to_address_script(&request.pay_address);
+        let script_public_key = celenium_txscript::pay_to_address_script(&request.pay_address);
         let extra_data = version().as_bytes().iter().chain(once(&(b'/'))).chain(&request.extra_data).cloned().collect::<Vec<_>>();
         let miner_data: MinerData = MinerData::new(script_public_key, extra_data);
         let block_template = self.mining_manager.clone().get_block_template(&session, miner_data).await?;
@@ -1193,7 +1193,7 @@ NOTE: This error usually indicates an RPC conversion error between the node and 
 
         // In the previous golang implementation the convention for virtual was the following const.
         // In the current implementation, consensus behaves the same when it gets a None instead.
-        const LEGACY_VIRTUAL: kaspa_hashes::Hash = kaspa_hashes::Hash::from_bytes([0xff; kaspa_hashes::HASH_SIZE]);
+        const LEGACY_VIRTUAL: celenium_hashes::Hash = celenium_hashes::Hash::from_bytes([0xff; celenium_hashes::HASH_SIZE]);
         let mut start_hash = request.start_hash;
         if let Some(start) = start_hash
             && start == LEGACY_VIRTUAL

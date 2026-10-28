@@ -1,6 +1,6 @@
 [package]
-name = "kaspa-utils"
-description = "Kaspa utilities"
+name = "celenium-utils"
+description = "Celenium utilities"
 rust-version.workspace = true
 version.workspace = true
 edition.workspace = true

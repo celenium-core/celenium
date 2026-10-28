@@ -1,6 +1,6 @@
 # Using `--override-params-file`
 
-The `--override-params-file` flag lets you run `kaspad` with a custom set of
+The `--override-params-file` flag lets you run `celeniumd` with a custom set of
 consensus parameters loaded from a JSON file. This is primarily useful for
 local development, testing alternative fork schedules, or simulating extreme
 network conditions. **Overriding consensus parameters on mainnet is blocked
@@ -12,13 +12,13 @@ and will make the node exit at startup.**
 	 `--simnet`).
 2. Create a JSON file containing the parameters you want to override. Any
 	 field you omit keeps its default value for the chosen network.
-3. Launch `kaspad` with the flag:
+3. Launch `celeniumd` with the flag:
 
 	 ```bash
-	 kaspad --devnet --override-params-file /path/to/overrides.json
+	 celeniumd --devnet --override-params-file /path/to/overrides.json
 	 ```
 
-If the file cannot be read or parsed, `kaspad` prints the error and exits.
+If the file cannot be read or parsed, `celeniumd` prints the error and exits.
 
 ### Example override file
 
@@ -133,16 +133,16 @@ their meaning.
 
 ## Use simpa params
 
-If you want to run `kaspad` with the simpa generated database, you'll need to ask it to generate an override params file as well, so you can run `kaspad` with the same parameters.
+If you want to run `celeniumd` with the simpa generated database, you'll need to ask it to generate an override params file as well, so you can run `celeniumd` with the same parameters.
 
 This can be done by passing the `--override-params-output` param, for example:
 ```bash
 cargo run --release --bin simpa -- --override-params-output overrides.json -o=/path/to/simpa/database
 ```
 
-And then launch kaspad with:
+And then launch celeniumd with:
 ```bash
-kaspad --simnet
+celeniumd --simnet
 ```
 
 and immedeiately close it. This will create the simnet datadir at `~/.rusty-kaspa/kaspa-simnet`.
@@ -153,7 +153,7 @@ rm -rf ~/.rusty-kaspa/kaspa-simnet/datadir/consensus/consensus-001/
 mv /path/to/simpa/database ~/.rusty-kaspa/kaspa-simnet/datadir/consensus/consensus-001/
 ```
 
-And finally launch kaspad with:
+And finally launch celeniumd with:
 ```bash
-kaspad --simnet --override-params-file overrides.json
+celeniumd --simnet --override-params-file overrides.json
 ```

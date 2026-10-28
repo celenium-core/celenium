@@ -1,4 +1,4 @@
-use kaspa_consensus_core::mass::{BlockLaneLimits, BlockMassLimits, MassCofactors};
+use celenium_consensus_core::mass::{BlockLaneLimits, BlockMassLimits, MassCofactors};
 
 pub(crate) const DEFAULT_MAXIMUM_TRANSACTION_COUNT: usize = 1_000_000;
 pub(crate) const DEFAULT_MEMPOOL_SIZE_LIMIT: usize = 1_000_000_000;
@@ -89,7 +89,7 @@ impl Config {
     }
 
     /// Build a default config.
-    /// The mass limits should be obtained from [`kaspa_consensus_core::config::params::Params::block_mass_limits`].
+    /// The mass limits should be obtained from [`celenium_consensus_core::config::params::Params::block_mass_limits`].
     #[allow(
         clippy::arithmetic_side_effects,
         reason = "If there's an overflow, the program will panic on startup, which is acceptable since it indicates a misconfiguration."

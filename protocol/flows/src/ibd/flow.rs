@@ -5,7 +5,7 @@ use crate::{
 };
 use futures::future::{Either, join_all, select, try_join_all};
 use itertools::Itertools;
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     BlockHashSet,
     api::BlockValidationFuture,
     block::Block,
@@ -14,20 +14,20 @@ use kaspa_consensus_core::{
     trusted::TrustedBlock,
     tx::Transaction,
 };
-use kaspa_consensusmanager::{ConsensusProxy, StagingConsensus, spawn_blocking};
-use kaspa_core::{debug, info, time::unix_now, warn};
-use kaspa_hashes::Hash;
-use kaspa_muhash::MuHash;
-use kaspa_p2p_lib::{
+use celenium_consensusmanager::{ConsensusProxy, StagingConsensus, spawn_blocking};
+use celenium_core::{debug, info, time::unix_now, warn};
+use celenium_hashes::Hash;
+use celenium_muhash::MuHash;
+use celenium_p2p_lib::{
     IncomingRoute, Router,
     common::ProtocolError,
     dequeue_with_timeout, make_message, make_request,
     pb::{
         RequestAntipastMessage, RequestBlockBodiesMessage, RequestHeadersMessage, RequestPruningPointAndItsAnticoneMessage,
-        RequestPruningPointProofMessage, RequestPruningPointUtxoSetMessage, kaspad_message::Payload,
+        RequestPruningPointProofMessage, RequestPruningPointUtxoSetMessage, celeniumd_message::Payload,
     },
 };
-use kaspa_utils::channel::JobReceiver;
+use celenium_utils::channel::JobReceiver;
 use std::{
     sync::Arc,
     time::{Duration, Instant},
@@ -700,8 +700,8 @@ impl IbdFlow {
 
     async fn sync_new_smt_state(&mut self, consensus: &ConsensusProxy, pruning_point: Hash) -> Result<(), ProtocolError> {
         use super::streams::SmtStream;
-        use kaspa_p2p_lib::pb::RequestPruningPointSmtStateMessage;
-        use kaspa_seq_commit::verify::{SmtMetadata, verify_smt_metadata};
+        use celenium_p2p_lib::pb::RequestPruningPointSmtStateMessage;
+        use celenium_seq_commit::verify::{SmtMetadata, verify_smt_metadata};
 
         let pp_header = consensus.async_get_header(pruning_point).await.unwrap();
 
@@ -749,7 +749,7 @@ impl IbdFlow {
 
         // Small queue of already-chunked batches: one in flight + one being processed
         // by the importer is enough headroom; each chunk holds up to SMT_CHUNK_SIZE lanes.
-        let (tx, rx) = tokio::sync::mpsc::channel::<Vec<kaspa_consensus_core::api::ImportLane>>(2);
+        let (tx, rx) = tokio::sync::mpsc::channel::<Vec<celenium_consensus_core::api::ImportLane>>(2);
 
         let consensus_for_import = consensus.clone();
         let builder_handle =
@@ -829,7 +829,7 @@ impl IbdFlow {
         staging_consensus: &ConsensusProxy,
     ) -> Result<(), ProtocolError> {
         // The purpose of this check is to prevent the potential abuse explained here:
-        // https://github.com/kaspanet/research/issues/3#issuecomment-895243792
+        // https://github.com/celeniumnet/research/issues/3#issuecomment-895243792
         let staging_hst = staging_consensus.async_get_header(staging_consensus.async_get_headers_selected_tip().await).await.unwrap();
         let current_hst = consensus.async_get_header(consensus.async_get_headers_selected_tip().await).await.unwrap();
         // If staging is behind current or within 10 minutes ahead of it, then something is wrong and we reject the IBD

@@ -132,7 +132,7 @@ pub fn init_metrics() {
     BLOCK_ACCEPTED_COUNTER.get_or_init(|| {
         register_counter_vec!(
             "ks_blocks_accepted_by_node",
-            "Number of blocks accepted by the connected Kaspa node (may later be red)",
+            "Number of blocks accepted by the connected Celenium node (may later be red)",
             WORKER_LABELS
         )
         .unwrap()
@@ -206,7 +206,7 @@ pub fn init_metrics() {
         INTERNAL_CPU_BLOCKS_ACCEPTED_TOTAL.get_or_init(|| {
             register_counter!(
                 "ks_internal_cpu_blocks_accepted_total",
-                "Total blocks accepted by the connected Kaspa node from the internal CPU miner since process start"
+                "Total blocks accepted by the connected Celenium node from the internal CPU miner since process start"
             )
             .unwrap()
         });
@@ -429,7 +429,7 @@ async fn handle_http_request(
     }
 
     if request.starts_with("GET /api/status") {
-        let kaspad_version = crate::kaspaapi::NODE_STATUS.lock().server_version.clone().unwrap_or_else(|| "-".to_string());
+        let celeniumd_version = crate::celeniumapi::NODE_STATUS.lock().server_version.clone().unwrap_or_else(|| "-".to_string());
         let status_cfg = get_web_status_config();
         let web_bind = match mode {
             HttpMode::Aggregated { web_bind } => web_bind.clone(),
@@ -437,7 +437,7 @@ async fn handle_http_request(
         };
 
         let status =
-            WebStatusResponse { kaspad_address: status_cfg.kaspad_address, kaspad_version, instances: status_cfg.instances, web_bind };
+            WebStatusResponse { celeniumd_address: status_cfg.celeniumd_address, celeniumd_version, instances: status_cfg.instances, web_bind };
         let json = serde_json::to_string(&status).unwrap_or_else(|_| "{}".to_string());
         let response = format!(
             "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nConnection: close\r\nAccess-Control-Allow-Origin: *\r\nContent-Length: {}\r\n\r\n{}",
@@ -793,15 +793,15 @@ pub fn record_network_stats(hashrate: u64, block_count: u64, difficulty: f64) {
 
 #[derive(Serialize)]
 struct WebStatusResponse {
-    kaspad_address: String,
-    kaspad_version: String,
+    celeniumd_address: String,
+    celeniumd_version: String,
     instances: usize,
     web_bind: String,
 }
 
 #[derive(Clone, Debug)]
 struct WebStatusConfig {
-    kaspad_address: String,
+    celeniumd_address: String,
     instances: usize,
 }
 
@@ -830,15 +830,15 @@ fn config_write_allowed() -> bool {
 ///
 /// This avoids re-reading `config.yaml` from within the web/prom servers (which can be wrong when
 /// using `--config` / CLI overrides, and also breaks when the working directory differs).
-pub fn set_web_status_config(kaspad_address: String, instances: usize) {
+pub fn set_web_status_config(celeniumd_address: String, instances: usize) {
     let lock =
-        WEB_STATUS_CONFIG.get_or_init(|| parking_lot::RwLock::new(WebStatusConfig { kaspad_address: "-".to_string(), instances: 1 }));
-    *lock.write() = WebStatusConfig { kaspad_address, instances: instances.max(1) };
+        WEB_STATUS_CONFIG.get_or_init(|| parking_lot::RwLock::new(WebStatusConfig { celeniumd_address: "-".to_string(), instances: 1 }));
+    *lock.write() = WebStatusConfig { celeniumd_address, instances: instances.max(1) };
 }
 
 fn get_web_status_config() -> WebStatusConfig {
     WEB_STATUS_CONFIG
-        .get_or_init(|| parking_lot::RwLock::new(WebStatusConfig { kaspad_address: "-".to_string(), instances: 1 }))
+        .get_or_init(|| parking_lot::RwLock::new(WebStatusConfig { celeniumd_address: "-".to_string(), instances: 1 }))
         .read()
         .clone()
 }
@@ -1541,7 +1541,7 @@ async fn get_config_json() -> String {
 
         let json_value = serde_json::json!({
             // Global fields
-            "kaspad_address": config.global.kaspad_address,
+            "celeniumd_address": config.global.celeniumd_address,
             "block_wait_time": config.global.block_wait_time.as_millis() as u64,
             "print_stats": config.global.print_stats,
             "log_to_file": config.global.log_to_file,
@@ -1582,8 +1582,8 @@ async fn update_config_from_json(json_body: &str) -> Result<(), Box<dyn std::err
     };
 
     // Update global fields if provided
-    if let Some(addr) = updates.get("kaspad_address").and_then(|v| v.as_str()) {
-        config.global.kaspad_address = addr.to_string();
+    if let Some(addr) = updates.get("celeniumd_address").and_then(|v| v.as_str()) {
+        config.global.celeniumd_address = addr.to_string();
     }
     if let Some(bwt) = updates.get("block_wait_time").and_then(|v| v.as_u64()) {
         config.global.block_wait_time = Duration::from_millis(bwt);
@@ -1709,7 +1709,7 @@ mod tests {
         std::fs::write(
             &config_path,
             r#"
-kaspad_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:16110"
 stratum_port: ":5555"
 min_share_diff: 8192
 "#,
@@ -1723,7 +1723,7 @@ min_share_diff: 8192
         let status_resp = send_request(mode.clone(), "GET /api/status HTTP/1.1\r\n\r\n").await;
         assert!(status_resp.contains("200 OK"));
         assert!(status_resp.contains("Connection: close"));
-        assert!(status_resp.contains("\"kaspad_address\""));
+        assert!(status_resp.contains("\"celeniumd_address\""));
         assert!(status_resp.contains("\"instances\":2"));
 
         let stats_resp = send_request(mode.clone(), "GET /api/stats HTTP/1.1\r\n\r\n").await;
@@ -1732,13 +1732,13 @@ min_share_diff: 8192
 
         let config_resp = send_request(mode.clone(), "GET /api/config HTTP/1.1\r\n\r\n").await;
         assert!(config_resp.contains("200 OK"));
-        assert!(config_resp.contains("\"kaspad_address\""));
+        assert!(config_resp.contains("\"celeniumd_address\""));
 
         // SAFETY: test-only env change scoped to this process; no concurrent mutation expected.
         unsafe {
             std::env::set_var("RKSTRATUM_ALLOW_CONFIG_WRITE", "1");
         }
-        let json_body = r#"{"kaspad_address":"127.0.0.2:16110","stratum_port":":5556","min_share_diff":4096}"#;
+        let json_body = r#"{"celeniumd_address":"127.0.0.2:16110","stratum_port":":5556","min_share_diff":4096}"#;
         let post_req = format!("POST /api/config HTTP/1.1\r\nContent-Length: {}\r\n\r\n{}", json_body.len(), json_body);
         let post_resp = send_request(mode, &post_req).await;
         assert!(post_resp.contains("\"success\": true"));

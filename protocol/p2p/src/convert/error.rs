@@ -1,4 +1,4 @@
-use kaspa_consensus_core::subnets::SubnetworkConversionError;
+use celenium_consensus_core::subnets::SubnetworkConversionError;
 use thiserror::Error;
 
 #[derive(Clone, Debug, Error)]
@@ -19,7 +19,7 @@ pub enum ConversionError {
     ArrayBytesSizeError(#[from] std::array::TryFromSliceError),
 
     #[error("Bytes size mismatch error {0}")]
-    UintBytesSizeError(#[from] kaspa_math::uint::TryFromSliceError),
+    UintBytesSizeError(#[from] celenium_math::uint::TryFromSliceError),
 
     #[error("Integer parsing error: {0}")]
     IntCastingError(#[from] std::num::TryFromIntError),
@@ -34,5 +34,5 @@ pub enum ConversionError {
     SubnetParsingError(#[from] SubnetworkConversionError),
 
     #[error(transparent)]
-    CompressedParentsError(#[from] kaspa_consensus_core::errors::header::CompressedParentsError),
+    CompressedParentsError(#[from] celenium_consensus_core::errors::header::CompressedParentsError),
 }

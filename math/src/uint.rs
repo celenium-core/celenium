@@ -1,15 +1,15 @@
 #[doc(hidden)]
-pub use {alloc::format, alloc::string::String, alloc::vec::Vec, faster_hex, kaspa_utils, malachite_base, malachite_nz, serde};
+pub use {alloc::format, alloc::string::String, alloc::vec::Vec, faster_hex, celenium_utils, malachite_base, malachite_nz, serde};
 
 // Feature-gated impls for `construct_uint!` types. Each helper is a
-// cfg-selected pair, defined here, so the gate is evaluated against kaspa-math's
+// cfg-selected pair, defined here, so the gate is evaluated against celenium-math's
 // own features instead of whichever crate invokes the macro.
 #[cfg(feature = "std")]
 #[doc(hidden)]
 #[macro_export]
 macro_rules! __uint_impl_memsize {
     ($name:ident) => {
-        impl $crate::uint::kaspa_utils::mem_size::MemSizeEstimator for $name {
+        impl $crate::uint::celenium_utils::mem_size::MemSizeEstimator for $name {
             fn estimate_mem_units(&self) -> usize {
                 1
             }
@@ -521,19 +521,19 @@ macro_rules! construct_uint {
 
         $crate::__uint_impl_memsize!($name);
 
-        impl $crate::uint::kaspa_utils::hex::ToHex for $name {
+        impl $crate::uint::celenium_utils::hex::ToHex for $name {
             fn to_hex(&self) -> $crate::uint::String {
                 self.to_be_bytes().as_slice().to_hex()
             }
         }
 
-        impl $crate::uint::kaspa_utils::hex::ToHex for &$name {
+        impl $crate::uint::celenium_utils::hex::ToHex for &$name {
             fn to_hex(&self) -> $crate::uint::String {
                 self.to_be_bytes().as_slice().to_hex()
             }
         }
 
-        impl $crate::uint::kaspa_utils::hex::FromHex for $name {
+        impl $crate::uint::celenium_utils::hex::FromHex for $name {
             type Error = $crate::Error;
             fn from_hex(hex: &str) -> Result<$name, Self::Error> {
                 Ok($name::from_hex(hex)?)

@@ -5,10 +5,10 @@ use borsh::{BorshDeserialize, BorshSerialize};
 #[cfg(feature = "mem_size")]
 use core::mem::size_of;
 use itertools::Itertools;
-use kaspa_hashes::Hash;
-use kaspa_utils::iter::{IterExtensions, IterExtensionsRle};
+use celenium_hashes::Hash;
+use celenium_utils::iter::{IterExtensions, IterExtensionsRle};
 #[cfg(feature = "mem_size")]
-use kaspa_utils::mem_size::MemSizeEstimator;
+use celenium_utils::mem_size::MemSizeEstimator;
 use serde::{Deserialize, Serialize};
 
 /// An efficient run-length encoding for the parent-by-level vector in the block header.
@@ -266,7 +266,7 @@ impl MemSizeEstimator for Header {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use kaspa_math::Uint192;
+    use celenium_math::Uint192;
     use serde_json::Value;
 
     fn hash(val: u8) -> Hash {

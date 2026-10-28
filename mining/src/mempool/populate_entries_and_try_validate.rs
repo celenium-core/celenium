@@ -1,5 +1,5 @@
 use crate::mempool::{Mempool, errors::RuleResult, model::pool::Pool};
-use kaspa_consensus_core::{
+use celenium_consensus_core::{
     api::{
         ConsensusApi,
         args::{TransactionValidationArgs, TransactionValidationBatchArgs},
@@ -7,7 +7,7 @@ use kaspa_consensus_core::{
     constants::UNACCEPTED_DAA_SCORE,
     tx::{MutableTransaction, UtxoEntry},
 };
-use kaspa_mining_errors::mempool::RuleError;
+use celenium_mining_errors::mempool::RuleError;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum PopulateError {

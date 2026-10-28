@@ -1,11 +1,11 @@
 use crate::{
     error::{Error, Result},
-    resolver::{KaspadResponseReceiver, KaspadResponseSender, Resolver, matcher::Matcher},
+    resolver::{CeleniumdResponseReceiver, CeleniumdResponseSender, Resolver, matcher::Matcher},
 };
-use kaspa_core::trace;
-use kaspa_grpc_core::{
-    ops::KaspadPayloadOps,
-    protowire::{KaspadRequest, KaspadResponse},
+use celenium_core::trace;
+use celenium_grpc_core::{
+    ops::CeleniumdPayloadOps,
+    protowire::{CeleniumdRequest, CeleniumdResponse},
 };
 use std::{
     collections::VecDeque,
@@ -17,17 +17,17 @@ use tokio::sync::oneshot;
 #[derive(Debug)]
 struct Pending {
     timestamp: Instant,
-    op: KaspadPayloadOps,
-    request: KaspadRequest,
-    sender: KaspadResponseSender,
+    op: CeleniumdPayloadOps,
+    request: CeleniumdRequest,
+    sender: CeleniumdResponseSender,
 }
 
 impl Pending {
-    fn new(op: KaspadPayloadOps, request: KaspadRequest, sender: KaspadResponseSender) -> Self {
+    fn new(op: CeleniumdPayloadOps, request: CeleniumdRequest, sender: CeleniumdResponseSender) -> Self {
         Self { timestamp: Instant::now(), op, request, sender }
     }
 
-    fn is_matching(&self, response: &KaspadResponse, response_op: KaspadPayloadOps) -> bool {
+    fn is_matching(&self, response: &CeleniumdResponse, response_op: CeleniumdPayloadOps) -> bool {
         self.op == response_op && self.request.is_matching(response)
     }
 }
@@ -44,8 +44,8 @@ impl QueueResolver {
 }
 
 impl Resolver for QueueResolver {
-    fn register_request(&self, op: KaspadPayloadOps, request: &KaspadRequest) -> KaspadResponseReceiver {
-        let (sender, receiver) = oneshot::channel::<Result<KaspadResponse>>();
+    fn register_request(&self, op: CeleniumdPayloadOps, request: &CeleniumdRequest) -> CeleniumdResponseReceiver {
+        let (sender, receiver) = oneshot::channel::<Result<CeleniumdResponse>>();
         {
             let pending = Pending::new(op, request.clone(), sender);
 
@@ -56,8 +56,8 @@ impl Resolver for QueueResolver {
         receiver
     }
 
-    fn handle_response(&self, response: KaspadResponse) {
-        let response_op: KaspadPayloadOps = response.payload.as_ref().unwrap().try_into().expect("response is not a notification");
+    fn handle_response(&self, response: CeleniumdResponse) {
+        let response_op: CeleniumdPayloadOps = response.payload.as_ref().unwrap().try_into().expect("response is not a notification");
         trace!("[Resolver] handle_response type: {:?}", response_op);
         let mut pending_calls = self.pending_calls.lock().unwrap();
         let mut pending: Option<Pending> = None;

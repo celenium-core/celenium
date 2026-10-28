@@ -1,6 +1,6 @@
 use super::{Consensus, factory::MultiConsensusManagementStore};
-use kaspa_consensusmanager::ConsensusCtl;
-use kaspa_database::prelude::DB;
+use celenium_consensusmanager::ConsensusCtl;
+use celenium_database::prelude::DB;
 use parking_lot::RwLock;
 use std::{
     path::PathBuf,

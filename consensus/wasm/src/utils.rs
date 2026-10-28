@@ -1,10 +1,10 @@
 use crate::result::Result;
-use kaspa_consensus_core::hashing::sighash::{SigHashReusedValuesUnsync, calc_schnorr_signature_hash};
-use kaspa_consensus_core::hashing::sighash_type::SIG_HASH_ALL;
-use kaspa_consensus_core::tx;
-use kaspa_consensus_core::tx::ComputeCommit;
+use celenium_consensus_core::hashing::sighash::{SigHashReusedValuesUnsync, calc_schnorr_signature_hash};
+use celenium_consensus_core::hashing::sighash_type::SIG_HASH_ALL;
+use celenium_consensus_core::tx;
+use celenium_consensus_core::tx::ComputeCommit;
 
-pub fn script_hashes(mut mutable_tx: tx::SignableTransaction) -> Result<Vec<kaspa_hashes::Hash>> {
+pub fn script_hashes(mut mutable_tx: tx::SignableTransaction) -> Result<Vec<celenium_hashes::Hash>> {
     let mut list = vec![];
     for i in 0..mutable_tx.tx.inputs.len() {
         mutable_tx.tx.inputs[i].compute_commit = ComputeCommit::SigopCount(1.into());

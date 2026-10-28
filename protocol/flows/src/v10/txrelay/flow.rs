@@ -3,10 +3,10 @@ use crate::{
     flow_trait::Flow,
     flowcontext::transactions::MAX_INV_PER_TX_INV_MSG,
 };
-use kaspa_consensus_core::tx::{Transaction, TransactionId};
-use kaspa_consensusmanager::ConsensusProxy;
-use kaspa_core::{time::unix_now, warn};
-use kaspa_mining::{
+use celenium_consensus_core::tx::{Transaction, TransactionId};
+use celenium_consensusmanager::ConsensusProxy;
+use celenium_core::{time::unix_now, warn};
+use celenium_mining::{
     P2pTxCountSample,
     errors::MiningManagerError,
     mempool::{
@@ -15,11 +15,11 @@ use kaspa_mining::{
     },
     model::tx_query::TransactionQuery,
 };
-use kaspa_p2p_lib::{
+use celenium_p2p_lib::{
     IncomingRoute, Router,
     common::{DEFAULT_TIMEOUT, ProtocolError},
     dequeue, make_message,
-    pb::{RequestTransactionsMessage, TransactionNotFoundMessage, kaspad_message::Payload},
+    pb::{RequestTransactionsMessage, TransactionNotFoundMessage, celeniumd_message::Payload},
 };
 use std::sync::Arc;
 use tokio::time::timeout;
@@ -79,7 +79,7 @@ impl RelayTransactionsFlow {
 
     pub fn invs_channel_size() -> usize {
         // TODO: reevaluate when the node is fully functional and later when the network tx rate increases
-        // Note: in go-kaspad we have 10,000 for this channel combined with tx channel.
+        // Note: in go-celeniumd we have 10,000 for this channel combined with tx channel.
         4096
     }
 
@@ -246,7 +246,7 @@ impl RelayTransactionsFlow {
                         self.spam_counter += 1;
                     }
                     if self.spam_counter.is_multiple_of(100) {
-                        kaspa_core::warn!("Peer {} has shared {} spam/non-standard txs ({:?})", self.router, self.spam_counter, res);
+                        celenium_core::warn!("Peer {} has shared {} spam/non-standard txs ({:?})", self.router, self.spam_counter, res);
                     }
                 }
                 Err(_) => {}

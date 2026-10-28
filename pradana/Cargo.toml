@@ -1,6 +1,6 @@
 [package]
-name = "rothschild"
-description = "Kaspa Transaction Generator"
+name = "pradana"
+description = "Celenium Transaction Generator"
 rust-version.workspace = true
 version.workspace = true
 edition.workspace = true
@@ -10,14 +10,14 @@ license.workspace = true
 repository.workspace = true
 
 [dependencies]
-kaspa-addresses.workspace = true
-kaspa-consensus-core.workspace = true
-kaspa-core.workspace = true
-kaspa-grpc-client.workspace = true
-kaspa-notify.workspace = true
-kaspa-rpc-core.workspace = true
-kaspa-txscript.workspace = true
-kaspa-utils.workspace = true
+celenium-addresses.workspace = true
+celenium-consensus-core.workspace = true
+celenium-core.workspace = true
+celenium-grpc-client.workspace = true
+celenium-notify.workspace = true
+celenium-rpc-core.workspace = true
+celenium-txscript.workspace = true
+celenium-utils.workspace = true
 
 async-channel.workspace = true
 clap.workspace = true

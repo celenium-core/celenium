@@ -1,7 +1,7 @@
 use crate::mempool::model::{frontier::selectors::ALPHA, tx::MempoolTransaction};
-use kaspa_consensus_core::mass::{ContextualMasses, Mass, MassCofactors};
-use kaspa_consensus_core::subnets::SubnetworkId;
-use kaspa_consensus_core::tx::Transaction;
+use celenium_consensus_core::mass::{ContextualMasses, Mass, MassCofactors};
+use celenium_consensus_core::subnets::SubnetworkId;
+use celenium_consensus_core::tx::Transaction;
 use std::sync::Arc;
 
 #[derive(Clone, Debug)]
@@ -103,11 +103,11 @@ impl FeerateTransactionKey {
 #[cfg(test)]
 pub(crate) mod tests {
     use super::*;
-    use kaspa_consensus_core::{
+    use celenium_consensus_core::{
         subnets::SUBNETWORK_ID_NATIVE,
         tx::{Transaction, TransactionInput, TransactionOutpoint},
     };
-    use kaspa_hashes::{HasherBase, TransactionID};
+    use celenium_hashes::{HasherBase, TransactionID};
     use std::sync::Arc;
 
     fn generate_unique_tx(i: u64) -> Arc<Transaction> {
