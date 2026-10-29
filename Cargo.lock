@@ -1507,9 +1507,14 @@ dependencies = [
 name = "celenium-grpc-simple-client-example"
 version = "2.1.0"
 dependencies = [
+ "celenium-addresses",
+ "celenium-consensus-core",
  "celenium-grpc-client",
  "celenium-rpc-core",
+ "celenium-txscript",
  "futures",
+ "hex",
+ "secp256k1",
  "tokio",
 ]
 
