@@ -629,8 +629,12 @@ pub const MAINNET_PARAMS: Params = Params {
 };
 
 pub const TESTNET_PARAMS: Params = Params {
-    // Private network for now: no public DNS seeders.
-    dns_seeders: &[],
+    // Local validation seeder. Resolves through the system resolver, so on a
+    // developer machine it maps to 127.0.0.1 via /etc/hosts and proves the DNS
+    // seeding path end to end. Replace with the real public hostname (and its
+    // A records) before opening the network; an empty list here is why no
+    // outside node can currently discover the network.
+    dns_seeders: &["seed.celium.test"],
     net: NetworkId::with_suffix(NetworkType::Testnet, 10),
     genesis: TESTNET_GENESIS,
     timestamp_deviation_tolerance: TIMESTAMP_DEVIATION_TOLERANCE,
