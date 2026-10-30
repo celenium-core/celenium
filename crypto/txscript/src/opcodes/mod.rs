@@ -1740,7 +1740,7 @@ mod test {
 
         assert_eq!(
             script_to_str(&script).unwrap(),
-            "OpDup OpData3 0x02abcd OpBlake2b OpData5 0x6b61737061 OpEqualVerify Op1Negate Op16 OpCheckSig OpData4 0xdeadbeef OpDrop OpVerify"
+            "OpDup OpData3 0x02abcd OpBlake2b OpData8 0x63656c656e69756d OpEqualVerify Op1Negate Op16 OpCheckSig OpData4 0xdeadbeef OpDrop OpVerify"
         );
     }
 

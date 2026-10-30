@@ -67,17 +67,17 @@ pub enum AddressError {
     WASM(String),
 }
 
-/// Address prefix identifying the network type this address belongs to (such as `celenium`, `celeniumtest`, `celeniumsim`, `celeniumdev`).
+/// Address prefix identifying the network type this address belongs to (such as `cen69`, `cen69test`, `cen69sim`, `cen69dev`).
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Debug, Hash, Serialize, Deserialize, BorshSerialize, BorshDeserialize)]
 #[borsh(use_discriminant = true)]
 pub enum Prefix {
-    #[serde(rename = "celenium")]
+    #[serde(rename = "cen69")]
     Mainnet,
-    #[serde(rename = "celeniumtest")]
+    #[serde(rename = "cen69test")]
     Testnet,
-    #[serde(rename = "celeniumsim")]
+    #[serde(rename = "cen69sim")]
     Simnet,
-    #[serde(rename = "celeniumdev")]
+    #[serde(rename = "cen69dev")]
     Devnet,
     #[cfg(test)]
     A,
@@ -88,10 +88,10 @@ pub enum Prefix {
 impl Prefix {
     fn as_str(&self) -> &'static str {
         match self {
-            Prefix::Mainnet => "celenium",
-            Prefix::Testnet => "celeniumtest",
-            Prefix::Simnet => "celeniumsim",
-            Prefix::Devnet => "celeniumdev",
+            Prefix::Mainnet => "cen69",
+            Prefix::Testnet => "cen69test",
+            Prefix::Simnet => "cen69sim",
+            Prefix::Devnet => "cen69dev",
             #[cfg(test)]
             Prefix::A => "a",
             #[cfg(test)]
@@ -119,10 +119,10 @@ impl TryFrom<&str> for Prefix {
 
     fn try_from(prefix: &str) -> Result<Self, Self::Error> {
         match prefix {
-            "celenium" => Ok(Prefix::Mainnet),
-            "celeniumtest" => Ok(Prefix::Testnet),
-            "celeniumsim" => Ok(Prefix::Simnet),
-            "celeniumdev" => Ok(Prefix::Devnet),
+            "cen69" => Ok(Prefix::Mainnet),
+            "cen69test" => Ok(Prefix::Testnet),
+            "cen69sim" => Ok(Prefix::Simnet),
+            "cen69dev" => Ok(Prefix::Devnet),
             #[cfg(test)]
             "a" => Ok(Prefix::A),
             #[cfg(test)]
@@ -204,7 +204,7 @@ pub const PAYLOAD_VECTOR_SIZE: usize = 36;
 /// Used as the underlying type for address payload, optimized for the largest version length (33).
 pub type PayloadVec = SmallVec<[u8; PAYLOAD_VECTOR_SIZE]>;
 
-/// Celenium [`Address`] struct that serializes to and from an address format string: `celenium:qz0s...t8cv`.
+/// Celenium [`Address`] struct that serializes to and from an address format string: `cen69:qz0s...t8cv`.
 ///
 /// @category Address
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Hash)]
@@ -504,11 +504,11 @@ mod tests {
             (Address::new(Prefix::B, Version::ScriptHash, b"1234598760"), "b:pqcnyve5x5unsdekxqeusxeyu2"),
             (Address::new(Prefix::B, Version::ScriptHash, b"abcdefghijklmnopqrstuvwxyz"), "b:ppskycmyv4nxw6rfdf4kcmtwdac8zunnw36hvamc09aqtpppz8lk"),
             (Address::new(Prefix::B, Version::ScriptHash, b"000000000000000000000000000000000000000000"), "b:pqcrqvpsxqcrqvpsxqcrqvpsxqcrqvpsxqcrqvpsxqcrqvpsxqcrqvpsxqcrqvpsxqcrq7ag684l3"),
-            (Address::new(Prefix::Testnet, Version::PubKey, &[0u8; 32]),      "celeniumtest:qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq4tl2vj9j"),
-            (Address::new(Prefix::Testnet, Version::PubKeyECDSA, &[0u8; 33]), "celeniumtest:qyqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqnzrzx7kf"),
-            (Address::new(Prefix::Testnet, Version::PubKeyECDSA, b"\xba\x01\xfc\x5f\x4e\x9d\x98\x79\x59\x9c\x69\xa3\xda\xfd\xb8\x35\xa7\x25\x5e\x5f\x2e\x93\x4e\x93\x22\xec\xd3\xaf\x19\x0a\xb0\xf6\x0e"), "celeniumtest:qxaqrlzlf6wes72en3568khahq66wf27tuhfxn5nytkd8tcep2c0vrsapv7rd25"),
-            (Address::new(Prefix::Mainnet, Version::PubKey, &[0u8; 32]),      "celenium:qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxtw40xw4"),
-            (Address::new(Prefix::Mainnet, Version::PubKey, b"\x5f\xff\x3c\x4d\xa1\x8f\x45\xad\xcd\xd4\x99\xe4\x46\x11\xe9\xff\xf1\x48\xba\x69\xdb\x3c\x4e\xa2\xdd\xd9\x55\xfc\x46\xa5\x95\x22"), "celenium:qp0l70zd5x85ttwd6jv7g3s3a8llzj96d8dncn4zmhv4tlzx5k2jys6488uj7"),
+            (Address::new(Prefix::Testnet, Version::PubKey, &[0u8; 32]),      "cen69test:qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqz0ef0nda"),
+            (Address::new(Prefix::Testnet, Version::PubKeyECDSA, &[0u8; 33]), "cen69test:qyqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqg52hclvv"),
+            (Address::new(Prefix::Testnet, Version::PubKeyECDSA, b"\xba\x01\xfc\x5f\x4e\x9d\x98\x79\x59\x9c\x69\xa3\xda\xfd\xb8\x35\xa7\x25\x5e\x5f\x2e\x93\x4e\x93\x22\xec\xd3\xaf\x19\x0a\xb0\xf6\x0e"), "cen69test:qxaqrlzlf6wes72en3568khahq66wf27tuhfxn5nytkd8tcep2c0vrsxh9tavs3"),
+            (Address::new(Prefix::Mainnet, Version::PubKey, &[0u8; 32]),      "cen69:qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqem807kn3"),
+            (Address::new(Prefix::Mainnet, Version::PubKey, b"\x5f\xff\x3c\x4d\xa1\x8f\x45\xad\xcd\xd4\x99\xe4\x46\x11\xe9\xff\xf1\x48\xba\x69\xdb\x3c\x4e\xa2\xdd\xd9\x55\xfc\x46\xa5\x95\x22"), "cen69:qp0l70zd5x85ttwd6jv7g3s3a8llzj96d8dncn4zmhv4tlzx5k2jy02uakv06"),
         ]
         // cspell:enable
     }
@@ -532,33 +532,33 @@ mod tests {
     #[test]
     fn test_errors() {
         // cspell:disable
-        let address_str: String = "celenium:qqqqqqqqqqqqq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkx9awp4e".to_string();
+        let address_str: String = "cen69:qqqqqqqqqqqqq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkx9awp4e".to_string();
         let address: Result<Address, AddressError> = address_str.try_into();
         assert_eq!(Err(AddressError::DecodingError('1')), address);
 
         let invalid_char = 124u8 as char;
-        let address_str: String = format!("celenium:qqqqqqqqqqqqq{invalid_char}qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkx9awp4e");
+        let address_str: String = format!("cen69:qqqqqqqqqqqqq{invalid_char}qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkx9awp4e");
         let address: Result<Address, AddressError> = address_str.try_into();
         assert_eq!(Err(AddressError::DecodingError(invalid_char)), address);
 
         let invalid_char = 129u8 as char;
-        let address_str: String = format!("celenium:qqqqqqqqqqqqq{invalid_char}qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkx9awp4e");
+        let address_str: String = format!("cen69:qqqqqqqqqqqqq{invalid_char}qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkx9awp4e");
         let address: Result<Address, AddressError> = address_str.try_into();
         assert!(matches!(address, Err(AddressError::DecodingError(_))));
 
-        let address_str: String = "celenium1:qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkx9awp4e".to_string();
+        let address_str: String = "cen691:qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkx9awp4e".to_string();
         let address: Result<Address, AddressError> = address_str.try_into();
-        assert_eq!(Err(AddressError::InvalidPrefix("celenium1".into())), address);
+        assert_eq!(Err(AddressError::InvalidPrefix("cen691".into())), address);
 
-        let address_str: String = "celeniumqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkx9awp4e".to_string();
+        let address_str: String = "cen69qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkx9awp4e".to_string();
         let address: Result<Address, AddressError> = address_str.try_into();
         assert_eq!(Err(AddressError::MissingPrefix), address);
 
-        let address_str: String = "celenium:qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkx9awp4l".to_string();
+        let address_str: String = "cen69:qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkx9awp4l".to_string();
         let address: Result<Address, AddressError> = address_str.try_into();
         assert_eq!(Err(AddressError::BadChecksum), address);
 
-        let address_str: String = "celenium:qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkx9awp4e".to_string();
+        let address_str: String = "cen69:qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkx9awp4e".to_string();
         let address: Result<Address, AddressError> = address_str.try_into();
         assert_eq!(Err(AddressError::BadChecksum), address);
         // cspell:enable
