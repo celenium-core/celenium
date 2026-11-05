@@ -1,11 +1,11 @@
 const { PrivateKey, RpcClient, ScriptBuilder, Opcodes,
     payToScriptHashScript, addressFromScriptPublicKey,
     createTransaction, signTransaction,
-    Encoding} = require('./kaspa');
+    Encoding} = require('./celenium');
 
 // Configuration
 const NETWORK_ID = 'devnet';
-const RPC_URL = 'ws://127.0.0.1:17610';
+const RPC_URL = 'ws://127.0.0.1:27610';
 const PRIVATE_KEY = 'b99d75736a0fd0ae2da658959813d680474f5a740a9c970a7da867141596178f';
 
 // ZK Proof configuration - Hardcoded values

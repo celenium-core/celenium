@@ -109,6 +109,9 @@ pub struct Cli {
     #[arg(long)]
     pub config: Option<PathBuf>,
 
+    #[arg(long, help = "Skip waiting for node sync (solo/fresh chains)")]
+    pub skip_sync_wait: bool,
+
     #[arg(long)]
     pub testnet: bool,
 

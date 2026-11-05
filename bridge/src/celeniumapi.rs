@@ -605,9 +605,15 @@ impl CeleniumApi {
         Ok(())
     }
 
-    pub async fn wait_for_sync_with_shutdown(&self, mut shutdown_rx: watch::Receiver<bool>) -> Result<()> {
+    pub async fn wait_for_sync_with_shutdown(&self, mut shutdown_rx: watch::Receiver<bool>, skip_sync_wait: bool) -> Result<()> {
         debug!("checking celeniumd sync state");
-
+        if skip_sync_wait {
+            // Solo/fresh chains never report is_synced (sync rate 0 with no
+            // peers); mining rules already allow mining when the finality
+            // point is recent, so honoring the operator's flag here is safe.
+            tracing::warn!("--skip-sync-wait set: skipping the sync gate");
+            return Ok(());
+        }
         loop {
             let sync_fut = self.client.get_sync_status();
             let sync_res = tokio::select! {

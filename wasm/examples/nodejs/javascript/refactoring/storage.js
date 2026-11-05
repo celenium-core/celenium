@@ -1,6 +1,6 @@
 globalThis.WebSocket = require('websocket').w3cwebsocket; // W3C WebSocket module shim
 
-const kaspa = require('../kaspa/kaspa_wasm');
+const kaspa = require('../celenium/celenium_wasm');
 const {parseArgs} = require("../utils");
 kaspa.init_console_panic_hook();
 
@@ -45,7 +45,7 @@ kaspa.init_console_panic_hook();
     //     // await wallet.connect();
     //     await wallet.connect({
     //         // url : "ws://foobar",
-    //         url : "wrpc://127.0.0.1:17110",
+    //         url : "wrpc://127.0.0.1:27110",
     //         retry : false,
     //         block : true,
     //     });

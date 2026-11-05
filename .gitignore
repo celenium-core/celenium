@@ -16,3 +16,17 @@ Servers.toml
 release
 package-sizes.js
 rustbridge_*.log
+
+# Secrets guardrail: key material lives outside the repo (E:/ keys dir)
+premine-keys*
+*SECRET*
+.env
+.env.*
+*.pem
+*.p12
+cenium-keys/
+
+# Android/APK build artifacts (accidental extraction guardrail)
+*.apk
+*.dex
+*.aar

@@ -1,6 +1,6 @@
 :root {
-  --kaspa-primary: #70c7ba;
-  --kaspa-accent: #49eacb;
+  --celenium-primary: #70c7ba;
+  --celenium-accent: #49eacb;
   --surface-dark: rgba(15, 21, 30, 0.72);
   --surface-light: rgba(255, 255, 255, 0.92);
   --bg-gradient-start: #0f1319;
@@ -101,11 +101,11 @@ body::after {
 }
 
 .status-dot--loading {
-  background: var(--kaspa-primary);
+  background: var(--celenium-primary);
   box-shadow: 0 0 0 3px rgba(112, 199, 186, 0.18);
 }
 
-.kaspa-primary { color: var(--kaspa-primary); }
+.celenium-primary { color: var(--celenium-primary); }
 .bg-surface-1,
 .bg-surface-2 {
   backdrop-filter: blur(18px);
@@ -132,9 +132,9 @@ body::after {
   border-color: var(--border-strong);
 }
 
-.border-kaspa-primary { border-color: var(--kaspa-primary); }
-.bg-kaspa-primary { background-color: var(--kaspa-primary); }
-.hover-bg-kaspa-primary:hover { background-color: var(--kaspa-accent); }
+.border-celenium-primary { border-color: var(--celenium-primary); }
+.bg-celenium-primary { background-color: var(--celenium-primary); }
+.hover-bg-celenium-primary:hover { background-color: var(--celenium-accent); }
 
 button,
 a {
@@ -210,14 +210,14 @@ pre#raw {
   tbody tr {
     transition: none;
   }
-  .rk-logo:hover {
+  .celenium-logo:hover {
     animation: none;
   }
 }
 
 .loader {
   border: 4px solid rgba(255, 255, 255, 0.1);
-  border-top: 4px solid var(--kaspa-primary);
+  border-top: 4px solid var(--celenium-primary);
   border-radius: 50%;
   width: 22px;
   height: 22px;
@@ -229,16 +229,16 @@ pre#raw {
   100% { transform: rotate(360deg); }
 }
 
-.rk-logo {
+.celenium-logo {
   display: inline-block;
   transform-origin: 50% 50%;
 }
 
-.rk-logo:hover {
-  animation: rk-logo-bounce 700ms ease-in-out;
+.celenium-logo:hover {
+  animation: celenium-logo-bounce 700ms ease-in-out;
 }
 
-@keyframes rk-logo-bounce {
+@keyframes celenium-logo-bounce {
   0% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
   20% { transform: translate3d(0, -2px, 0) rotate(-6deg) scale(1.05); }
   45% { transform: translate3d(0, 0, 0) rotate(6deg) scale(1.04); }
@@ -248,5 +248,5 @@ pre#raw {
 
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: var(--bg-1); }
-::-webkit-scrollbar-thumb { background: var(--kaspa-primary); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--kaspa-accent); }
+::-webkit-scrollbar-thumb { background: var(--celenium-primary); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--celenium-accent); }

@@ -7,7 +7,7 @@ use itertools::Itertools;
 use celenium_addresses::{Address, Prefix, Version};
 use celenium_consensus_core::{
     config::params::TESTNET_PARAMS,
-    constants::{SOMPI_PER_CELENIUM, TX_VERSION, TX_VERSION_TOCCATA},
+    constants::{PRADHA_PER_CELENIUM, TX_VERSION, TX_VERSION_TOCCATA},
     hashing::covenant_id::covenant_id,
     network::NetworkType,
     sign::sign,
@@ -33,11 +33,11 @@ use tokio::time::{Instant, MissedTickBehavior, interval};
 
 mod gas;
 
-const DEFAULT_SEND_AMOUNT: u64 = 10 * SOMPI_PER_CELENIUM;
+const DEFAULT_SEND_AMOUNT: u64 = 10 * PRADHA_PER_CELENIUM;
 const MILLIS_PER_TICK: u64 = 10;
 const ADDRESS_VERSION: Version = Version::PubKey;
 
-// Minimum standard relay fee is 100 sompi/gram; use 110 for a safety margin.
+// Minimum standard relay fee is 100 pradha/gram; use 110 for a safety margin.
 const FEE_RATE: u64 = 110;
 
 // Mempool minimum relay fee uses post-Toccata cofactors immediately, so we normalize accordingly (factor / ratio between limits).

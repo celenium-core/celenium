@@ -69,8 +69,8 @@ celeniumd --archival --rocksdb-preset=hdd
 ```bash
 # Default preset, suitable for SSD
 celeniumd --archival \
-  --rpclisten-borsh=0.0.0.0:17110 \
-  --rpclisten-json=0.0.0.0:18110
+  --rpclisten-borsh=0.0.0.0:27110 \
+  --rpclisten-json=0.0.0.0:28110
 ```
 
 ### HDD-Optimized Archive Node
@@ -79,8 +79,8 @@ celeniumd --archival \
 celeniumd --archival \
   --rocksdb-preset=hdd \
   --ram-scale=1.0 \
-  --rpclisten-borsh=0.0.0.0:17110 \
-  --rpclisten-json=0.0.0.0:18110
+  --rpclisten-borsh=0.0.0.0:27110 \
+  --rpclisten-json=0.0.0.0:28110
 ```
 
 ## Performance Tuning
@@ -159,14 +159,14 @@ celeniumd --archival --rocksdb-preset=hdd --rocksdb-cache-size=2048  # 2GB cache
 
 ### Check Archive Status
 ```bash
-# Using kaspa-cli (if installed)
-kaspa-cli getinfo
+# Using celenium (if installed)
+celenium getinfo
 
 # Check logs
 journalctl -u celeniumd -f
 
 # Check disk usage
-du -sh ~/.kaspa/kaspa-mainnet/datadir/
+du -sh ~/.celenium/celenium-mainnet/datadir/
 ```
 
 ### Performance Metrics
@@ -194,24 +194,24 @@ version: '3.8'
 
 services:
   celeniumd-archive:
-    image: kaspanet/celeniumd:latest
+    image: celeniumd:latest
     container_name: celeniumd-archive
     restart: unless-stopped
     command:
       - --archival
       - --rocksdb-preset=hdd
       - --ram-scale=1.0
-      - --rpclisten-borsh=0.0.0.0:17110
-      - --rpclisten-json=0.0.0.0:18110
+      - --rpclisten-borsh=0.0.0.0:27110
+      - --rpclisten-json=0.0.0.0:28110
       - --utxoindex
     volumes:
-      - /mnt/hdd/kaspa-archive:/app/data
+      - /mnt/hdd/celenium-archive:/app/data
     ports:
-      - "16111:16111"  # P2P
-      - "17110:17110"  # RPC Borsh
-      - "18110:18110"  # RPC JSON
+      - "26111:26111"  # P2P
+      - "27110:27110"  # RPC Borsh
+      - "28110:28110"  # RPC JSON
     environment:
-      - KASPAD_APPDIR=/app/data
+      - CELENIUMD_APPDIR=/app/data
 ```
 
 Run with: `docker-compose up -d`
@@ -236,16 +236,16 @@ echo "mq-deadline" | sudo tee /sys/block/sda/queue/scheduler
 docker run -d \
   --name celeniumd-archive \
   --restart unless-stopped \
-  -v /mnt/hdd/kaspa-archive:/app/data \
-  -p 16111:16111 \
-  -p 17110:17110 \
-  -p 18110:18110 \
-  kaspanet/celeniumd:latest \
+  -v /mnt/hdd/celenium-archive:/app/data \
+  -p 26111:26111 \
+  -p 27110:27110 \
+  -p 28110:28110 \
+  celeniumd:latest \
     --archival \
     --rocksdb-preset=hdd \
     --ram-scale=1.0 \
-    --rpclisten-borsh=0.0.0.0:17110 \
-    --rpclisten-json=0.0.0.0:18110 \
+    --rpclisten-borsh=0.0.0.0:27110 \
+    --rpclisten-json=0.0.0.0:28110 \
     --appdir=/app/data
 ```
 
@@ -261,15 +261,15 @@ After=network.target
 
 [Service]
 Type=simple
-User=kaspa
-Group=kaspa
+User=celenium
+Group=celenium
 ExecStart=/usr/local/bin/celeniumd \
   --archival \
   --rocksdb-preset=hdd \
   --ram-scale=1.0 \
-  --appdir=/mnt/hdd/kaspa-archive \
-  --rpclisten-borsh=0.0.0.0:17110 \
-  --rpclisten-json=0.0.0.0:18110 \
+  --appdir=/mnt/hdd/celenium-archive \
+  --rpclisten-borsh=0.0.0.0:27110 \
+  --rpclisten-json=0.0.0.0:28110 \
   --utxoindex
 Restart=always
 RestartSec=10

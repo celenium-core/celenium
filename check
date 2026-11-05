@@ -12,7 +12,7 @@ if [ $status -ne 0 ]; then
 fi
 
 declare -a crates=(
-    "kaspa-wasm"
+    "celenium-wasm"
 )
 
 for crate in "${crates[@]}"
@@ -28,11 +28,11 @@ do
 done
 
 declare -a crates=(
-    "kaspa-wrpc-wasm"
-    "kaspa-wallet-cli-wasm"
-    "kaspa-wasm"
-    "kaspa-cli"
-    "kaspa-daemon"
+    "celenium-wrpc-wasm"
+    "celenium-wallet-cli-wasm"
+    "celenium-wasm"
+    "celenium-cli"
+    "celenium-daemon"
 )
 
 for crate in "${crates[@]}"
@@ -55,11 +55,11 @@ declare -a features=(
 
 for feature in "${features[@]}"
 do
-    cargo clippy -p kaspa-wasm --target wasm32-unknown-unknown --features $feature
+    cargo clippy -p celenium-wasm --target wasm32-unknown-unknown --features $feature
     status=$?
     if [ $status -ne 0 ]; then
         echo
-        echo "--> wasm32 check of kaspa-wasm --features $feature has failed"
+        echo "--> wasm32 check of celenium-wasm --features $feature has failed"
         echo
         exit $status
     fi
@@ -73,9 +73,9 @@ done
 # wasm-only test break (e.g. the wasm-bindgen 0.2.x `into_abi()` ABI change)
 # reaches CI undetected. Keep this list in sync with the CI test-wasm32 job.
 declare -a wasm_test_crates=(
-    "kaspa-consensus-core"
-    "kaspa-addresses"
-    "kaspa-wallet-pskt"
+    "celenium-consensus-core"
+    "celenium-addresses"
+    "celenium-wallet-pskt"
 )
 
 for crate in "${wasm_test_crates[@]}"
@@ -92,8 +92,8 @@ done
 
 # Same as above, for the wasm32 test suites that require the wasm32-sdk feature.
 declare -a wasm_test_crates_sdk=(
-    "kaspa-txscript"
-    "kaspa-consensus-client"
+    "celenium-txscript"
+    "celenium-consensus-client"
 )
 
 for crate in "${wasm_test_crates_sdk[@]}"

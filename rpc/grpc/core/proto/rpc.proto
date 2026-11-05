@@ -141,7 +141,7 @@ enum RpcNotifyCommand {
   NOTIFY_STOP = 1;
 }
 
-// GetCurrentNetworkRequestMessage requests the network kaspad is currently running against.
+// GetCurrentNetworkRequestMessage requests the network celeniumd is currently running against.
 //
 // Possible networks are: Mainnet, Testnet, Simnet, Devnet
 message GetCurrentNetworkRequestMessage {}
@@ -183,9 +183,9 @@ message GetBlockTemplateRequestMessage {
 message GetBlockTemplateResponseMessage {
   RpcBlock block = 3;
 
-  // Whether kaspad thinks that it's synced.
-  // Callers are discouraged (but not forbidden) from solving blocks when kaspad is not synced.
-  // That is because when kaspad isn't in sync with the rest of the network there's a high
+  // Whether celeniumd thinks that it's synced.
+  // Callers are discouraged (but not forbidden) from solving blocks when celeniumd is not synced.
+  // That is because when celeniumd isn't in sync with the rest of the network there's a high
   // chance the block will never be accepted, thus the solving effort would have been wasted.
   bool isSynced = 2;
 
@@ -211,7 +211,7 @@ message BlockAddedNotificationMessage {
   RpcBlock block = 3;
 }
 
-// GetPeerAddressesRequestMessage requests the list of known kaspad addresses in the
+// GetPeerAddressesRequestMessage requests the list of known celeniumd addresses in the
 // current network. (mainnet, testnet, etc.)
 message GetPeerAddressesRequestMessage {}
 
@@ -269,7 +269,7 @@ message RpcMempoolEntry {
 }
 
 // GetConnectedPeerInfoRequestMessage requests information about all the p2p peers
-// currently connected to this kaspad.
+// currently connected to this celeniumd.
 message GetConnectedPeerInfoRequestMessage {}
 
 message GetConnectedPeerInfoResponseMessage {
@@ -284,7 +284,7 @@ message GetConnectedPeerInfoMessage {
   // How long did the last ping/pong exchange take
   int64 lastPingDuration = 3;
 
-  // Whether this kaspad initiated the connection
+  // Whether this celeniumd initiated the connection
   bool isOutbound = 6;
   int64 timeOffset = 7;
   string userAgent = 8;
@@ -292,15 +292,15 @@ message GetConnectedPeerInfoMessage {
   // The protocol version that this peer claims to support
   uint32 advertisedProtocolVersion = 9;
 
-  // The timestamp of when this peer connected to this kaspad
+  // The timestamp of when this peer connected to this celeniumd
   int64 timeConnected = 10;
 
   // Whether this peer is the IBD peer (if IBD is running)
   bool isIbdPeer = 11;
 }
 
-// AddPeerRequestMessage adds a peer to kaspad's outgoing connection list.
-// This will, in most cases, result in kaspad connecting to said peer.
+// AddPeerRequestMessage adds a peer to celeniumd's outgoing connection list.
+// This will, in most cases, result in celeniumd connecting to said peer.
 message AddPeerRequestMessage {
   string address = 1;
 
@@ -394,7 +394,7 @@ message GetSubnetworkResponseMessage {
 }
 
 /// GetVirtualChainFromBlockRequestMessage requests the virtual selected
-/// parent chain from some startHash to this kaspad's current virtual
+/// parent chain from some startHash to this celeniumd's current virtual
 /// Note:
 ///     this call batches the response to:
 ///         a. the network's `mergeset size limit * 10` amount of added chain blocks, if `includeAcceptedTransactionIds = false`
@@ -426,7 +426,7 @@ message GetVirtualChainFromBlockResponseMessage {
 }
 
 // GetBlocksRequestMessage requests blocks between a certain block lowHash up to this
-// kaspad's current virtual.
+// celeniumd's current virtual.
 message GetBlocksRequestMessage {
   string lowHash = 1;
   bool includeBlocks = 2;
@@ -439,7 +439,7 @@ message GetBlocksResponseMessage {
   RPCError error = 1000;
 }
 
-// GetBlockCountRequestMessage requests the current number of blocks in this kaspad.
+// GetBlockCountRequestMessage requests the current number of blocks in this celeniumd.
 // Note that this number may decrease as pruning occurs.
 message GetBlockCountRequestMessage {}
 
@@ -450,7 +450,7 @@ message GetBlockCountResponseMessage {
 }
 
 // GetBlockDagInfoRequestMessage requests general information about the current state
-// of this kaspad's DAG.
+// of this celeniumd's DAG.
 message GetBlockDagInfoRequestMessage {}
 
 message GetBlockDagInfoResponseMessage {
@@ -491,7 +491,7 @@ message FinalityConflictResolvedNotificationMessage {
   string finalityBlockHash = 1;
 }
 
-// ShutdownRequestMessage shuts down this kaspad.
+// ShutdownRequestMessage shuts down this celeniumd.
 message ShutdownRequestMessage {}
 
 message ShutdownResponseMessage {
@@ -514,7 +514,7 @@ message GetHeadersResponseMessage {
 // NotifyUtxosChangedRequestMessage registers this connection for utxoChanged notifications
 // for the given addresses.
 //
-// This call is only available when this kaspad was started with `--utxoindex`
+// This call is only available when this celeniumd was started with `--utxoindex`
 //
 // See: UtxosChangedNotificationMessage
 message NotifyUtxosChangedRequestMessage {
@@ -545,11 +545,11 @@ message RpcUtxosByAddressesEntry {
 // StopNotifyingUtxosChangedRequestMessage unregisters this connection for utxoChanged notifications
 // for the given addresses.
 //
-// This call is only available when this kaspad was started with `--utxoindex`
+// This call is only available when this celeniumd was started with `--utxoindex`
 //
 // See: UtxosChangedNotificationMessage
 //
-// This message only exists for backward compatibility reason with kaspad and is deprecated.
+// This message only exists for backward compatibility reason with celeniumd and is deprecated.
 // Use instead UtxosChangedNotificationMessage with command = NOTIFY_STOP.
 message StopNotifyingUtxosChangedRequestMessage {
   repeated string addresses = 1;
@@ -559,9 +559,9 @@ message StopNotifyingUtxosChangedResponseMessage {
   RPCError error = 1000;
 }
 
-// GetUtxosByAddressesRequestMessage requests all current UTXOs for the given kaspad addresses
+// GetUtxosByAddressesRequestMessage requests all current UTXOs for the given celeniumd addresses
 //
-// This call is only available when this kaspad was started with `--utxoindex`
+// This call is only available when this celeniumd was started with `--utxoindex`
 message GetUtxosByAddressesRequestMessage {
   repeated string addresses = 1;
 }
@@ -575,7 +575,7 @@ message GetUtxosByAddressesResponseMessage {
 // GetUtxosByAddressesV2RequestMessage requests UTXOs for multiple addresses,
 // optionally bounded by an inclusive DAA-score range.
 //
-// This call is only available when this kaspad was started with `--utxoindex`.
+// This call is only available when this celeniumd was started with `--utxoindex`.
 message GetUtxosByAddressesV2RequestMessage {
   // Addresses to query UTXOs for. Note an empty set of addresses is considered an invalid query.
   // max addresses without requiring --unsafe-rpc flag on the node is 5_000
@@ -617,7 +617,7 @@ message RpcGetUtxosByAddressesCursor {
 
 // GetBalanceByAddressRequest returns the total balance in unspent transactions towards a given address
 //
-// This call is only available when this kaspad was started with `--utxoindex`
+// This call is only available when this celeniumd was started with `--utxoindex`
 message GetBalanceByAddressRequestMessage {
   string address = 1;
 }
@@ -698,7 +698,7 @@ message VirtualDaaScoreChangedNotificationMessage {
 // NotifyPruningPointUtxoSetOverrideRequestMessage registers this connection for
 // pruning point UTXO set override notifications.
 //
-// This call is only available when this kaspad was started with `--utxoindex`
+// This call is only available when this celeniumd was started with `--utxoindex`
 //
 // See: NotifyPruningPointUtxoSetOverrideResponseMessage
 message NotifyPruningPointUtxoSetOverrideRequestMessage {
@@ -718,11 +718,11 @@ message PruningPointUtxoSetOverrideNotificationMessage {}
 // StopNotifyingPruningPointUtxoSetOverrideRequestMessage unregisters this connection for
 // pruning point UTXO set override notifications.
 //
-// This call is only available when this kaspad was started with `--utxoindex`
+// This call is only available when this celeniumd was started with `--utxoindex`
 //
 // See: PruningPointUtxoSetOverrideNotificationMessage
 //
-// This message only exists for backward compatibility reason with kaspad and is deprecated.
+// This message only exists for backward compatibility reason with celeniumd and is deprecated.
 // Use instead NotifyPruningPointUtxoSetOverrideRequestMessage with command = NOTIFY_STOP.
 message StopNotifyingPruningPointUtxoSetOverrideRequestMessage {}
 
@@ -811,8 +811,8 @@ message GetMempoolEntriesByAddressesResponseMessage {
 message GetCoinSupplyRequestMessage {}
 
 message GetCoinSupplyResponseMessage {
-  uint64 maxSompi = 1; // note: this is a hard coded maxSupply, actual maxSupply is expected to deviate by upto -5%, but cannot be measured exactly.
-  uint64 circulatingSompi = 2;
+  uint64 maxPradha = 1; // note: this is a hard coded maxSupply, actual maxSupply is expected to deviate by upto -5%, but cannot be measured exactly.
+  uint64 circulatingPradha = 2;
 
   RPCError error = 1000;
 }
@@ -959,14 +959,14 @@ message GetDaaScoreTimestampEstimateResponseMessage {
 }
 
 message RpcFeerateBucket {
-  // Fee/mass of a transaction in `sompi/gram` units
+  // Fee/mass of a transaction in `pradha/gram` units
   double feerate = 1;
   double estimatedSeconds = 2;
 }
 
 // Data required for making fee estimates.
 //
-// Feerate values represent fee/mass of a transaction in `sompi/gram` units.
+// Feerate values represent fee/mass of a transaction in `pradha/gram` units.
 // Given a feerate value recommendation, calculate the required fee by
 // taking the transaction mass and multiplying it by feerate: `fee = feerate * mass(tx)`
 message RpcFeeEstimate {
@@ -1123,7 +1123,7 @@ message RpcChainBlockAcceptedTransactions {
 }
 
 /// GetVirtualChainFromBlockV2RequestMessage requests the virtual selected
-/// parent chain from some startHash to this kaspad's current virtual
+/// parent chain from some startHash to this celeniumd's current virtual
 message GetVirtualChainFromBlockV2RequestMessage {
   string startHash = 1;
 

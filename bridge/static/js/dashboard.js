@@ -285,7 +285,7 @@ function filterBlocksByDays(blocks, days) {
 
 function displayWorkerName(worker) {
   const w = String(worker ?? '').trim();
-  if (w === 'InternalCPU') return 'RKStratum CPU Miner';
+  if (w === 'InternalCPU') return 'Celenium CPU Miner';
   // Legacy Prometheus rows keyed by miner IP (pre-default-name fix).
   if (/^\d{1,3}(\.\d{1,3}){3}$/.test(w) || /^\d{1,3}(\.\d{1,3}){3}:\d+$/.test(w)) {
     return 'unnamed-asic';
@@ -419,7 +419,7 @@ function openRowDetailModal(title, rows) {
   body.innerHTML = (rows || []).map(({ label, value, copyValue }) => {
     const v = value == null || value === '' ? '-' : String(value);
     const copy = copyValue != null && String(copyValue) !== ''
-      ? `<button type="button" class="bg-surface-2 border border-card px-3 py-2 rounded-lg text-sm font-medium text-white hover:border-kaspa-primary shrink-0" data-copy-text="${escapeHtmlAttr(copyValue)}">Copy</button>`
+      ? `<button type="button" class="bg-surface-2 border border-card px-3 py-2 rounded-lg text-sm font-medium text-white hover:border-celenium-primary shrink-0" data-copy-text="${escapeHtmlAttr(copyValue)}">Copy</button>`
       : '';
     return `
       <div class="bg-surface-2 border border-card rounded-xl px-4 py-3">
@@ -667,7 +667,7 @@ function renderWalletSummary(stats, filter) {
         <div class="text-sm text-white break-all">${escapeHtmlAttr(f)}</div>
       </div>
       <div class="shrink-0">
-        <button type="button" class="bg-surface-1 border border-card px-3 py-1.5 rounded-lg text-xs font-medium text-white hover:border-kaspa-primary" data-copy-text="${escapeHtmlAttr(f)}">Copy</button>
+        <button type="button" class="bg-surface-1 border border-card px-3 py-1.5 rounded-lg text-xs font-medium text-white hover:border-celenium-primary" data-copy-text="${escapeHtmlAttr(f)}">Copy</button>
       </div>
     </div>
     <div class="mt-3 grid grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
@@ -797,7 +797,7 @@ async function refresh() {
     loader.style.display = 'none';
     setDot('online', 'Online');
 
-    document.getElementById('kaspadVersion').textContent = status.kaspad_version ?? '-';
+    document.getElementById('celeniumdVersion').textContent = status.celeniumd_version ?? '-';
     document.getElementById('instances').textContent = status.instances;
     setLastUpdated(Date.now(), false);
 
@@ -865,14 +865,14 @@ async function refresh() {
         <td class="py-1.5 pr-3">
           <div class="flex items-center gap-2 min-w-0">
             <span class="min-w-0 truncate" title="${escapeHtmlAttr(b.wallet || '')}">${escapeHtmlAttr(b.wallet || '-')}</span>
-            ${b.wallet ? `<button type="button" class="bg-surface-1 border border-card px-2 py-0.5 rounded text-xs hover:border-kaspa-primary shrink-0" data-copy-text="${escapeHtmlAttr(b.wallet)}">Copy</button>` : ''}
+            ${b.wallet ? `<button type="button" class="bg-surface-1 border border-card px-2 py-0.5 rounded text-xs hover:border-celenium-primary shrink-0" data-copy-text="${escapeHtmlAttr(b.wallet)}">Copy</button>` : ''}
           </div>
         </td>
         <td class="py-1.5 pr-3 font-mono" title="${escapeHtmlAttr(nonceInfo.title)}">${nonceInfo.display || '-'}</td>
         <td class="py-1.5 pr-3">
           <div class="flex items-center gap-2 min-w-0">
             <span class="font-mono min-w-0 truncate" title="${hashFull}">${hashShort}</span>
-            ${hashFull ? `<button type="button" class="bg-surface-1 border border-card px-2 py-0.5 rounded text-xs hover:border-kaspa-primary shrink-0" data-copy-text="${escapeHtmlAttr(hashFull)}">Copy</button>` : ''}
+            ${hashFull ? `<button type="button" class="bg-surface-1 border border-card px-2 py-0.5 rounded text-xs hover:border-celenium-primary shrink-0" data-copy-text="${escapeHtmlAttr(hashFull)}">Copy</button>` : ''}
           </div>
         </td>
       `;
@@ -929,7 +929,7 @@ async function refresh() {
         <td class="py-1.5 pr-3">
           <div class="flex items-center gap-2 min-w-0">
             <span class="min-w-0 truncate" title="${escapeHtmlAttr(wallet)}">${escapeHtmlAttr(wallet || '-')}</span>
-            ${wallet ? `<button type="button" class="bg-surface-1 border border-card px-2 py-0.5 rounded text-xs hover:border-kaspa-primary shrink-0" data-copy-text="${escapeHtmlAttr(wallet)}">Copy</button>` : ''}
+            ${wallet ? `<button type="button" class="bg-surface-1 border border-card px-2 py-0.5 rounded text-xs hover:border-celenium-primary shrink-0" data-copy-text="${escapeHtmlAttr(wallet)}">Copy</button>` : ''}
           </div>
         </td>
         <td class="py-1.5 pr-3">${formatHashrateHs(hashrateHs)}</td>
@@ -956,7 +956,7 @@ async function refresh() {
         <td class="py-1.5 pr-3">
           <div class="flex items-center gap-2 min-w-0">
             <span class="min-w-0 truncate" title="${escapeHtmlAttr(w.wallet || '')}">${escapeHtmlAttr(w.wallet || '-')}</span>
-            ${w.wallet ? `<button type="button" class="bg-surface-1 border border-card px-2 py-0.5 rounded text-xs hover:border-kaspa-primary shrink-0" data-copy-text="${String(w.wallet).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#39;')}">Copy</button>` : ''}
+            ${w.wallet ? `<button type="button" class="bg-surface-1 border border-card px-2 py-0.5 rounded text-xs hover:border-celenium-primary shrink-0" data-copy-text="${String(w.wallet).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#39;')}">Copy</button>` : ''}
           </div>
         </td>
         <td class="py-1.5 pr-3">${formatHashrateHs((w.hashrate || 0) * 1e9)}</td>
@@ -982,7 +982,7 @@ async function refresh() {
     setDot('offline', 'Offline');
     const cached = readCachedSnapshot();
     if (cached) {
-      document.getElementById('kaspadVersion').textContent = cached.status.kaspad_version ?? '-';
+      document.getElementById('celeniumdVersion').textContent = cached.status.celeniumd_version ?? '-';
       document.getElementById('instances').textContent = cached.status.instances ?? '-';
       setLastUpdated(cached.updatedMs, true);
       
@@ -1040,14 +1040,14 @@ async function refresh() {
         <td class="py-1.5 pr-3">
           <div class="flex items-center gap-2 min-w-0">
               <span class="min-w-0 truncate" title="${escapeHtmlAttr(b.wallet || '')}">${escapeHtmlAttr(b.wallet || '-')}</span>
-              ${b.wallet ? `<button type="button" class="bg-surface-1 border border-card px-2 py-0.5 rounded text-xs hover:border-kaspa-primary shrink-0" data-copy-text="${escapeHtmlAttr(b.wallet)}">Copy</button>` : ''}
+              ${b.wallet ? `<button type="button" class="bg-surface-1 border border-card px-2 py-0.5 rounded text-xs hover:border-celenium-primary shrink-0" data-copy-text="${escapeHtmlAttr(b.wallet)}">Copy</button>` : ''}
           </div>
         </td>
           <td class="py-1.5 pr-3 font-mono" title="${escapeHtmlAttr(nonceInfo.title)}">${nonceInfo.display || '-'}</td>
           <td class="py-1.5 pr-3">
             <div class="flex items-center gap-2 min-w-0">
               <span class="font-mono min-w-0 truncate" title="${hashFull}">${hashShort}</span>
-              ${hashFull ? `<button type="button" class="bg-surface-1 border border-card px-2 py-0.5 rounded text-xs hover:border-kaspa-primary shrink-0" data-copy-text="${escapeHtmlAttr(hashFull)}">Copy</button>` : ''}
+              ${hashFull ? `<button type="button" class="bg-surface-1 border border-card px-2 py-0.5 rounded text-xs hover:border-celenium-primary shrink-0" data-copy-text="${escapeHtmlAttr(hashFull)}">Copy</button>` : ''}
             </div>
           </td>
         `;
@@ -1104,7 +1104,7 @@ async function refresh() {
           <td class="py-1.5 pr-3">
             <div class="flex items-center gap-2 min-w-0">
               <span class="min-w-0 truncate" title="${escapeHtmlAttr(wallet)}">${escapeHtmlAttr(wallet || '-')}</span>
-              ${wallet ? `<button type="button" class="bg-surface-1 border border-card px-2 py-0.5 rounded text-xs hover:border-kaspa-primary shrink-0" data-copy-text="${escapeHtmlAttr(wallet)}">Copy</button>` : ''}
+              ${wallet ? `<button type="button" class="bg-surface-1 border border-card px-2 py-0.5 rounded text-xs hover:border-celenium-primary shrink-0" data-copy-text="${escapeHtmlAttr(wallet)}">Copy</button>` : ''}
             </div>
           </td>
           <td class="py-1.5 pr-3">${formatHashrateHs(hashrateHs)}</td>
@@ -1131,7 +1131,7 @@ async function refresh() {
           <td class="py-1.5 pr-3">
             <div class="flex items-center gap-2 min-w-0">
               <span class="min-w-0 truncate" title="${escapeHtmlAttr(w.wallet || '')}">${escapeHtmlAttr(w.wallet || '-')}</span>
-              ${w.wallet ? `<button type="button" class="bg-surface-1 border border-card px-2 py-0.5 rounded text-xs hover:border-kaspa-primary shrink-0" data-copy-text="${escapeHtmlAttr(w.wallet)}">Copy</button>` : ''}
+              ${w.wallet ? `<button type="button" class="bg-surface-1 border border-card px-2 py-0.5 rounded text-xs hover:border-celenium-primary shrink-0" data-copy-text="${escapeHtmlAttr(w.wallet)}">Copy</button>` : ''}
             </div>
           </td>
           <td class="py-1.5 pr-3">${formatHashrateHs((w.hashrate || 0) * 1e9)}</td>
@@ -1239,7 +1239,7 @@ document.addEventListener('click', async (e) => {
   if (kind === 'icpu') {
     const icpu = lastInternalCpuWorker;
     if (!icpu) return;
-    openRowDetailModal('RKStratum CPU Miner', [
+    openRowDetailModal('Celenium CPU Miner', [
       { label: 'Worker', value: displayWorkerName('InternalCPU'), copyValue: displayWorkerName('InternalCPU') },
       { label: 'Wallet', value: icpu.wallet || '-', copyValue: icpu.wallet || '' },
       { label: 'Hashrate', value: formatHashrateHs(icpu.hashrateHs || 0), copyValue: String(icpu.hashrateHs || 0) },
@@ -1374,7 +1374,7 @@ setInterval(() => {
 (function bootstrapFromCache() {
   const cached = readCachedSnapshot();
   if (!cached) return;
-  document.getElementById('kaspadVersion').textContent = cached.status.kaspad_version ?? '-';
+  document.getElementById('celeniumdVersion').textContent = cached.status.celeniumd_version ?? '-';
   document.getElementById('instances').textContent = cached.status.instances ?? '-';
   setLastUpdated(cached.updatedMs, true);
   
@@ -1419,14 +1419,14 @@ setInterval(() => {
       <td class="py-1.5 pr-3">
         <div class="flex items-center gap-2 min-w-0">
           <span class="min-w-0 truncate" title="${escapeHtmlAttr(b.wallet || '')}">${escapeHtmlAttr(b.wallet || '-')}</span>
-          ${b.wallet ? `<button type="button" class="bg-surface-1 border border-card px-2 py-0.5 rounded text-xs hover:border-kaspa-primary shrink-0" data-copy-text="${escapeHtmlAttr(b.wallet)}">Copy</button>` : ''}
+          ${b.wallet ? `<button type="button" class="bg-surface-1 border border-card px-2 py-0.5 rounded text-xs hover:border-celenium-primary shrink-0" data-copy-text="${escapeHtmlAttr(b.wallet)}">Copy</button>` : ''}
         </div>
       </td>
       <td class="py-1.5 pr-3 font-mono" title="${escapeHtmlAttr(nonceInfo.title)}">${nonceInfo.display || '-'}</td>
       <td class="py-1.5 pr-3">
         <div class="flex items-center gap-2 min-w-0">
           <span class="font-mono min-w-0 truncate" title="${hashFull}">${hashShort}</span>
-          ${hashFull ? `<button type="button" class="bg-surface-1 border border-card px-2 py-0.5 rounded text-xs hover:border-kaspa-primary shrink-0" data-copy-text="${escapeHtmlAttr(hashFull)}">Copy</button>` : ''}
+          ${hashFull ? `<button type="button" class="bg-surface-1 border border-card px-2 py-0.5 rounded text-xs hover:border-celenium-primary shrink-0" data-copy-text="${escapeHtmlAttr(hashFull)}">Copy</button>` : ''}
         </div>
       </td>
     `;
@@ -1477,7 +1477,7 @@ setInterval(() => {
       <td class="py-1.5 pr-3">
         <div class="flex items-center gap-2 min-w-0">
           <span class="min-w-0 truncate" title="${escapeHtmlAttr(w.wallet || '')}">${escapeHtmlAttr(w.wallet || '-')}</span>
-          ${w.wallet ? `<button type="button" class="bg-surface-1 border border-card px-2 py-0.5 rounded text-xs hover:border-kaspa-primary shrink-0" data-copy-text="${String(w.wallet).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#39;')}">Copy</button>` : ''}
+          ${w.wallet ? `<button type="button" class="bg-surface-1 border border-card px-2 py-0.5 rounded text-xs hover:border-celenium-primary shrink-0" data-copy-text="${String(w.wallet).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#39;')}">Copy</button>` : ''}
         </div>
       </td>
       <td class="py-1.5 pr-3">${formatHashrateHs((w.hashrate || 0) * 1e9)}</td>

@@ -2,7 +2,7 @@
 
 This Stratum Bridge is currently in BETA. Support is available in the Celenium Discord’s [#mining-and-hardware](https://discord.com/channels/599153230659846165/910178666099646584) channel.
 
-For bug reports or feature request, please open an issue at [`kaspanet/rusty-kaspa` issues](https://github.com/kaspanet/rusty-kaspa/issues) and prefix your issue title with `[Bridge]`.
+For bug reports or feature request, please open an issue at [`dimas405/celenium` issues](https://github.com/dimas405/celenium/issues) and prefix your issue title with `[Bridge]`.
 
 This repository contains a standalone Stratum bridge binary at:
 
@@ -24,10 +24,10 @@ If you are running from GitHub Releases (without `cargo run`):
 
 ```bash
 # Linux/macOS
-./stratum-bridge --config bridge/config.yaml --node-mode inprocess -- --utxoindex --rpclisten=127.0.0.1:16110
+./stratum-bridge --config bridge/config.yaml --node-mode inprocess -- --utxoindex --rpclisten=127.0.0.1:26110
 
 # Windows (PowerShell)
-.\stratum-bridge.exe --config bridge/config.yaml --node-mode inprocess -- --utxoindex --rpclisten=127.0.0.1:16110
+.\stratum-bridge.exe --config bridge/config.yaml --node-mode inprocess -- --utxoindex --rpclisten=127.0.0.1:26110
 ```
 
 Then run in external mode:
@@ -53,7 +53,7 @@ The sample configuration file is:
 `bridge/config.yaml`
 
 **Note:** If no config file is found, the bridge uses code defaults:
-- Default `celeniumd_address`: `localhost:16110` (code default) or `127.0.0.1:16110` (as in `config.yaml`)
+- Default `celeniumd_address`: `localhost:26110` (code default) or `127.0.0.1:26110` (as in `config.yaml`)
 - Default `node_mode`: `inprocess` (if `--node-mode` is not specified)
 - Default `web_dashboard_port`: empty (dashboard disabled unless configured)
 
@@ -85,7 +85,7 @@ cargo run --bin stratum-bridge --release
 Run in-process with explicit config and celeniumd args:
 
 ```bash
-cargo run -p celenium-stratum-bridge --release --bin stratum-bridge -- --config bridge/config.yaml --node-mode inprocess -- --utxoindex --rpclisten=127.0.0.1:16110
+cargo run -p celenium-stratum-bridge --release --bin stratum-bridge -- --config bridge/config.yaml --node-mode inprocess -- --utxoindex --rpclisten=127.0.0.1:26110
 ```
 
 **Important:** Use `--` separator before celeniumd arguments. Arguments starting with hyphens must come after the `--` separator.
@@ -93,10 +93,10 @@ cargo run -p celenium-stratum-bridge --release --bin stratum-bridge -- --config 
 **Examples:**
 ```bash
 # ✓ Correct - bridge args first, then --, then celeniumd args
-cargo run --release --bin stratum-bridge -- --config config.yaml --node-mode inprocess -- --utxoindex --rpclisten=127.0.0.1:16110
+cargo run --release --bin stratum-bridge -- --config config.yaml --node-mode inprocess -- --utxoindex --rpclisten=127.0.0.1:26110
 
 # ✗ Incorrect - will show error message
-cargo run --release --bin stratum-bridge -- --rpclisten=127.0.0.1:16110 --config config.yaml --node-mode inprocess
+cargo run --release --bin stratum-bridge -- --rpclisten=127.0.0.1:26110 --config config.yaml --node-mode inprocess
 # Error: tip: to pass '--rpclisten' as a value, use '-- --rpclisten'
 ```
 
@@ -105,7 +105,7 @@ cargo run --release --bin stratum-bridge -- --rpclisten=127.0.0.1:16110 --config
 If you want to override it, pass `--appdir` to the bridge (before the `--` separator):
 
 ```bash
-cargo run --release --bin stratum-bridge -- --config bridge/config.yaml --node-mode inprocess --appdir "C:\path\to\custom\datadir" -- --utxoindex --rpclisten=127.0.0.1:16110
+cargo run --release --bin stratum-bridge -- --config bridge/config.yaml --node-mode inprocess --appdir "C:\path\to\custom\datadir" -- --utxoindex --rpclisten=127.0.0.1:26110
 ```
 
 ### Run (external node)
@@ -113,7 +113,7 @@ cargo run --release --bin stratum-bridge -- --config bridge/config.yaml --node-m
 Terminal A (node):
 
 ```bash
-cargo run --release --bin celeniumd -- --utxoindex --rpclisten=127.0.0.1:16110
+cargo run --release --bin celeniumd -- --utxoindex --rpclisten=127.0.0.1:26110
 ```
 
 Terminal B (bridge):
@@ -137,7 +137,7 @@ Recommended setup:
 Example (external bridge on `:3031` + Stratum `:16120`):
 
 ```bash
-cargo run -p celenium-stratum-bridge --release --features rkstratum_cpu_miner --bin stratum-bridge -- --config config.yaml --web-dashboard-port :3031 --node-mode external --celeniumd-address 127.0.0.1:16210 --instance "port=:16120,diff=1" --internal-cpu-miner --internal-cpu-miner-address "celeniumtest:address" --internal-cpu-miner-threads 1
+cargo run -p celenium-stratum-bridge --release --features rkstratum_cpu_miner --bin stratum-bridge -- --config config.yaml --web-dashboard-port :3031 --node-mode external --celeniumd-address 127.0.0.1:26210 --instance "port=:16120,diff=1" --internal-cpu-miner --internal-cpu-miner-address "celeniumtest:address" --internal-cpu-miner-threads 1
 ```
 
 Open:

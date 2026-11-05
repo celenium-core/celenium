@@ -10,7 +10,7 @@ The seeder hostname resolves through the system resolver, so this run maps it
 to 127.0.0.1 via /etc/hosts. Nothing here proves public reachability, which
 needs a seed node on a public IP.
 
-Run from the build dir after ceniumd is rebuilt with dns_seeders populated.
+Run from the build dir after celeniumd is rebuilt with dns_seeders populated.
 """
 import os
 import shutil
@@ -19,10 +19,10 @@ import subprocess
 import sys
 import time
 
-BUILD = "/home/dx401/cenium-build"
+BUILD = "/home/dx401/celenium-build"
 BIN = f"{BUILD}/target/release/celeniumd"
 SCRATCH = "/home/dx401/.hermes/profiles/devops/cache/scratch/dnsseed"
-SEEDER_HOST = "seed.celium.test"
+SEEDER_HOST = "seed.celenium.test"
 
 # The seed listens on the testnet-10 default port so the seeder hostname,
 # which carries no port, resolves straight to it.

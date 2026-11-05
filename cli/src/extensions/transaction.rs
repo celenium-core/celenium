@@ -127,7 +127,7 @@ impl TransactionExtension for TransactionRecord {
             | TransactionData::External { utxo_entries, aggregate_input_value }
             | TransactionData::Change { utxo_entries, aggregate_input_value, .. } => {
                 let aggregate_input_value =
-                    transaction_type.style_with_sign(sompi_to_celenium_string(*aggregate_input_value).as_str(), history);
+                    transaction_type.style_with_sign(pradha_to_celenium_string(*aggregate_input_value).as_str(), history);
                 lines.push(format!("{:>4}UTXOs: {}  Total: {}", "", utxo_entries.len(), aggregate_input_value));
                 if include_utxos {
                     for utxo_entry in utxo_entries {
@@ -140,7 +140,7 @@ impl TransactionExtension for TransactionRecord {
                         } else {
                             style(format!("standard utxo [{index}]")).dim()
                         };
-                        let amount = transaction_type.style_with_sign(sompi_to_celenium_string(utxo_entry.amount).as_str(), history);
+                        let amount = transaction_type.style_with_sign(pradha_to_celenium_string(utxo_entry.amount).as_str(), history);
 
                         lines.push(format!("{:>4}{address}", ""));
                         lines.push(format!("{:>4}{amount} {suffix} {is_coinbase}", ""));
@@ -155,10 +155,10 @@ impl TransactionExtension for TransactionRecord {
                     lines.push(format!(
                         "{:>4}Payment: {}  Used: {}  Fees: {}  Change: {}  UTXOs: [{}↠{}]",
                         "",
-                        style(sompi_to_celenium_string(*payment_value)).red(),
-                        style(sompi_to_celenium_string(*aggregate_input_value)).blue(),
-                        style(sompi_to_celenium_string(*fees)).red(),
-                        style(sompi_to_celenium_string(*change_value)).green(),
+                        style(pradha_to_celenium_string(*payment_value)).red(),
+                        style(pradha_to_celenium_string(*aggregate_input_value)).blue(),
+                        style(pradha_to_celenium_string(*fees)).red(),
+                        style(pradha_to_celenium_string(*change_value)).green(),
                         transaction.inputs.len(),
                         transaction.outputs.len(),
                     ));
@@ -166,9 +166,9 @@ impl TransactionExtension for TransactionRecord {
                     lines.push(format!(
                         "{:>4}Sweep: {}  Fees: {}  Change: {}  UTXOs: [{}↠{}]",
                         "",
-                        style(sompi_to_celenium_string(*aggregate_input_value)).blue(),
-                        style(sompi_to_celenium_string(*fees)).red(),
-                        style(sompi_to_celenium_string(*change_value)).green(),
+                        style(pradha_to_celenium_string(*aggregate_input_value)).blue(),
+                        style(pradha_to_celenium_string(*fees)).red(),
+                        style(pradha_to_celenium_string(*change_value)).green(),
                         transaction.inputs.len(),
                         transaction.outputs.len(),
                     ));

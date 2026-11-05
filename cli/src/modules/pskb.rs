@@ -38,9 +38,9 @@ impl Pskb {
                 let _ = ctx.notifier().show(Notification::Processing).await;
 
                 let address = Address::try_from(argv.first().unwrap().as_str())?;
-                let amount_sompi = try_parse_required_nonzero_celenium_as_sompi_u64(argv.get(1))?;
-                let outputs = PaymentOutputs::from((address, amount_sompi));
-                let priority_fee_sompi = try_parse_optional_celenium_as_sompi_i64(argv.get(2))?.unwrap_or(0);
+                let amount_pradha = try_parse_required_nonzero_celenium_as_pradha_u64(argv.get(1))?;
+                let outputs = PaymentOutputs::from((address, amount_pradha));
+                let priority_fee_pradha = try_parse_optional_celenium_as_pradha_i64(argv.get(2))?.unwrap_or(0);
                 let abortable = Abortable::default();
 
                 let account: Arc<dyn Account> = ctx.wallet().account()?;
@@ -49,7 +49,7 @@ impl Pskb {
                         outputs.into(),
                         // fee_rate
                         None,
-                        priority_fee_sompi.into(),
+                        priority_fee_pradha.into(),
                         None,
                         wallet_secret.clone(),
                         payment_secret.clone(),
@@ -91,18 +91,18 @@ impl Pskb {
 
                 match subcommand.as_str() {
                     "lock" => {
-                        let amount_sompi = try_parse_required_nonzero_celenium_as_sompi_u64(argv.first())?;
-                        let outputs = PaymentOutputs::from((script_p2sh, amount_sompi));
+                        let amount_pradha = try_parse_required_nonzero_celenium_as_pradha_u64(argv.first())?;
+                        let outputs = PaymentOutputs::from((script_p2sh, amount_pradha));
                         // TODO fee_rate
                         let fee_rate = None;
-                        let priority_fee_sompi = try_parse_optional_celenium_as_sompi_i64(argv.get(1))?.unwrap_or(0);
+                        let priority_fee_pradha = try_parse_optional_celenium_as_pradha_i64(argv.get(1))?.unwrap_or(0);
                         let abortable = Abortable::default();
 
                         let signer = account
                             .pskb_from_send_generator(
                                 outputs.into(),
                                 fee_rate,
-                                priority_fee_sompi.into(),
+                                priority_fee_pradha.into(),
                                 None,
                                 wallet_secret.clone(),
                                 payment_secret.clone(),
@@ -123,7 +123,7 @@ impl Pskb {
                         // Get locked UTXO set.
                         let spend_utxos: Vec<celenium_rpc_core::RpcUtxosByAddressesEntry> =
                             ctx.wallet().rpc_api().get_utxos_by_addresses(vec![script_p2sh.clone()]).await?;
-                        let priority_fee_sompi = try_parse_optional_celenium_as_sompi_i64(argv.first())?.unwrap_or(0) as u64;
+                        let priority_fee_pradha = try_parse_optional_celenium_as_pradha_i64(argv.first())?.unwrap_or(0) as u64;
 
                         if spend_utxos.is_empty() {
                             twarnln!(ctx, "No locked UTXO set found.");
@@ -133,18 +133,18 @@ impl Pskb {
                         let references: Vec<(UtxoEntry, TransactionOutpoint)> =
                             spend_utxos.iter().map(|entry| (entry.utxo_entry.clone().into(), entry.outpoint.into())).collect();
 
-                        let total_locked_sompi: u64 = spend_utxos.iter().map(|entry| entry.utxo_entry.amount).sum();
+                        let total_locked_pradha: u64 = spend_utxos.iter().map(|entry| entry.utxo_entry.amount).sum();
 
                         tprintln!(
                             ctx,
-                            "{} locked UTXO{} found with total amount of {} KAS",
+                            "{} locked UTXO{} found with total amount of {} CEN",
                             spend_utxos.len(),
                             if spend_utxos.len() == 1 { "" } else { "s" },
-                            sompi_to_celenium(total_locked_sompi)
+                            pradha_to_celenium(total_locked_pradha)
                         );
 
                         // Sweep UTXO set.
-                        match unlock_utxos_as_pskb(references, &receive_address, script_sig, priority_fee_sompi as u64) {
+                        match unlock_utxos_as_pskb(references, &receive_address, script_sig, priority_fee_pradha as u64) {
                             Ok(pskb) => {
                                 let pskb_hex = pskb.serialize()?;
                                 tprintln!(ctx, "{pskb_hex}");
@@ -218,7 +218,7 @@ impl Pskb {
                     return self.display_help(ctx, argv).await;
                 }
                 let pskb = Self::parse_input_pskb(argv.first().unwrap().as_str())?;
-                tprintln!(ctx, "{}", pskb.display_format(ctx.wallet().network_id()?, sompi_to_celenium_string_with_suffix));
+                tprintln!(ctx, "{}", pskb.display_format(ctx.wallet().network_id()?, pradha_to_celenium_string_with_suffix));
 
                 for (pskt_index, bundle_inner) in pskb.0.iter().enumerate() {
                     tprintln!(ctx, "PSKT #{:03} finalized check:", pskt_index + 1);

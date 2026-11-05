@@ -14,7 +14,7 @@
 //! Usage:
 //!   tx_e2e --url grpc://127.0.0.1:26510 \
 //!          --privkey-file /path/to/hex \
-//!          --to celeniumsim:qq... --amount 1000000000000 --fee 1000000
+//!          --to cen69sim:qq... --amount 1000000000000 --fee 1000000
 
 use celenium_addresses::{Address, Prefix, Version};
 use celenium_consensus_core::constants::{MAX_TX_IN_SEQUENCE_NUM, TX_VERSION};
@@ -61,10 +61,10 @@ fn parse_args() -> Result<Args, String> {
         }
     }
     if privkey_file.is_empty() {
-        return Err("usage: tx_e2e --privkey-file <hex> [--check-only] | --to <address> --amount <sompi>".into());
+        return Err("usage: tx_e2e --privkey-file <hex> [--check-only] | --to <address> --amount <pradha>".into());
     }
     if !check_only && (to.is_empty() || amount == 0) {
-        return Err("usage: tx_e2e --privkey-file <hex> --to <address> --amount <sompi> [--url ...] [--fee ...]".into());
+        return Err("usage: tx_e2e --privkey-file <hex> --to <address> --amount <pradha> [--url ...] [--fee ...]".into());
     }
     Ok(Args { url, privkey_file, to, amount, fee, check_only })
 }
@@ -90,8 +90,8 @@ fn p2pk_script(pubkey: &secp256k1::XOnlyPublicKey) -> Vec<u8> {
     std::iter::once(0x20u8).chain(pubkey.serialize()).chain(std::iter::once(0xacu8)).collect()
 }
 
-fn sompi_to_cen(sompi: u64) -> f64 {
-    sompi as f64 / 100_000_000.0
+fn pradha_to_cen(pradha: u64) -> f64 {
+    pradha as f64 / 100_000_000.0
 }
 
 #[tokio::main]
@@ -167,7 +167,7 @@ async fn run() -> Result<(), String> {
     for b in &balances {
         let addr = b.address.to_string();
         let bal = b.balance.unwrap_or(0);
-        println!("  {addr}  {} CEN ({} sompi)", sompi_to_cen(bal), bal);
+        println!("  {addr}  {} CEN ({} pradha)", pradha_to_cen(bal), bal);
     }
 
     if args.check_only {
@@ -187,7 +187,7 @@ async fn run() -> Result<(), String> {
                 "  {} idx {} amount {} CEN daa {} coinbase {} mature {}",
                 u.outpoint.transaction_id,
                 u.outpoint.index,
-                sompi_to_cen(entry.amount),
+                pradha_to_cen(entry.amount),
                 entry.block_daa_score,
                 entry.is_coinbase,
                 mature
@@ -217,7 +217,7 @@ async fn run() -> Result<(), String> {
             "  outpoint {} idx {} amount {} CEN daa {} coinbase {} mature {}",
             u.outpoint.transaction_id,
             u.outpoint.index,
-            sompi_to_cen(entry.amount),
+            pradha_to_cen(entry.amount),
             entry.block_daa_score,
             entry.is_coinbase,
             mature
@@ -229,7 +229,7 @@ async fn run() -> Result<(), String> {
 
     let (outpoint, entry) =
         chosen.ok_or_else(|| "no mature UTXO with enough value — mine more blocks or wait for coinbase maturity".to_string())?;
-    println!("spending       : outpoint idx {} amount {} CEN", outpoint.index, sompi_to_cen(entry.amount));
+    println!("spending       : outpoint idx {} amount {} CEN", outpoint.index, pradha_to_cen(entry.amount));
 
     // --- build the transaction ---
     // 1 input, 2 outputs (payment + change). Fee is subtracted from the change output.
@@ -279,7 +279,7 @@ async fn run() -> Result<(), String> {
         .get_mempool_entry(txid, true, false)
         .await
         .map_err(|e| format!("get_mempool_entry: {e}"))?;
-    println!("mempool        : accepted (fee {} sompi)", entry.fee);
+    println!("mempool        : accepted (fee {} pradha)", entry.fee);
 
     client.disconnect().await.map_err(|e| format!("disconnect: {e}"))?;
 

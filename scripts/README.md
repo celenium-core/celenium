@@ -5,7 +5,7 @@
 ```bash
 scripts/regenesis.sh --now                          # current wall clock
 scripts/regenesis.sh 1794000000000                  # explicit ms timestamp
-scripts/regenesis.sh --now --binary target/release/ceniumd
+scripts/regenesis.sh --now --binary target/release/celeniumd
 ```
 
 What it does, in order:

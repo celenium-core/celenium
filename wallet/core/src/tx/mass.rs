@@ -24,8 +24,8 @@ use celenium_hashes::HASH_SIZE;
 pub const SIGNATURE_SIZE: u64 = 1 + 64 + 1; //1 byte for OP_DATA_65 + 64 (length of signature) + 1 byte for sig hash type
 
 /// MINIMUM_RELAY_TRANSACTION_FEE specifies the minimum transaction fee for a transaction to be accepted to
-/// the mempool and relayed. It is specified in sompi per 1kg (or 1000 grams) of transaction mass.
-/// The default is 100 sompi per gram.
+/// the mempool and relayed. It is specified in pradha per 1kg (or 1000 grams) of transaction mass.
+/// The default is 100 pradha per gram.
 pub(crate) const MINIMUM_RELAY_TRANSACTION_FEE_PER_KG: u64 = 100_000;
 const MINIMUM_RELAY_TRANSACTION_FEE_PER_GRAM: u64 = MINIMUM_RELAY_TRANSACTION_FEE_PER_KG / 1000;
 
@@ -44,7 +44,7 @@ pub fn calc_minimum_required_transaction_relay_fee(mass: u64) -> u64 {
 
     // Set the minimum fee to the maximum possible value if the calculated
     // fee is not in the valid range for monetary amounts.
-    minimum_fee = minimum_fee.min(MAX_SOMPI);
+    minimum_fee = minimum_fee.min(MAX_PRADHA);
 
     minimum_fee
 }

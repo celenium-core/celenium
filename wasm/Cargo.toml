@@ -1,6 +1,6 @@
 [package]
 name = "celenium-wasm"
-description = "KASPA WASM bindings"
+description = "Celenium WASM bindings"
 rust-version.workspace = true
 version.workspace = true
 edition.workspace = true

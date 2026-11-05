@@ -407,7 +407,7 @@ from!(
 
 from!(&celenium_rpc_core::GetCoinSupplyRequest, protowire::GetCoinSupplyRequestMessage);
 from!(item: RpcResult<&celenium_rpc_core::GetCoinSupplyResponse>, protowire::GetCoinSupplyResponseMessage, {
-    Self { max_sompi: item.max_sompi, circulating_sompi: item.circulating_sompi, error: None }
+    Self { max_pradha: item.max_pradha, circulating_pradha: item.circulating_pradha, error: None }
 });
 
 from!(item: &celenium_rpc_core::GetDaaScoreTimestampEstimateRequest, protowire::GetDaaScoreTimestampEstimateRequestMessage, {
@@ -976,7 +976,7 @@ try_from!(
 
 try_from!(&protowire::GetCoinSupplyRequestMessage, celenium_rpc_core::GetCoinSupplyRequest);
 try_from!(item: &protowire::GetCoinSupplyResponseMessage, RpcResult<celenium_rpc_core::GetCoinSupplyResponse>, {
-    Self { max_sompi: item.max_sompi, circulating_sompi: item.circulating_sompi }
+    Self { max_pradha: item.max_pradha, circulating_pradha: item.circulating_pradha }
 });
 
 try_from!(item: &protowire::GetDaaScoreTimestampEstimateRequestMessage, celenium_rpc_core::GetDaaScoreTimestampEstimateRequest , {

@@ -14,7 +14,7 @@ use itertools::Itertools;
 use celenium_addresses::Address;
 use celenium_consensus::params::Params;
 use celenium_consensus_core::{
-    constants::{SOMPI_PER_CELENIUM, TX_VERSION_TOCCATA},
+    constants::{PRADHA_PER_CELENIUM, TX_VERSION_TOCCATA},
     hashing::sighash::SigHashReusedValuesUnsync,
     mass::{ComputeBudget, MassCalculator, ScriptUnits, transaction_estimated_serialized_size},
     network::NetworkType,
@@ -107,7 +107,7 @@ async fn bench_bbt_latency() {
         enable_unsynced_mining: true,
         num_prealloc_utxos: Some(TX_LEVEL_WIDTH as u64 * CONTRACT_FACTOR),
         prealloc_address: Some(prealloc_address.to_string()),
-        prealloc_amount: 500 * SOMPI_PER_CELENIUM,
+        prealloc_amount: 500 * PRADHA_PER_CELENIUM,
         block_template_cache_lifetime: Some(0),
         ..Default::default()
     };

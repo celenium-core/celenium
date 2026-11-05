@@ -28,7 +28,7 @@ use celenium_consensus_core::block::{Block, MutableBlock};
 use celenium_consensus_core::blockhash::{self, new_unique};
 use celenium_consensus_core::blockstatus::BlockStatus;
 use celenium_consensus_core::coinbase::MinerData;
-use celenium_consensus_core::constants::{BLOCK_VERSION, SOMPI_PER_CELENIUM, TRANSIENT_BYTE_TO_MASS_FACTOR};
+use celenium_consensus_core::constants::{BLOCK_VERSION, PRADHA_PER_CELENIUM, TRANSIENT_BYTE_TO_MASS_FACTOR};
 use celenium_consensus_core::errors::block::{BlockProcessResult, RuleError};
 use celenium_consensus_core::errors::tx::TxRuleError;
 use celenium_consensus_core::hashing;
@@ -1547,7 +1547,7 @@ async fn seqcommit_sp_context_threshold_edge_test() {
     let initial_utxo = (
         TransactionOutpoint::new(100.into(), 0),
         UtxoEntry {
-            amount: SOMPI_PER_CELENIUM,
+            amount: PRADHA_PER_CELENIUM,
             script_public_key: seqcommit_spk.clone(),
             block_daa_score: 0,
             is_coinbase: false,
@@ -1721,7 +1721,7 @@ async fn kip10_test() {
     let initial_utxo_collection = [(
         TransactionOutpoint::new(1.into(), 0),
         UtxoEntry {
-            amount: SOMPI_PER_CELENIUM,
+            amount: PRADHA_PER_CELENIUM,
             script_public_key: spk.clone(),
             block_daa_score: 0,
             is_coinbase: false,
@@ -2027,7 +2027,7 @@ async fn payload_for_native_tx_test() {
     let initial_utxo_collection = [(
         TransactionOutpoint::new(1.into(), 0),
         UtxoEntry {
-            amount: SOMPI_PER_CELENIUM,
+            amount: PRADHA_PER_CELENIUM,
             script_public_key: ScriptPublicKey::from_vec(0, vec![OpTrue]),
             block_daa_score: 0,
             is_coinbase: false,
@@ -2107,7 +2107,7 @@ fn build_p2pk_block(
             (
                 TransactionOutpoint::new((i as u64 + 1).into(), 0),
                 UtxoEntry {
-                    amount: SOMPI_PER_CELENIUM / 10,
+                    amount: PRADHA_PER_CELENIUM / 10,
                     script_public_key: p2pk_script.clone(),
                     block_daa_score: 0,
                     is_coinbase: false,
@@ -2207,7 +2207,7 @@ fn init_stark_fixture() -> (TestConsensus, Vec<std::thread::JoinHandle<()>>, Has
             0,
         );
         let tx = Transaction::new(TX_VERSION_TOCCATA, vec![input.clone()], vec![], 0, Default::default(), 0, vec![]);
-        let utxo_entry = UtxoEntry::new(10 * SOMPI_PER_CELENIUM, stark_spk.clone(), 0, false, None);
+        let utxo_entry = UtxoEntry::new(10 * PRADHA_PER_CELENIUM, stark_spk.clone(), 0, false, None);
         let populated_tx = PopulatedTransaction::new(&tx, vec![utxo_entry.clone()]);
         let sig_cache = Cache::new(10_000);
         let reused_values = SigHashReusedValuesUnsync::new();
@@ -2230,7 +2230,7 @@ fn init_stark_fixture() -> (TestConsensus, Vec<std::thread::JoinHandle<()>>, Has
             (
                 TransactionOutpoint::new((i as u64 + 1).into(), 0),
                 UtxoEntry {
-                    amount: 10 * SOMPI_PER_CELENIUM,
+                    amount: 10 * PRADHA_PER_CELENIUM,
                     script_public_key: stark_spk.clone(),
                     block_daa_score: 0,
                     is_coinbase: false,
@@ -2399,7 +2399,7 @@ async fn runtime_sig_op_counting_test() {
     let initial_utxo_collection = [(
         TransactionOutpoint::new(1.into(), 0),
         UtxoEntry {
-            amount: SOMPI_PER_CELENIUM,
+            amount: PRADHA_PER_CELENIUM,
             script_public_key: script_pub_key.clone(),
             block_daa_score: 0,
             is_coinbase: false,
@@ -2506,7 +2506,7 @@ async fn sighash_type_commitment_test() {
         initial_utxo_collection.push((
             TransactionOutpoint::new((i + 1).into(), 0),
             UtxoEntry {
-                amount: SOMPI_PER_CELENIUM / 10,
+                amount: PRADHA_PER_CELENIUM / 10,
                 script_public_key: p2sh_script.clone(),
                 block_daa_score: 0,
                 is_coinbase: false,
@@ -2518,7 +2518,7 @@ async fn sighash_type_commitment_test() {
         initial_utxo_collection.push((
             TransactionOutpoint::new((i + 7).into(), 0),
             UtxoEntry {
-                amount: SOMPI_PER_CELENIUM / 20,
+                amount: PRADHA_PER_CELENIUM / 20,
                 script_public_key: op_true_spk.clone(),
                 block_daa_score: 0,
                 is_coinbase: false,

@@ -135,7 +135,7 @@ fn test_config_single_instance_mode() {
     // When no instances array is provided, a single instance is created from top-level fields.
     // This is the simplest configuration mode for single-pool setups.
     let yaml = r#"
-celeniumd_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:26110"
 stratum_port: ":5555"
 min_share_diff: 8192
 print_stats: true
@@ -147,7 +147,7 @@ print_stats: true
     assert_eq!(config.instances.len(), 1, "Should create one instance in single-instance mode");
     assert_eq!(config.instances[0].stratum_port, ":5555", "Stratum port should be parsed correctly");
     assert_eq!(config.instances[0].min_share_diff, 8192, "Min share diff should be parsed correctly");
-    assert_eq!(config.global.celeniumd_address, "127.0.0.1:16110", "Celeniumd address should be stored in global config");
+    assert_eq!(config.global.celeniumd_address, "127.0.0.1:26110", "Celeniumd address should be stored in global config");
 }
 
 #[cfg(test)]
@@ -156,7 +156,7 @@ fn test_config_single_instance_defaults_when_missing_fields() {
     // Test: Single instance mode uses defaults for missing fields
     // When fields are not specified, sensible defaults are applied (e.g., stratum_port=":5555", min_share_diff=8192).
     let yaml = r#"
-celeniumd_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:26110"
 print_stats: true
 "#;
 
@@ -175,7 +175,7 @@ fn test_config_single_instance_log_to_file_uses_global() {
     // Global settings are applied to the single instance when not specified at instance level.
     // The instance-level log_to_file remains None, indicating it uses the global value.
     let yaml = r#"
-celeniumd_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:26110"
 stratum_port: ":5555"
 min_share_diff: 8192
 log_to_file: false
@@ -197,7 +197,7 @@ fn test_config_multi_instance_mode() {
     // Each instance can have its own port, difficulty, and other settings.
     // This enables running multiple pools or different configurations simultaneously.
     let yaml = r#"
-celeniumd_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:26110"
 instances:
   - stratum_port: ":5555"
     min_share_diff: 8192
@@ -219,7 +219,7 @@ instances:
 #[test]
 fn test_config_port_normalization() {
     let yaml = r#"
-celeniumd_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:26110"
 stratum_port: "3030"
 min_share_diff: 8192
 web_dashboard_port: "3031"
@@ -236,7 +236,7 @@ web_dashboard_port: "3031"
 #[test]
 fn test_config_duplicate_ports_error() {
     let yaml = r#"
-celeniumd_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:26110"
 instances:
   - stratum_port: ":5555"
     min_share_diff: 8192
@@ -253,7 +253,7 @@ instances:
 #[test]
 fn test_config_coinbase_tag_suffix_empty_string() {
     let yaml = r#"
-celeniumd_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:26110"
 stratum_port: ":5555"
 min_share_diff: 8192
 coinbase_tag_suffix: ""
@@ -269,7 +269,7 @@ coinbase_tag_suffix: ""
 #[test]
 fn test_config_coinbase_tag_suffix_with_value() {
     let yaml = r#"
-celeniumd_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:26110"
 stratum_port: ":5555"
 min_share_diff: 8192
 coinbase_tag_suffix: "test"
@@ -286,7 +286,7 @@ coinbase_tag_suffix: "test"
 fn test_config_var_diff_parsing() {
     // Test single-instance mode with var_diff
     let yaml = r#"
-celeniumd_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:26110"
 stratum_port: ":5555"
 min_share_diff: 8192
 var_diff: true
@@ -304,7 +304,7 @@ shares_per_min: 30
 
     // Test multi-instance mode with var_diff
     let yaml2 = r#"
-celeniumd_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:26110"
 var_diff: false
 var_diff_stats: false
 shares_per_min: 20
@@ -332,13 +332,13 @@ instances:
 #[test]
 fn test_config_missing_instance_fields_error() {
     let yaml_missing_port = r#"
-celeniumd_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:26110"
 instances:
   - min_share_diff: 8192
 "#;
 
     let yaml_missing_diff = r#"
-celeniumd_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:26110"
 instances:
   - stratum_port: ":5555"
 "#;
@@ -351,12 +351,12 @@ instances:
 #[test]
 fn test_config_single_instance_missing_fields_use_defaults() {
     let yaml_single_missing_diff = r#"
-celeniumd_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:26110"
 stratum_port: ":5555"
 "#;
 
     let yaml_single_missing_port = r#"
-celeniumd_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:26110"
 min_share_diff: 1024
 "#;
 
@@ -379,7 +379,7 @@ min_share_diff: 1024
 #[test]
 fn test_config_empty_web_dashboard_port_kept_empty() {
     let yaml = r#"
-celeniumd_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:26110"
 stratum_port: ":5555"
 min_share_diff: 8192
 web_dashboard_port: ""
@@ -400,7 +400,7 @@ fn test_normalize_port_with_colon() {
     use celenium_stratum_bridge::net_utils::normalize_port;
     assert_eq!(normalize_port(":3030"), ":3030", "Port with colon should remain unchanged");
     assert_eq!(normalize_port(":5555"), ":5555", "Port with colon should remain unchanged");
-    assert_eq!(normalize_port(":16110"), ":16110", "Port with colon should remain unchanged");
+    assert_eq!(normalize_port(":26110"), ":26110", "Port with colon should remain unchanged");
 }
 
 #[cfg(test)]
@@ -411,7 +411,7 @@ fn test_normalize_port_without_colon() {
     use celenium_stratum_bridge::net_utils::normalize_port;
     assert_eq!(normalize_port("3030"), ":3030", "Port without colon should get colon prefix");
     assert_eq!(normalize_port("5555"), ":5555", "Port without colon should get colon prefix");
-    assert_eq!(normalize_port("16110"), ":16110", "Port without colon should get colon prefix");
+    assert_eq!(normalize_port("26110"), ":26110", "Port without colon should get colon prefix");
 }
 
 #[cfg(test)]
@@ -454,7 +454,7 @@ fn test_bind_addr_from_port_with_colon() {
     use celenium_stratum_bridge::net_utils::bind_addr_from_port;
     assert_eq!(bind_addr_from_port(":3030"), "0.0.0.0:3030");
     assert_eq!(bind_addr_from_port(":5555"), "0.0.0.0:5555");
-    assert_eq!(bind_addr_from_port(":16110"), "0.0.0.0:16110");
+    assert_eq!(bind_addr_from_port(":26110"), "0.0.0.0:26110");
 }
 
 #[cfg(test)]
@@ -463,7 +463,7 @@ fn test_bind_addr_from_port_without_colon() {
     use celenium_stratum_bridge::net_utils::bind_addr_from_port;
     assert_eq!(bind_addr_from_port("3030"), "0.0.0.0:3030");
     assert_eq!(bind_addr_from_port("5555"), "0.0.0.0:5555");
-    assert_eq!(bind_addr_from_port("16110"), "0.0.0.0:16110");
+    assert_eq!(bind_addr_from_port("26110"), "0.0.0.0:26110");
 }
 
 #[cfg(test)]
@@ -886,7 +886,7 @@ fn test_mining_state_big_job_flag() {
 fn test_config_invalid_yaml() {
     use celenium_stratum_bridge::BridgeConfig;
     let invalid_yaml = r#"
-celeniumd_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:26110"
 stratum_port: ":5555"
 min_share_diff: invalid_number
 "#;
@@ -898,7 +898,7 @@ min_share_diff: invalid_number
 fn test_config_malformed_yaml() {
     use celenium_stratum_bridge::BridgeConfig;
     let malformed_yaml = r#"
-celeniumd_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:26110"
 stratum_port: ":5555"
 min_share_diff: 8192
 invalid: [unclosed
@@ -911,7 +911,7 @@ invalid: [unclosed
 fn test_config_negative_values() {
     use celenium_stratum_bridge::BridgeConfig;
     let yaml = r#"
-celeniumd_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:26110"
 stratum_port: ":5555"
 min_share_diff: -1
 "#;
@@ -927,7 +927,7 @@ min_share_diff: -1
 fn test_config_very_large_values() {
     use celenium_stratum_bridge::BridgeConfig;
     let yaml = r#"
-celeniumd_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:26110"
 stratum_port: ":5555"
 min_share_diff: 999999999
 "#;
@@ -941,7 +941,7 @@ min_share_diff: 999999999
 fn test_config_empty_instances_list() {
     use celenium_stratum_bridge::BridgeConfig;
     let yaml = r#"
-celeniumd_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:26110"
 instances: []
 "#;
     let config = BridgeConfig::from_yaml(yaml);
@@ -954,7 +954,7 @@ instances: []
 fn test_config_whitespace_in_values() {
     use celenium_stratum_bridge::BridgeConfig;
     let yaml = r#"
-celeniumd_address: "  127.0.0.1:16110  "
+celeniumd_address: "  127.0.0.1:26110  "
 stratum_port: "  :5555  "
 min_share_diff: 8192
 "#;

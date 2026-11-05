@@ -3,7 +3,7 @@
 use crate::error::Error;
 use crate::result::Result;
 use crate::tx::{Fees, MassCalculator, PaymentDestination, PaymentOutput, PaymentOutputs};
-use crate::utils::celenium_to_sompi;
+use crate::utils::celenium_to_pradha;
 use crate::utxo::UtxoEntryReference;
 use celenium_addresses::Address;
 use celenium_consensus_core::config::params::Params;
@@ -23,27 +23,27 @@ const DISPLAY_LOGS: bool = true;
 const DISPLAY_EXPECTED: bool = true;
 
 #[derive(Clone, Copy, Debug)]
-pub(crate) struct Sompi(u64);
+pub(crate) struct Pradha(u64);
 
 #[derive(Clone, Copy)]
 struct Celenium(f64);
 
 impl Debug for Celenium {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let sompi: Sompi = self.into();
-        write!(f, "{}", sompi.0)
+        let pradha: Pradha = self.into();
+        write!(f, "{}", pradha.0)
     }
 }
 
-impl From<Celenium> for Sompi {
+impl From<Celenium> for Pradha {
     fn from(celenium: Celenium) -> Self {
-        Sompi(celenium_to_sompi(celenium.0))
+        Pradha(celenium_to_pradha(celenium.0))
     }
 }
 
-impl From<&Celenium> for Sompi {
+impl From<&Celenium> for Pradha {
     fn from(celenium: &Celenium) -> Self {
-        Sompi(celenium_to_sompi(celenium.0))
+        Pradha(celenium_to_pradha(celenium.0))
     }
 }
 
@@ -55,22 +55,22 @@ enum FeesExpected {
 }
 
 impl FeesExpected {
-    fn sender<T: Into<Sompi>>(v: T) -> Self {
-        let sompi: Sompi = v.into();
-        FeesExpected::Sender(sompi.0)
+    fn sender<T: Into<Pradha>>(v: T) -> Self {
+        let pradha: Pradha = v.into();
+        FeesExpected::Sender(pradha.0)
     }
-    fn receiver<T: Into<Sompi>>(v: T) -> Self {
-        let sompi: Sompi = v.into();
-        FeesExpected::Receiver(sompi.0)
+    fn receiver<T: Into<Pradha>>(v: T) -> Self {
+        let pradha: Pradha = v.into();
+        FeesExpected::Receiver(pradha.0)
     }
 }
 
 trait PendingTransactionExtension {
     #[allow(dead_code)]
     fn tuple(self) -> (PendingTransaction, Transaction);
-    fn expect<SOMPI>(self, expected: &Expected<SOMPI>) -> Self
+    fn expect<PRADHA>(self, expected: &Expected<PRADHA>) -> Self
     where
-        SOMPI: Into<Sompi> + Debug + Copy;
+        PRADHA: Into<Pradha> + Debug + Copy;
     fn validate(self) -> Self;
     fn accumulate(self, accumulator: &mut Accumulator) -> Self;
 }
@@ -80,9 +80,9 @@ impl PendingTransactionExtension for PendingTransaction {
         let tx = self.transaction();
         (self, tx)
     }
-    fn expect<SOMPI>(self, expected: &Expected<SOMPI>) -> Self
+    fn expect<PRADHA>(self, expected: &Expected<PRADHA>) -> Self
     where
-        SOMPI: Into<Sompi> + Debug + Copy,
+        PRADHA: Into<Pradha> + Debug + Copy,
     {
         expect(&self, expected);
         self
@@ -116,18 +116,18 @@ impl GeneratorSummaryExtension for GeneratorSummary {
 }
 
 trait FeesExtension {
-    fn sender<T: Into<Sompi>>(v: T) -> Self;
-    fn receiver<T: Into<Sompi>>(v: T) -> Self;
+    fn sender<T: Into<Pradha>>(v: T) -> Self;
+    fn receiver<T: Into<Pradha>>(v: T) -> Self;
 }
 
 impl FeesExtension for Fees {
-    fn sender<T: Into<Sompi>>(v: T) -> Self {
-        let sompi: Sompi = v.into();
-        Fees::SenderPays(sompi.0)
+    fn sender<T: Into<Pradha>>(v: T) -> Self {
+        let pradha: Pradha = v.into();
+        Fees::SenderPays(pradha.0)
     }
-    fn receiver<T: Into<Sompi>>(v: T) -> Self {
-        let sompi: Sompi = v.into();
-        Fees::ReceiverPays(sompi.0)
+    fn receiver<T: Into<Pradha>>(v: T) -> Self {
+        let pradha: Pradha = v.into();
+        Fees::ReceiverPays(pradha.0)
     }
 }
 
@@ -152,10 +152,10 @@ struct Accumulator {
 }
 
 #[derive(Debug)]
-pub(crate) struct Expected<SOMPI: Into<Sompi>> {
+pub(crate) struct Expected<PRADHA: Into<Pradha>> {
     is_final: bool,
     input_count: usize,
-    aggregate_input_value: SOMPI,
+    aggregate_input_value: PRADHA,
     output_count: usize,
     priority_fees: FeesExpected,
 }
@@ -182,9 +182,9 @@ fn validate(pt: &PendingTransaction) {
     assert_eq!(tx.storage_mass(), storage_mass, "transaction storage mass commitment does not match calculated storage mass");
 }
 
-fn expect<SOMPI>(pt: &PendingTransaction, expected: &Expected<SOMPI>)
+fn expect<PRADHA>(pt: &PendingTransaction, expected: &Expected<PRADHA>)
 where
-    SOMPI: Into<Sompi> + Debug + Copy,
+    PRADHA: Into<Pradha> + Debug + Copy,
 {
     let network_params = pt.generator().network_params();
     let tx = pt.transaction();
@@ -194,7 +194,7 @@ where
     assert_ne!(aggregate_input_value, aggregate_output_value, "aggregate input and output values can not be the same due to fees");
     assert_eq!(pt.is_final(), expected.is_final, "expected final transaction");
 
-    let expected_aggregate_input_value: Sompi = expected.aggregate_input_value.into();
+    let expected_aggregate_input_value: Pradha = expected.aggregate_input_value.into();
     assert_eq!(tx.inputs.len(), expected.input_count, "expected input count");
     assert_eq!(aggregate_input_value, expected_aggregate_input_value.0, "expected aggregate input value");
     assert_eq!(tx.outputs.len(), expected.output_count, "expected output count");
@@ -305,9 +305,9 @@ impl Harness {
         Rc::new(Harness { generator, accumulator: RefCell::new(Accumulator::default()) })
     }
 
-    pub fn fetch<SOMPI>(self: &Rc<Self>, expected: &Expected<SOMPI>) -> Rc<Self>
+    pub fn fetch<PRADHA>(self: &Rc<Self>, expected: &Expected<PRADHA>) -> Rc<Self>
     where
-        SOMPI: Into<Sompi> + Debug + Copy,
+        PRADHA: Into<Pradha> + Debug + Copy,
     {
         if DISPLAY_LOGS {
             println!("{}", style(format!("fetch - checking transaction: {}", self.accumulator.borrow().list.len())).magenta());
@@ -320,9 +320,9 @@ impl Harness {
         self.clone()
     }
 
-    pub fn drain<SOMPI>(self: &Rc<Self>, count: usize, expected: &Expected<SOMPI>) -> Rc<Self>
+    pub fn drain<PRADHA>(self: &Rc<Self>, count: usize, expected: &Expected<PRADHA>) -> Rc<Self>
     where
-        SOMPI: Into<Sompi> + Debug + Copy,
+        PRADHA: Into<Pradha> + Debug + Copy,
     {
         for _n in 0..count {
             if DISPLAY_LOGS {
@@ -398,14 +398,14 @@ pub(crate) fn generator<T, F>(
     outputs: &[(F, T)],
 ) -> Result<Generator>
 where
-    T: Into<Sompi> + Clone,
+    T: Into<Pradha> + Clone,
     F: FnOnce(NetworkType) -> Address + Clone,
 {
     let outputs = outputs
         .iter()
         .map(|(address, amount)| {
-            let sompi: Sompi = (*amount).clone().into();
-            (address.clone()(network_id.into()), sompi.0)
+            let pradha: Pradha = (*amount).clone().into();
+            (address.clone()(network_id.into()), pradha.0)
         })
         .collect::<Vec<_>>();
     make_generator(network_id, head, tail, fee_rate, fees, change_address, PaymentOutputs::from(outputs.as_slice()).into())
@@ -442,7 +442,7 @@ where
     let mut values = head.to_vec();
     values.extend(tail);
 
-    let utxo_entries: Vec<UtxoEntryReference> = values.into_iter().map(celenium_to_sompi).map(UtxoEntryReference::simulated).collect();
+    let utxo_entries: Vec<UtxoEntryReference> = values.into_iter().map(celenium_to_pradha).map(UtxoEntryReference::simulated).collect();
     let multiplexer = None;
     let minimum_signatures = 1;
     let utxo_iterator: Box<dyn Iterator<Item = UtxoEntryReference> + Send + Sync + 'static> = Box::new(utxo_entries.into_iter());
@@ -549,7 +549,7 @@ fn test_generator_large_payload_min_relay_fee() -> Result<()> {
         None,
         Fees::sender(Celenium(0.0)),
         change_address,
-        PaymentOutputs::from([(output_address(network_id.into()), celenium_to_sompi(18.0))].as_slice()).into(),
+        PaymentOutputs::from([(output_address(network_id.into()), celenium_to_pradha(18.0))].as_slice()).into(),
         Some(vec![0; 20_000]),
     )
     .unwrap()
@@ -630,7 +630,7 @@ fn test_generator_fee_rate_compound_200k_10kas_transactions() -> Result<()> {
         &[10.0; 200_000],
         &[],
         Some(100.0),
-        Fees::sender(Sompi(0)),
+        Fees::sender(Pradha(0)),
         [(output_address, Celenium(190_000.0))].as_slice(),
     )
     .unwrap()
@@ -646,8 +646,8 @@ fn test_generator_compound_100k_random_transactions() -> Result<()> {
     let mut rng = StdRng::seed_from_u64(0);
     let inputs: Vec<f64> = (0..100_000).map(|_| rng.gen_range(0.001..10.0)).collect();
     let total = inputs.iter().sum::<f64>();
-    // The generated tree uses roughly 225 block-equivalents, so 150 KAS leaves
-    // enough room at the 0.5 KAS/block relay floor.
+    // The generated tree uses roughly 225 block-equivalents, so 150 CEN leaves
+    // enough room at the 0.5 CEN/block relay floor.
     let outputs = [(output_address, Celenium(total - 150.0))];
     generator(test_network_id(), &inputs, &[], None, Fees::sender(Celenium(5.0)), outputs.as_slice())
         .unwrap()
@@ -745,7 +745,7 @@ fn test_generator_inputs_500_outputs_1_fees_exclude_success() -> Result<()> {
         .fetch(&Expected {
             is_final: true,
             input_count: 2,
-            aggregate_input_value: Sompi(499943978800),
+            aggregate_input_value: Pradha(499943978800),
             output_count: 2,
             // priority_fees: FeesExpected::sender(Celenium(5.0)),
             priority_fees: FeesExpected::sender(Celenium(0.0)),
@@ -785,7 +785,7 @@ fn test_generator_inputs_500_outputs_1_fees_include_success() -> Result<()> {
     .fetch(&Expected {
         is_final: true,
         input_count: 2,
-        aggregate_input_value: Sompi(49943978800),
+        aggregate_input_value: Pradha(49943978800),
         output_count: 1,
         priority_fees: FeesExpected::receiver(Celenium(5.0)),
     })
@@ -836,7 +836,7 @@ fn test_generator_inputs_1k_outputs_2_fees_exclude() -> Result<()> {
         .fetch(&Expected {
             is_final: true,
             input_count: 3,
-            aggregate_input_value: Sompi(900899086400),
+            aggregate_input_value: Pradha(900899086400),
             output_count: 2,
             priority_fees: FeesExpected::receiver(Celenium(5.0)),
         })
@@ -914,7 +914,7 @@ fn test_generator_fan_out_1() -> Result<()> {
 
 #[test]
 fn test_generator_should_pick_valid_alternative_utxo_after_storage_mass_rejection() -> Result<()> {
-    generator(test_network_id(), &[0.21, 0.5], &[], None, Fees::sender(Sompi(0)), [(output_address, Celenium(0.2))].as_slice())?
+    generator(test_network_id(), &[0.21, 0.5], &[], None, Fees::sender(Pradha(0)), [(output_address, Celenium(0.2))].as_slice())?
         .harness()
         .fetch(&Expected {
             is_final: true,
@@ -932,7 +932,7 @@ fn test_generator_should_pick_valid_alternative_utxo_after_storage_mass_rejectio
 fn test_generator_rejects_output_covenant_binding() {
     let network_id = test_network_id();
     let covenant = CovenantBinding::new(0, Hash::from_u64_word(1));
-    let output = PaymentOutput::with_covenant(output_address(network_id.into()), celenium_to_sompi(10.0), covenant.into());
+    let output = PaymentOutput::with_covenant(output_address(network_id.into()), celenium_to_pradha(10.0), covenant.into());
     let destination = PaymentDestination::PaymentOutputs(PaymentOutputs { outputs: vec![output] });
 
     assert!(make_generator(network_id, &[20.0], &[], None, Fees::sender(Celenium(0.0)), change_address, destination.clone()).is_err());
@@ -941,11 +941,11 @@ fn test_generator_rejects_output_covenant_binding() {
 #[test]
 fn test_generator_skips_utxos_with_defined_covenant_id() -> Result<()> {
     let network_id = test_network_id();
-    let mut covenanted_utxo = UtxoEntryReference::simulated(celenium_to_sompi(100.0)).as_ref().clone();
+    let mut covenanted_utxo = UtxoEntryReference::simulated(celenium_to_pradha(100.0)).as_ref().clone();
     covenanted_utxo.covenant_id = Some(Hash::from_u64_word(2));
     let covenanted_entry = UtxoEntryReference::from(covenanted_utxo);
-    let selected_entry = UtxoEntryReference::simulated(celenium_to_sompi(20.0));
-    let output = PaymentOutput::new(output_address(network_id.into()), celenium_to_sompi(10.0));
+    let selected_entry = UtxoEntryReference::simulated(celenium_to_pradha(20.0));
+    let output = PaymentOutput::new(output_address(network_id.into()), celenium_to_pradha(10.0));
     let destination = PaymentDestination::PaymentOutputs(PaymentOutputs { outputs: vec![output] });
 
     let settings = GeneratorSettings {

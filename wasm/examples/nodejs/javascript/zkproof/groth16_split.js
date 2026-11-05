@@ -14,19 +14,19 @@
 // exists. The journal hash is *caller-owned* — the SDK never pushes it for you.
 //
 // Run after building the wasm module (`./build-node` in wasm/). Requires a
-// devnet node at the RPC url below. If `./kaspa` does not resolve, point the
-// require at the build output (`../../../../nodejs/kaspa`).
+// devnet node at the RPC url below. If `./celenium` does not resolve, point the
+// require at the build output (`../../../../nodejs/celenium`).
 
 const { PrivateKey, RpcClient,
     ZkScriptBuilder, payToScriptHashScript, addressFromScriptPublicKey,
     createTransaction, signTransaction,
-    Encoding } = require('./kaspa');
+    Encoding } = require('./celenium');
 const fs = require('fs');
 const path = require('path');
 
 // --- Configuration ---
 const NETWORK_ID = 'devnet';
-const RPC_URL = 'ws://127.0.0.1:17610';
+const RPC_URL = 'ws://127.0.0.1:27610';
 const PRIVATE_KEY = 'b99d75736a0fd0ae2da658959813d680474f5a740a9c970a7da867141596178f';
 
 // --- ZK fixtures (same program/proof as groth16_builder.js) ---

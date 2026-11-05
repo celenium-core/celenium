@@ -10,7 +10,7 @@ As with any consensus change, **failing to upgrade can cause your node to split 
 
 - Miners may use this release to sanity-test mining flows, but this does not replace testing on an activated testnet. Before activation, mainnet block templates only contain current transaction versions, so some Toccata-specific paths are only meaningfully exercised after activation.
 
-- RPC transaction submission now applies the upcoming higher minimum standard fee rule: `100 sompi * max(compute grams, 2 * transaction bytes)`.
+- RPC transaction submission now applies the upcoming higher minimum standard fee rule: `100 pradha * max(compute grams, 2 * transaction bytes)`.
 
 - The `2 * transaction bytes` term reflects the post-Toccata normalized transient-mass component.
 
@@ -77,10 +77,10 @@ Leave this process running. Closing it will stop your node. If you have other fl
 - **Advanced Command-Line Options**:
   - `--disable-upnp` if you don't want your node to be automatically publicly connectable (if your router supports UPnP). Recommended for pools and exchanges.
   - `--rpclisten=0.0.0.0` to listen for RPC connections on all network interfaces (public RPC). Use `--rpclisten=127.0.0.1` if you are running your pool/exchange software on the same machine.
-  - `--rpclisten-borsh` for local Borsh RPC access from the `kaspa-cli` binary.
+  - `--rpclisten-borsh` for local Borsh RPC access from the `celenium` binary.
   - `--unsaferpc` to allow P2P peer query and management via RPC (recommended only when RPC is not exposed publicly).
-  - `--perf-metrics --loglevel=info,celeniumd_lib::daemon=debug,kaspa_mining::monitor=debug` for detailed performance logs.
-  - `--loglevel=kaspa_grpc_server=warn` to suppress most RPC connect/disconnect log reports.
+  - `--perf-metrics --loglevel=info,celeniumd_lib::daemon=debug,celenium_mining::monitor=debug` for detailed performance logs.
+  - `--loglevel=celenium_grpc_server=warn` to suppress most RPC connect/disconnect log reports.
   - `--ram-scale=3.0` to increase cache size threefold (relevant for utilizing large RAM; can be set between 0.1 and 10).
 
 ## Block Reward Info RPC for Pools and Miners
@@ -103,7 +103,7 @@ Ideally, this includes deposit and withdrawal flows, block template handling, mi
 
 ## Fee Adaptation
 
-On Toccata activation, the minimum fee rate will increase from 1 sompi/gram to 100 sompi/gram. If you use the RPC fee estimation API to set your fees (most wallets do), you don't need to change anything. Otherwise, you'll need to update your code to create transactions with the correct fee rate.
+On Toccata activation, the minimum fee rate will increase from 1 pradha/gram to 100 pradha/gram. If you use the RPC fee estimation API to set your fees (most wallets do), you don't need to change anything. Otherwise, you'll need to update your code to create transactions with the correct fee rate.
 
 If you use `kaspawallet` from the Go Celeniumd repo, download the new [v0.12.23 release](https://github.com/kaspanet/celeniumd/releases/tag/v0.12.23), which is adapted to the new minimum fee rate.
 
@@ -134,7 +134,7 @@ Updated proto files: [`messages.proto`](../rpc/grpc/core/proto/messages.proto), 
 ### Wallet software
 
 - If you use the RPC fee estimation API, no fee calculation change is required.
-- If your software uses fixed fee assumptions, update the minimum standard fee calculation from `1 sompi` per gram to `100 sompi` per gram. The fee floor is `100 sompi * max(compute grams, 2 * transaction bytes)`. Without this change, direct transaction submissions to upgraded nodes can fail.
+- If your software uses fixed fee assumptions, update the minimum standard fee calculation from `1 pradha` per gram to `100 pradha` per gram. The fee floor is `100 pradha * max(compute grams, 2 * transaction bytes)`. Without this change, direct transaction submissions to upgraded nodes can fail.
 - If you construct transactions manually, review [Deprecation of `Transaction.mass` in Transaction APIs](#deprecation-of-transactionmass-in-transaction-apis) before reading or writing transaction mass fields.
 
 ### Exchanges
@@ -142,7 +142,7 @@ Updated proto files: [`messages.proto`](../rpc/grpc/core/proto/messages.proto), 
 - Upgrade all nodes before activation.
 - Use an updated SDK: [rusty-kaspa v2.0.1 or newer](https://github.com/kaspanet/rusty-kaspa/releases/latest) or [Go Celeniumd v0.12.23](https://github.com/kaspanet/celeniumd/releases/tag/v0.12.23). If you generate your own RPC bindings, regenerate them after reviewing [gRPC/protobuf Changes](#grpcprotobuf-changes).
 - Test deposit, withdrawal, indexing, balance tracking, and fee-estimation flows against Testnet-10.
-- If transaction submission does not use the RPC fee estimation API, update fee calculation to `100 sompi * max(compute grams, 2 * transaction bytes)`.
+- If transaction submission does not use the RPC fee estimation API, update fee calculation to `100 pradha * max(compute grams, 2 * transaction bytes)`.
 - Update transaction parsing to accept transaction version `1` and write `storageMass` / `storage_mass` instead of `mass`.
 
 ### Miners

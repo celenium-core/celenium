@@ -4,7 +4,7 @@ set -e
 
 # Parse command line arguments for --tag and --repo
 ARCHES="linux/amd64 linux/arm64"
-ARTIFACT="kaspad"
+ARTIFACT="celeniumd"
 while [ $# -gt 0 ]; do
   case "$1" in
     --tag)
@@ -53,7 +53,6 @@ multi_arch_build() {
   echo "===================================================="
   echo " Running build for $1"
   echo "===================================================="
-  dockerRepo="${DOCKER_REPO_PREFIX}-$1"
   dockerRepoArgs=
 
   if [ "$PUSH" = "push" ]; then

@@ -10,76 +10,76 @@ rm -rf nodejs/*
 rm -rf docs/*
 rm -rf examples/nodejs/typescript/lib
 
-mkdir -p release/kaspa-wasm32-sdk/web
-mkdir -p release/kaspa-wasm32-sdk/nodejs
-mkdir -p release/kaspa-wasm32-sdk/docs
+mkdir -p release/celenium-wasm32-sdk/web
+mkdir -p release/celenium-wasm32-sdk/nodejs
+mkdir -p release/celenium-wasm32-sdk/docs
 
 # pushd .
 # cd ../rpc/wrpc/wasm
-# wasm-pack build --target web --out-name kaspa-rpc --out-dir web/kaspa-rpc --features wasm32-sdk $@
+# wasm-pack build --target web --out-name celenium-rpc --out-dir web/celenium-rpc --features wasm32-sdk $@
 # popd
 
-wasm-pack build --weak-refs --target web --out-name kaspa --out-dir web/kaspa-keygen --features wasm32-keygen $@
-wasm-pack build --weak-refs --dev --target web --out-name kaspa --out-dir web/kaspa-keygen-dev --features wasm32-keygen $@
+wasm-pack build --weak-refs --target web --out-name celenium --out-dir web/celenium-keygen --features wasm32-keygen $@
+wasm-pack build --weak-refs --dev --target web --out-name celenium --out-dir web/celenium-keygen-dev --features wasm32-keygen $@
 
-wasm-pack build --weak-refs --target web --out-name kaspa --out-dir web/kaspa-rpc --features wasm32-rpc $@
-wasm-pack build --weak-refs --dev --target web --out-name kaspa --out-dir web/kaspa-rpc-dev --features wasm32-rpc $@
+wasm-pack build --weak-refs --target web --out-name celenium --out-dir web/celenium-rpc --features wasm32-rpc $@
+wasm-pack build --weak-refs --dev --target web --out-name celenium --out-dir web/celenium-rpc-dev --features wasm32-rpc $@
 
-wasm-pack build --weak-refs --target web --out-name kaspa --out-dir web/kaspa-core --features wasm32-core $@
-wasm-pack build --weak-refs --dev --target web --out-name kaspa --out-dir web/kaspa-core-dev --features wasm32-core $@
+wasm-pack build --weak-refs --target web --out-name celenium --out-dir web/celenium-core --features wasm32-core $@
+wasm-pack build --weak-refs --dev --target web --out-name celenium --out-dir web/celenium-core-dev --features wasm32-core $@
 
-wasm-pack build --weak-refs --target web --out-name kaspa --out-dir web/kaspa --features wasm32-sdk $@
-wasm-pack build --weak-refs --dev --target web --out-name kaspa --out-dir web/kaspa-dev --features wasm32-sdk $@
+wasm-pack build --weak-refs --target web --out-name celenium --out-dir web/celenium --features wasm32-sdk $@
+wasm-pack build --weak-refs --dev --target web --out-name celenium --out-dir web/celenium-dev --features wasm32-sdk $@
 
-wasm-pack build --weak-refs --target nodejs --out-name kaspa --out-dir nodejs/kaspa --features wasm32-sdk $@
-wasm-pack build --weak-refs --dev --target nodejs --out-name kaspa --out-dir nodejs/kaspa-dev --features wasm32-sdk $@
+wasm-pack build --weak-refs --target nodejs --out-name celenium --out-dir nodejs/celenium --features wasm32-sdk $@
+wasm-pack build --weak-refs --dev --target nodejs --out-name celenium --out-dir nodejs/celenium-dev --features wasm32-sdk $@
 
-# wasm-pack build --target web --dev --out-name kaspa --out-dir build/docs/kaspa --features wasm32-sdk $@
-typedoc --name "Kaspa WASM32 SDK - Key Generation" --sourceLinkExternal --readme ./README.md --options ./build/docs/ --out docs/kaspa-keygen ./build/docs/kaspa-keygen.ts
-typedoc --name "Kaspa WASM32 SDK - RPC" --sourceLinkExternal --readme ./README.md --options ./build/docs/ --out docs/kaspa-rpc ./build/docs/kaspa-rpc.ts
-typedoc --name "Kaspa WASM32 SDK - Core" --sourceLinkExternal --readme ./README.md --options ./build/docs/ --out docs/kaspa-core ./build/docs/kaspa-core.ts
-typedoc --name "Kaspa WASM32 SDK" --sourceLinkExternal --readme ./README.md --options ./build/docs/ --out docs/kaspa ./build/docs/kaspa.ts
+# wasm-pack build --target web --dev --out-name celenium --out-dir build/docs/celenium --features wasm32-sdk $@
+typedoc --name "Celenium WASM32 SDK - Key Generation" --sourceLinkExternal --readme ./README.md --options ./build/docs/ --out docs/celenium-keygen ./build/docs/celenium-keygen.ts
+typedoc --name "Celenium WASM32 SDK - RPC" --sourceLinkExternal --readme ./README.md --options ./build/docs/ --out docs/celenium-rpc ./build/docs/celenium-rpc.ts
+typedoc --name "Celenium WASM32 SDK - Core" --sourceLinkExternal --readme ./README.md --options ./build/docs/ --out docs/celenium-core ./build/docs/celenium-core.ts
+typedoc --name "Celenium WASM32 SDK" --sourceLinkExternal --readme ./README.md --options ./build/docs/ --out docs/celenium ./build/docs/celenium.ts
 
-# cp -r ../rpc/wrpc/wasm/web/kaspa-rpc release/kaspa-wasm32-sdk/web/kaspa-rpc
-cp -r web/kaspa-keygen release/kaspa-wasm32-sdk/web/kaspa-keygen
-cp -r web/kaspa-keygen-dev release/kaspa-wasm32-sdk/web/kaspa-keygen-dev
+# cp -r ../rpc/wrpc/wasm/web/celenium-rpc release/celenium-wasm32-sdk/web/celenium-rpc
+cp -r web/celenium-keygen release/celenium-wasm32-sdk/web/celenium-keygen
+cp -r web/celenium-keygen-dev release/celenium-wasm32-sdk/web/celenium-keygen-dev
 
-cp -r web/kaspa-rpc release/kaspa-wasm32-sdk/web/kaspa-rpc
-cp -r web/kaspa-rpc-dev release/kaspa-wasm32-sdk/web/kaspa-rpc-dev
+cp -r web/celenium-rpc release/celenium-wasm32-sdk/web/celenium-rpc
+cp -r web/celenium-rpc-dev release/celenium-wasm32-sdk/web/celenium-rpc-dev
 
-cp -r web/kaspa-core release/kaspa-wasm32-sdk/web/kaspa-core
-cp -r web/kaspa-core-dev release/kaspa-wasm32-sdk/web/kaspa-core-dev
+cp -r web/celenium-core release/celenium-wasm32-sdk/web/celenium-core
+cp -r web/celenium-core-dev release/celenium-wasm32-sdk/web/celenium-core-dev
 
-cp -r web/kaspa release/kaspa-wasm32-sdk/web/kaspa
-cp -r web/kaspa-dev release/kaspa-wasm32-sdk/web/kaspa-dev
+cp -r web/celenium release/celenium-wasm32-sdk/web/celenium
+cp -r web/celenium-dev release/celenium-wasm32-sdk/web/celenium-dev
 
-cp -r nodejs/kaspa release/kaspa-wasm32-sdk/nodejs/kaspa
-cp -r nodejs/kaspa-dev release/kaspa-wasm32-sdk/nodejs/kaspa-dev
+cp -r nodejs/celenium release/celenium-wasm32-sdk/nodejs/celenium
+cp -r nodejs/celenium-dev release/celenium-wasm32-sdk/nodejs/celenium-dev
 
-cp -r docs/kaspa-keygen release/kaspa-wasm32-sdk/docs/kaspa-keygen
-cp -r docs/kaspa-rpc release/kaspa-wasm32-sdk/docs/kaspa-rpc
-cp -r docs/kaspa-core release/kaspa-wasm32-sdk/docs/kaspa-core
-cp -r docs/kaspa release/kaspa-wasm32-sdk/docs/kaspa
+cp -r docs/celenium-keygen release/celenium-wasm32-sdk/docs/celenium-keygen
+cp -r docs/celenium-rpc release/celenium-wasm32-sdk/docs/celenium-rpc
+cp -r docs/celenium-core release/celenium-wasm32-sdk/docs/celenium-core
+cp -r docs/celenium release/celenium-wasm32-sdk/docs/celenium
 
-mkdir -p release/kaspa-wasm32-sdk/examples/data
-cp -r examples/data/.gitignore release/kaspa-wasm32-sdk/examples/data/.gitignore
-cp -r examples/nodejs release/kaspa-wasm32-sdk/examples/
-cp -r examples/web release/kaspa-wasm32-sdk/examples/
-cp -r examples/init.js release/kaspa-wasm32-sdk/examples/
-cp -r examples/jsconfig.json release/kaspa-wasm32-sdk/examples/
-cp -r examples/package.json release/kaspa-wasm32-sdk/examples/
+mkdir -p release/celenium-wasm32-sdk/examples/data
+cp -r examples/data/.gitignore release/celenium-wasm32-sdk/examples/data/.gitignore
+cp -r examples/nodejs release/celenium-wasm32-sdk/examples/
+cp -r examples/web release/celenium-wasm32-sdk/examples/
+cp -r examples/init.js release/celenium-wasm32-sdk/examples/
+cp -r examples/jsconfig.json release/celenium-wasm32-sdk/examples/
+cp -r examples/package.json release/celenium-wasm32-sdk/examples/
 
 pushd .
-cd release/kaspa-wasm32-sdk/examples
+cd release/celenium-wasm32-sdk/examples
 npm install
 popd
 
-# tsc release/kaspa-wasm32-sdk/examples/nodejs/typescript/
+# tsc release/celenium-wasm32-sdk/examples/nodejs/typescript/
 
-cp index.html release/kaspa-wasm32-sdk/index.html
-cp README.md release/kaspa-wasm32-sdk/README.md
-cp CHANGELOG.md release/kaspa-wasm32-sdk/CHANGELOG.md
-cp LICENSE release/kaspa-wasm32-sdk/LICENSE
+cp index.html release/celenium-wasm32-sdk/index.html
+cp README.md release/celenium-wasm32-sdk/README.md
+cp CHANGELOG.md release/celenium-wasm32-sdk/CHANGELOG.md
+cp LICENSE release/celenium-wasm32-sdk/LICENSE
 
 node build/package-sizes.js
-cp package-sizes.js release/kaspa-wasm32-sdk/package-sizes.js
+cp package-sizes.js release/celenium-wasm32-sdk/package-sizes.js

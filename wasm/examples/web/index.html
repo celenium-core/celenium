@@ -58,7 +58,7 @@
                 <p>Try running <code>python3 -m http.server</code> and navigating to <a href="http://localhost:8000/index.html">http://localhost:8000/</a></p>
                 <p>If using Rust, install http server by running: <code>cargo install http-server</code>,<br>
                 then run <code>http-server</code> and navigate to <a href="http://localhost:7878/index.html">http://localhost:7878/</a></p>
-                <p>Make sure to run HTTP server from the root of the <code>kaspa-wasm32-sdk</code> folder.</p>
+                <p>Make sure to run HTTP server from the root of the <code>celenium-wasm32-sdk</code> folder.</p>
             `;
         } else {
             if (!window.packageSizes) {
@@ -66,10 +66,10 @@
             }
             let el = document.getElementById("packages");
             Object.entries({
-                "kaspa-keygen": ["KeyGen","Key & Address Generation only"],
-                "kaspa-rpc": ["RPC","RPC only"],
-                "kaspa-core": ["Core","RPC + Key & Address Generation + Wallet SDK"],
-                "kaspa": ["SDK","Full SDK + Integrated Wallet"],
+                "celenium-keygen": ["KeyGen","Key & Address Generation only"],
+                "celenium-rpc": ["RPC","RPC only"],
+                "celenium-core": ["Core","RPC + Key & Address Generation + Wallet SDK"],
+                "celenium": ["SDK","Full SDK + Integrated Wallet"],
             }).forEach(([ident,[name,descr]]) => {
                 let size = packageSizes[ident] ? `${packageSizes[ident]}` : "";
                 el.innerHTML += `<li>WASM32 ${name} Package ${" ".repeat(6-name.length)}${size} - ${descr} - <a href="../../docs/${ident}/index.html" target="_blank">Docs</a></li>`;
@@ -78,12 +78,12 @@
         }
     </script>
     <script type="module">
-        import * as kaspa from '../../web/kaspa-core/kaspa.js';
+        import * as celenium from '../../web/celenium-core/celenium.js';
         (async () => {
-            await kaspa.default('../../web/kaspa-core/kaspa_bg.wasm');
-            console.log("kaspa", kaspa);
-            console.log("version", kaspa.version());
-            document.getElementById("version").innerText = kaspa.version();
+            await celenium.default('../../web/celenium-core/celenium_bg.wasm');
+            console.log("celenium", celenium);
+            console.log("version", celenium.version());
+            document.getElementById("version").innerText = celenium.version();
         })();
     </script>
 </html>

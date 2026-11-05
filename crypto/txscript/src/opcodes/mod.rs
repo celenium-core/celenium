@@ -1535,7 +1535,7 @@ mod test {
         EngineContext, EngineFlags, LOCK_TIME_THRESHOLD, TxScriptEngine, TxScriptError, opcodes, pay_to_address_script, script_to_str,
     };
     use celenium_addresses::{Address, Prefix, Version};
-    use celenium_consensus_core::constants::{SOMPI_PER_CELENIUM, TX_VERSION};
+    use celenium_consensus_core::constants::{PRADHA_PER_CELENIUM, TX_VERSION};
     use celenium_consensus_core::hashing::sighash::SigHashReusedValuesUnsync;
     use celenium_consensus_core::subnets::SUBNETWORK_ID_NATIVE;
     use celenium_consensus_core::tx::{
@@ -3296,7 +3296,7 @@ mod test {
 
         let addr = Address::new(Prefix::Testnet, Version::PubKey, &addr_hash);
         let dummy_script_public_key = pay_to_address_script(&addr);
-        let dummy_tx_out = TransactionOutput::new(SOMPI_PER_CELENIUM, dummy_script_public_key);
+        let dummy_tx_out = TransactionOutput::new(PRADHA_PER_CELENIUM, dummy_script_public_key);
 
         let tx = VerifiableTransactionMock(Transaction::new(
             TX_VERSION + 1,

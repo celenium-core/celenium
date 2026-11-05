@@ -6,7 +6,7 @@
             import { log, stringify, currentNetwork } from './resources/utils.js';
 
             import * as kaspa from '../../web/kaspa/kaspa.js';
-            let { Resolver, RpcClient, Encoding, kaspaToSompi } = kaspa;
+            let { Resolver, RpcClient, Encoding, kaspaToPradha } = kaspa;
 
             (async () => {
                 await kaspa.default('../../web/kaspa/kaspa_bg.wasm');
@@ -84,7 +84,7 @@
 
                     // let input = document.getElementById("amount");
                     // let amount = input.value;
-                    // //let sompi = kaspaToSompi(amount);
+                    // //let pradha = kaspaToPradha(amount);
                     // // TODO ... request payment
                     // input.value = "";
                     // Kaspa.send({address: "xxxx", amount:13.4});

@@ -9,7 +9,7 @@
 # Usage:
 #   scripts/regenesis.sh --now            # launch now: current wall clock
 #   scripts/regenesis.sh 1794000000000    # explicit ms timestamp
-#   scripts/regenesis.sh --now --binary target/release/ceniumd
+#   scripts/regenesis.sh --now --binary target/release/celeniumd
 #       # also patch the built binary in place (no rebuild needed)
 #
 # Steps: patch timestamp -> print new constants via cargo test -> patch

@@ -854,7 +854,7 @@ pub fn record_worker_error(instance_id: &str, wallet: &str, error: &str) {
 pub fn record_balances(instance_id: &str, balances: &[(String, u64)]) {
     if let Some(gauge) = BALANCE_GAUGE.get() {
         for (address, balance) in balances {
-            // Convert from sompi to KAS (divide by 100000000)
+            // Convert from pradha to CEN (divide by 100000000)
             let balance_kas = *balance as f64 / 100_000_000.0;
             gauge.with_label_values(&[instance_id, address]).set(balance_kas);
         }
@@ -1709,14 +1709,14 @@ mod tests {
         std::fs::write(
             &config_path,
             r#"
-celeniumd_address: "127.0.0.1:16110"
+celeniumd_address: "127.0.0.1:26110"
 stratum_port: ":5555"
 min_share_diff: 8192
 "#,
         )
         .unwrap();
 
-        set_web_status_config("127.0.0.1:16110".to_string(), 2);
+        set_web_status_config("127.0.0.1:26110".to_string(), 2);
 
         let mode = HttpMode::Instance { instance_id: "0".to_string(), web_bind: "127.0.0.1:0".to_string() };
 
@@ -1738,7 +1738,7 @@ min_share_diff: 8192
         unsafe {
             std::env::set_var("RKSTRATUM_ALLOW_CONFIG_WRITE", "1");
         }
-        let json_body = r#"{"celeniumd_address":"127.0.0.2:16110","stratum_port":":5556","min_share_diff":4096}"#;
+        let json_body = r#"{"celeniumd_address":"127.0.0.2:26110","stratum_port":":5556","min_share_diff":4096}"#;
         let post_req = format!("POST /api/config HTTP/1.1\r\nContent-Length: {}\r\n\r\n{}", json_body.len(), json_body);
         let post_resp = send_request(mode, &post_req).await;
         assert!(post_resp.contains("\"success\": true"));

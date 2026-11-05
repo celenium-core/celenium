@@ -1,5 +1,9 @@
 Latest online documentation available at: https://kaspa.aspectron.org/docs/
 
+## 2.1.0 (Celenium fork)
+- Rebrand: address prefix cen69/cen69test/cen69sim/cen69dev, proto Kaspad*→Celeniumd*, ports 16xxx→26xxx
+- NOTE: gRPC wire messages renamed Kaspad*→Celeniumd* — incompatible with Kaspa clients
+
 ### Latest Release
 
 - Replace `MassCalculator` with `calculateTransactionMass` and `calculateTransactionFee` functions.
@@ -48,7 +52,7 @@ the maturity DAA periods for user and coinbase transactions.
 
 ### Release 2024-04-14
 
-- Merge with Rusty Celenium master (0.13.6)
+- Merge with Rusty Kaspa master (0.13.6)
 
 ### Release 2024-04-13
 

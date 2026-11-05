@@ -1,4 +1,4 @@
-use crate::constants::{MAX_SOMPI, SEQUENCE_LOCK_TIME_DISABLED, SEQUENCE_LOCK_TIME_MASK};
+use crate::constants::{MAX_PRADHA, SEQUENCE_LOCK_TIME_DISABLED, SEQUENCE_LOCK_TIME_MASK};
 use celenium_consensus_core::{
     hashing::sighash::{SigHashReusedValuesSync, SigHashReusedValuesUnsync},
     mass::Gram,
@@ -105,7 +105,7 @@ impl TransactionValidator {
                 return Err(TxRuleError::InputAmountOverflow);
             }
 
-            if total > MAX_SOMPI {
+            if total > MAX_PRADHA {
                 return Err(TxRuleError::InputAmountTooHigh);
             }
         }

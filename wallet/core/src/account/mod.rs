@@ -340,7 +340,7 @@ pub trait Account: AnySync + Send + Sync + 'static {
         self: Arc<Self>,
         destination: PaymentDestination,
         fee_rate: Option<f64>,
-        priority_fee_sompi: Fees,
+        priority_fee_pradha: Fees,
         payload: Option<Vec<u8>>,
         wallet_secret: Secret,
         payment_secret: Option<Secret>,
@@ -351,7 +351,7 @@ pub trait Account: AnySync + Send + Sync + 'static {
         let signer = Arc::new(Signer::new(self.clone().as_dyn_arc(), keydata, payment_secret));
 
         let settings =
-            GeneratorSettings::try_new_with_account(self.clone().as_dyn_arc(), destination, fee_rate, priority_fee_sompi, payload)?;
+            GeneratorSettings::try_new_with_account(self.clone().as_dyn_arc(), destination, fee_rate, priority_fee_pradha, payload)?;
 
         let generator = Generator::try_new(settings, Some(signer), Some(abortable))?;
 
@@ -378,13 +378,13 @@ pub trait Account: AnySync + Send + Sync + 'static {
         wallet_secret: Secret,
         payment_secret: Option<Secret>,
         fee_rate: Option<f64>,
-        reveal_fee_sompi: u64,
+        reveal_fee_pradha: u64,
         payload: Option<Vec<u8>>,
         abortable: &Abortable,
     ) -> Result<Bundle, Error> {
         commit_reveal_batch_bundle(
             pskb::CommitRevealBatchKind::Manual { hop_payment: start_destination, destination_payment: end_destination },
-            reveal_fee_sompi,
+            reveal_fee_pradha,
             script_sig,
             payload,
             fee_rate,
@@ -402,15 +402,15 @@ pub trait Account: AnySync + Send + Sync + 'static {
         script_sig: Vec<u8>,
         wallet_secret: Secret,
         payment_secret: Option<Secret>,
-        commit_amount_sompi: u64,
+        commit_amount_pradha: u64,
         fee_rate: Option<f64>,
-        reveal_fee_sompi: u64,
+        reveal_fee_pradha: u64,
         payload: Option<Vec<u8>>,
         abortable: &Abortable,
     ) -> Result<Bundle, Error> {
         commit_reveal_batch_bundle(
-            pskb::CommitRevealBatchKind::Parameterized { address, commit_amount_sompi },
-            reveal_fee_sompi,
+            pskb::CommitRevealBatchKind::Parameterized { address, commit_amount_pradha },
+            reveal_fee_pradha,
             script_sig,
             payload,
             fee_rate,
@@ -426,14 +426,14 @@ pub trait Account: AnySync + Send + Sync + 'static {
         self: Arc<Self>,
         destination: PaymentDestination,
         fee_rate: Option<f64>,
-        priority_fee_sompi: Fees,
+        priority_fee_pradha: Fees,
         payload: Option<Vec<u8>>,
         wallet_secret: Secret,
         payment_secret: Option<Secret>,
         abortable: &Abortable,
     ) -> Result<Bundle, Error> {
         let settings =
-            GeneratorSettings::try_new_with_account(self.clone().as_dyn_arc(), destination, fee_rate, priority_fee_sompi, payload)?;
+            GeneratorSettings::try_new_with_account(self.clone().as_dyn_arc(), destination, fee_rate, priority_fee_pradha, payload)?;
         let keydata = self.prv_key_data(wallet_secret).await?;
         let signer = Arc::new(PSKBSigner::new(self.clone().as_dyn_arc(), keydata, payment_secret));
         let generator = Generator::try_new(settings, None, Some(abortable))?;
@@ -494,8 +494,8 @@ pub trait Account: AnySync + Send + Sync + 'static {
         Ok(ids)
     }
 
-    async fn get_utxos(self: Arc<Self>, addresses: Option<Vec<Address>>, min_amount_sompi: Option<u64>) -> Result<Vec<UtxoEntry>> {
-        let utxos = self.utxo_context().get_utxos(addresses, min_amount_sompi).await?;
+    async fn get_utxos(self: Arc<Self>, addresses: Option<Vec<Address>>, min_amount_pradha: Option<u64>) -> Result<Vec<UtxoEntry>> {
+        let utxos = self.utxo_context().get_utxos(addresses, min_amount_pradha).await?;
         Ok(utxos)
     }
 
@@ -503,9 +503,9 @@ pub trait Account: AnySync + Send + Sync + 'static {
     async fn transfer(
         self: Arc<Self>,
         destination_account_id: AccountId,
-        transfer_amount_sompi: u64,
+        transfer_amount_pradha: u64,
         fee_rate: Option<f64>,
-        priority_fee_sompi: Fees,
+        priority_fee_pradha: Fees,
         wallet_secret: Secret,
         payment_secret: Option<Secret>,
         abortable: &Abortable,
@@ -522,14 +522,14 @@ pub trait Account: AnySync + Send + Sync + 'static {
             .ok_or_else(|| Error::AccountNotFound(destination_account_id))?;
 
         let destination_address = destination_account.receive_address()?;
-        let final_transaction_destination = PaymentDestination::from(PaymentOutput::new(destination_address, transfer_amount_sompi));
+        let final_transaction_destination = PaymentDestination::from(PaymentOutput::new(destination_address, transfer_amount_pradha));
         let final_transaction_payload = None;
 
         let settings = GeneratorSettings::try_new_with_account(
             self.clone().as_dyn_arc(),
             final_transaction_destination,
             fee_rate,
-            priority_fee_sompi,
+            priority_fee_pradha,
             final_transaction_payload,
         )?
         .utxo_context_transfer(destination_account.utxo_context());
@@ -555,11 +555,11 @@ pub trait Account: AnySync + Send + Sync + 'static {
         self: Arc<Self>,
         destination: PaymentDestination,
         fee_rate: Option<f64>,
-        priority_fee_sompi: Fees,
+        priority_fee_pradha: Fees,
         payload: Option<Vec<u8>>,
         abortable: &Abortable,
     ) -> Result<GeneratorSummary> {
-        let settings = GeneratorSettings::try_new_with_account(self.as_dyn_arc(), destination, fee_rate, priority_fee_sompi, payload)?;
+        let settings = GeneratorSettings::try_new_with_account(self.as_dyn_arc(), destination, fee_rate, priority_fee_pradha, payload)?;
 
         let generator = Generator::try_new(settings, None, Some(abortable))?;
 

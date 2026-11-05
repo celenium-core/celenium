@@ -14,8 +14,8 @@ pub use crate::settings::WalletSettings;
 pub use crate::storage::{IdT, Interface, PrvKeyDataId, PrvKeyDataInfo, TransactionId, TransactionRecord, WalletDescriptor};
 pub use crate::tx::{Fees, PaymentDestination, PaymentOutput, PaymentOutputs};
 pub use crate::utils::{
-    celenium_suffix, celenium_to_sompi, sompi_to_celenium, sompi_to_celenium_string, sompi_to_celenium_string_with_suffix, try_celenium_str_to_sompi,
-    try_celenium_str_to_sompi_i64,
+    celenium_suffix, celenium_to_pradha, pradha_to_celenium, pradha_to_celenium_string, pradha_to_celenium_string_with_suffix, try_celenium_str_to_pradha,
+    try_celenium_str_to_pradha_i64,
 };
 pub use crate::utxo::balance::{Balance, BalanceStrings};
 pub use crate::wallet::Wallet;

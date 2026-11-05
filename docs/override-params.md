@@ -145,12 +145,12 @@ And then launch celeniumd with:
 celeniumd --simnet
 ```
 
-and immedeiately close it. This will create the simnet datadir at `~/.rusty-kaspa/kaspa-simnet`.
+and immedeiately close it. This will create the simnet datadir at `~/.celenium/celenium-simnet`.
 
 You can then override it with the simpa database by running:
 ```bash
-rm -rf ~/.rusty-kaspa/kaspa-simnet/datadir/consensus/consensus-001/
-mv /path/to/simpa/database ~/.rusty-kaspa/kaspa-simnet/datadir/consensus/consensus-001/
+rm -rf ~/.celenium/celenium-simnet/datadir/consensus/consensus-001/
+mv /path/to/simpa/database ~/.celenium/celenium-simnet/datadir/consensus/consensus-001/
 ```
 
 And finally launch celeniumd with:

@@ -2,7 +2,7 @@ use super::{
     TransactionValidator,
     errors::{TxResult, TxRuleError},
 };
-use crate::constants::{MAX_SOMPI, TX_VERSION_TOCCATA};
+use crate::constants::{MAX_PRADHA, TX_VERSION_TOCCATA};
 use celenium_consensus_core::subnets::{
     CoinbaseSubnetwork, NativeSubnetwork, SUBNETWORK_NAMESPACE_LEN, SUBNETWORK_ZERO_TAIL_LEN, Subnetwork,
 };
@@ -151,7 +151,7 @@ fn check_transaction_output_value_ranges(tx: &Transaction) -> TxResult<()> {
             return Err(TxRuleError::TxOutZero(i));
         }
 
-        if output.value > MAX_SOMPI {
+        if output.value > MAX_PRADHA {
             return Err(TxRuleError::TxOutTooHigh(i));
         }
 
@@ -161,7 +161,7 @@ fn check_transaction_output_value_ranges(tx: &Transaction) -> TxResult<()> {
             return Err(TxRuleError::OutputsValueOverflow);
         }
 
-        if total > MAX_SOMPI {
+        if total > MAX_PRADHA {
             return Err(TxRuleError::TotalTxOutTooHigh);
         }
     }

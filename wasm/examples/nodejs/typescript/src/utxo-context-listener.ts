@@ -9,7 +9,7 @@ import {
     Resolver,
     UtxoProcessor,
     UtxoContext,
-    kaspaToSompi,
+    kaspaToPradha,
     createTransactions,
     initConsolePanicHook,
     IUtxoProcessorEvent,
@@ -18,7 +18,7 @@ import {
     IMaturityEvent,
     ITransactionRecord,
     UtxoProcessorEventType,
-} from "../../../../nodejs/kaspa";
+} from "../../../../nodejs/celenium";
 
 import { parseArgs } from "./utils";
 

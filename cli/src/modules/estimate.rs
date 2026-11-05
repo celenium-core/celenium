@@ -16,17 +16,17 @@ impl Estimate {
             return Ok(());
         }
 
-        let amount_sompi = try_parse_required_nonzero_celenium_as_sompi_u64(argv.first())?;
+        let amount_pradha = try_parse_required_nonzero_celenium_as_pradha_u64(argv.first())?;
         // TODO fee_rate
         let fee_rate = None;
-        let priority_fee_sompi = try_parse_optional_celenium_as_sompi_i64(argv.get(1))?.unwrap_or(0);
+        let priority_fee_pradha = try_parse_optional_celenium_as_pradha_i64(argv.get(1))?.unwrap_or(0);
         let abortable = Abortable::default();
 
         // just use any address for an estimate (change address)
         let change_address = account.change_address()?;
-        let destination = PaymentDestination::PaymentOutputs(PaymentOutputs::from((change_address.clone(), amount_sompi)));
+        let destination = PaymentDestination::PaymentOutputs(PaymentOutputs::from((change_address.clone(), amount_pradha)));
         // TODO fee_rate
-        let estimate = account.estimate(destination, fee_rate, priority_fee_sompi.into(), None, &abortable).await?;
+        let estimate = account.estimate(destination, fee_rate, priority_fee_pradha.into(), None, &abortable).await?;
 
         tprintln!(ctx, "Estimate - {estimate}");
 

@@ -1,2 +1,2 @@
-const { version } = require('../../../nodejs/kaspa');
+const { version } = require('../../../nodejs/celenium');
 console.log("version:", version());

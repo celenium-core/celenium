@@ -241,7 +241,7 @@ pub fn cli() -> Command {
                 .num_args(0..=1)
                 .require_equals(true)
                 .value_parser(clap::value_parser!(ContextualNetAddress))
-                .help("Interface:port to listen for gRPC connections (default port: 26110, testnet: 16210)."),
+                .help("Interface:port to listen for gRPC connections (default port: 26110, testnet: 26210)."),
         )
         .arg(
             Arg::new("rpclisten-borsh")
@@ -252,7 +252,7 @@ pub fn cli() -> Command {
                 .require_equals(true)
                 .default_missing_value("default") // TODO: Find a way to use defaults.rpclisten_borsh
                 .value_parser(clap::value_parser!(WrpcNetAddress))
-                .help("Interface:port to listen for wRPC Borsh connections (default port: 17110, testnet: 17210)."),
+                .help("Interface:port to listen for wRPC Borsh connections (default port: 27110, testnet: 27210)."),
 
         )
         .arg(
@@ -264,7 +264,7 @@ pub fn cli() -> Command {
                 .require_equals(true)
                 .default_missing_value("default") // TODO: Find a way to use defaults.rpclisten_json
                 .value_parser(clap::value_parser!(WrpcNetAddress))
-                .help("Interface:port to listen for wRPC JSON connections (default port: 18110, testnet: 18210)."),
+                .help("Interface:port to listen for wRPC JSON connections (default port: 28110, testnet: 28210)."),
         )
         .arg(arg!(--unsaferpc "Enable RPC commands which affect the state of the node").env("CELENIUMD_UNSAFERPC"))
         .arg(
@@ -294,7 +294,7 @@ pub fn cli() -> Command {
                 .value_name("IP[:PORT]")
                 .require_equals(true)
                 .value_parser(clap::value_parser!(ContextualNetAddress))
-                .help("Add an interface:port to listen for connections (default all interfaces port: 16111, testnet: 16211)."),
+                .help("Add an interface:port to listen for connections (default all interfaces port: 26111, testnet: 26211)."),
         )
         .arg(
             Arg::new("outpeers")
@@ -604,7 +604,7 @@ mod tests {
                                             automatically disabled if the --connect or --proxy options are used
                                             without also specifying listen interfaces via --listen
       --listen=                             Add an interface/port to listen for connections (default all interfaces
-                                            port: 16111, testnet: 16211)
+                                            port: 26111, testnet: 26211)
       --outpeers=                           Target number of outbound peers (default: 8)
       --maxinpeers=                         Max number of inbound peers (default: 117)
       --enablebanning                       Enable banning of misbehaving peers
@@ -615,7 +615,7 @@ mod tests {
       --whitelist=                          Add an IP network or IP that will not be banned. (eg. 192.168.1.0/24 or
                                             ::1)
       --rpclisten=                          Add an interface/port to listen for RPC connections (default port: 26110,
-                                            testnet: 16210)
+                                            testnet: 26210)
       --rpccert=                            File containing the certificate file (default:
                                             /Users/aspect/Library/Application Support/Celeniumd/rpc.cert)
       --rpckey=                             File containing the certificate key (default:
@@ -642,7 +642,7 @@ mod tests {
                                             individual subsystems -- Use show to list available subsystems (default:
                                             info)
       --upnp                                Use UPnP to map our listening port outside of NAT
-      --minrelaytxfee=                      The minimum transaction fee in KAS/kB to be considered a non-zero fee.
+      --minrelaytxfee=                      The minimum transaction fee in CEN/kB to be considered a non-zero fee.
                                             (default: 1e-05)
       --maxorphantx=                        Max number of orphan transactions to keep in memory (default: 100)
       --blockmaxmass=                       Maximum transaction mass to be used when creating a block (default:

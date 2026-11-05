@@ -1837,21 +1837,21 @@ impl Deserializer for GetCoinSupplyRequest {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GetCoinSupplyResponse {
-    pub max_sompi: u64,
-    pub circulating_sompi: u64,
+    pub max_pradha: u64,
+    pub circulating_pradha: u64,
 }
 
 impl GetCoinSupplyResponse {
-    pub fn new(max_sompi: u64, circulating_sompi: u64) -> Self {
-        Self { max_sompi, circulating_sompi }
+    pub fn new(max_pradha: u64, circulating_pradha: u64) -> Self {
+        Self { max_pradha, circulating_pradha }
     }
 }
 
 impl Serializer for GetCoinSupplyResponse {
     fn serialize<W: std::io::Write>(&self, writer: &mut W) -> std::io::Result<()> {
         store!(u16, &1, writer)?;
-        store!(u64, &self.max_sompi, writer)?;
-        store!(u64, &self.circulating_sompi, writer)?;
+        store!(u64, &self.max_pradha, writer)?;
+        store!(u64, &self.circulating_pradha, writer)?;
 
         Ok(())
     }
@@ -1860,10 +1860,10 @@ impl Serializer for GetCoinSupplyResponse {
 impl Deserializer for GetCoinSupplyResponse {
     fn deserialize<R: std::io::Read>(reader: &mut R) -> std::io::Result<Self> {
         let _version = load!(u16, reader)?;
-        let max_sompi = load!(u64, reader)?;
-        let circulating_sompi = load!(u64, reader)?;
+        let max_pradha = load!(u64, reader)?;
+        let circulating_pradha = load!(u64, reader)?;
 
-        Ok(Self { max_sompi, circulating_sompi })
+        Ok(Self { max_pradha, circulating_pradha })
     }
 }
 

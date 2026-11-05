@@ -4,12 +4,12 @@ globalThis.WebSocket = require('websocket').w3cwebsocket; // W3C WebSocket modul
 
 const path = require('path');
 const fs = require('fs');
-const kaspa = require('../../../../nodejs/kaspa-dev');
+const kaspa = require('../../../../nodejs/celenium-dev');
 const {
     Wallet, setDefaultStorageFolder,
     AccountKind, Mnemonic, Resolver,
-    kaspaToSompi,
-    sompiToKaspaString,
+    kaspaToPradha,
+    pradhaToKaspaString,
     Address
 } = kaspa;
 
@@ -79,7 +79,7 @@ setDefaultStorageFolder(storageFolder);
             list.push({
                 Id: tx.id,
                 Type: tx.data.type,
-                Value: sompiToKaspaString(value(tx)||0)
+                Value: pradhaToKaspaString(value(tx)||0)
             });
             //console.log("tx.data", tx.id, tx.data)
         });
@@ -134,9 +134,9 @@ setDefaultStorageFolder(storageFolder);
                         let b = balance[id];
                         list.push({
                             Account: id.substring(0, 5)+"...",
-                            Mature: sompiToKaspaString(b.mature),
-                            Pending: sompiToKaspaString(b.pending),
-                            Outgoing: sompiToKaspaString(b.outgoing),
+                            Mature: pradhaToKaspaString(b.mature),
+                            Pending: pradhaToKaspaString(b.pending),
+                            Outgoing: pradhaToKaspaString(b.outgoing),
                             MatureUtxo: b.matureUtxoCount,
                             PendingUtxo: b.pendingUtxoCount,
                             StasisUtxo: b.stasisUtxoCount
@@ -259,11 +259,11 @@ setDefaultStorageFolder(storageFolder);
             walletSecret,
             // @ts-ignore
             accountId: firstAccount.accountId,
-            priorityFeeSompi: kaspaToSompi("0.001"),
+            priorityFeePradha: kaspaToPradha("0.001"),
             destination:[{
                 // @ts-ignore
                 address: firstAccount.changeAddress,
-                amount: kaspaToSompi("1.567")
+                amount: kaspaToPradha("1.567")
             }]
         });
         console.log("sendResult", sendResult);
@@ -276,7 +276,7 @@ setDefaultStorageFolder(storageFolder);
             walletSecret,
             sourceAccountId: firstAccount.accountId,
             destinationAccountId: firstAccount.accountId,
-            transferAmountSompi: kaspaToSompi("2.456"),
+            transferAmountPradha: kaspaToPradha("2.456"),
         });
         console.log("transferResult", transferResult);
 

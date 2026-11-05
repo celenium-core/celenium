@@ -44,10 +44,10 @@ Leave this process running. Closing it will stop your node.
 
 - **Advanced Command-Line Options**:
   - `--rpclisten=0.0.0.0` to listen for RPC connections on all network interfaces (public RPC).
-  - `--rpclisten-borsh` for local borsh RPC access from the `kaspa-cli` binary.
+  - `--rpclisten-borsh` for local borsh RPC access from the `celenium` binary.
   - `--unsaferpc` for allowing P2P peer query and management via RPC (recommended to use only if **not** exposing RPC publicly).
-  - `--perf-metrics --loglevel=info,celeniumd_lib::daemon=debug,kaspa_mining::monitor=debug` for detailed performance logs.
-  - `--loglevel=kaspa_grpc_server=warn` for suppressing most RPC connect/disconnect log reports.
+  - `--perf-metrics --loglevel=info,celeniumd_lib::daemon=debug,celenium_mining::monitor=debug` for detailed performance logs.
+  - `--loglevel=celenium_grpc_server=warn` for suppressing most RPC connect/disconnect log reports.
   - `--ram-scale=3.0` for increasing cache size threefold (relevant for utilizing large RAM; can be set between 0.1 and 10).
 
 ---
@@ -77,7 +77,7 @@ Leave this process running. Closing it will stop your node.
 
 2. **Start Mining**  
   ```
-  kaspa-miner --testnet --mining-address <your-address> -p 16210 -t 1
+  kaspa-miner --testnet --mining-address <your-address> -p 26210 -t 1
   ```
 
    Replace <your-address> with your TN10 address (e.g., from Rothschild) if you want to mine and generate transactions simultaneously.
@@ -91,7 +91,7 @@ Leave this process running. Closing it will stop your node.
 - **Transaction Generation:**  
   `pradana --private-key <your-private-key> -t=10`
 - **Mining:**  
-  `kaspa-miner --testnet --mining-address <your-address> -p 16210 -t 1`  
+  `kaspa-miner --testnet --mining-address <your-address> -p 26210 -t 1`  
 
 By participating in TN10, you help stress-test the Crescendo Hardfork environment and prepare for a robust mainnet upgrade in end of April / early May. Share any challenges or successes in the #testnet Discord channel, and thank you for supporting Celenium’s continued evolution.
 

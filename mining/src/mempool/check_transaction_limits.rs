@@ -50,7 +50,7 @@ mod tests {
     use crate::{MiningCounters, mempool::config::Config};
     use celenium_consensus_core::{
         config::constants::consensus::DEFAULT_LANES_PER_BLOCK_LIMIT,
-        constants::{MAX_TX_IN_SEQUENCE_NUM, SOMPI_PER_CELENIUM, TX_VERSION},
+        constants::{MAX_TX_IN_SEQUENCE_NUM, PRADHA_PER_CELENIUM, TX_VERSION},
         mass::{BlockLaneLimits, BlockMassLimits},
         subnets::SUBNETWORK_ID_NATIVE,
         tx::{ScriptPublicKey, Transaction, TransactionInput, TransactionOutpoint, TransactionOutput, UtxoEntry, scriptvec},
@@ -92,10 +92,10 @@ mod tests {
         let script_public_key = ScriptPublicKey::new(0, scriptvec![0x51]);
         let outpoint = TransactionOutpoint::new(Hash::from_u64_word(1), 0);
         let input = TransactionInput::new(outpoint, vec![], MAX_TX_IN_SEQUENCE_NUM, 0);
-        let output = TransactionOutput::new(SOMPI_PER_CELENIUM, script_public_key.clone());
+        let output = TransactionOutput::new(PRADHA_PER_CELENIUM, script_public_key.clone());
         let tx = Transaction::new(TX_VERSION, vec![input], vec![output], 0, SUBNETWORK_ID_NATIVE, gas, vec![]);
         tx.set_storage_mass(storage_mass);
-        let entry = UtxoEntry::new(SOMPI_PER_CELENIUM, script_public_key, 0, false, None);
+        let entry = UtxoEntry::new(PRADHA_PER_CELENIUM, script_public_key, 0, false, None);
         let mut tx = MutableTransaction::with_entries(tx.into(), vec![entry]);
         tx.calculated_non_contextual_masses = Some(NonContextualMasses::new(compute_mass, transient_mass));
         tx

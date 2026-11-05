@@ -1,13 +1,13 @@
 const { PrivateKey, RpcClient, ScriptBuilder, Opcodes,
   payToScriptHashScript, addressFromScriptPublicKey,
   createTransaction, signTransaction,
-  Encoding } = require('../../../../nodejs/kaspa');
+  Encoding } = require('../../../../nodejs/celenium');
 const fs = require('fs');
 const path = require('path');
 
 // Configuration
 const NETWORK_ID = 'devnet';
-const RPC_URL = 'ws://127.0.0.1:17610';
+const RPC_URL = 'ws://127.0.0.1:27610';
 const PRIVATE_KEY = 'b99d75736a0fd0ae2da658959813d680474f5a740a9c970a7da867141596178f';
 
 

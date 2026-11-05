@@ -400,7 +400,7 @@ impl StratumListener {
                             error!(
                                 "{} {}",
                                 LogColors::error("[ERROR]"),
-                                "  * HTTP/2/gRPC connections should use the Celenium node port (16110), not the bridge port (5555)"
+                                "  * HTTP/2/gRPC connections should use the Celenium node port (26110), not the bridge port (5555)"
                             );
                             error!("{} {}", LogColors::error("[ERROR]"), "  * Closing connection immediately");
                             error!("{}", LogColors::error("========================================"));
@@ -557,7 +557,7 @@ impl StratumListener {
                                 error!(
                                     "{} {}",
                                     LogColors::error("[ERROR]"),
-                                    "  * HTTP/2/gRPC connections should use the Celenium node port (16110), not the bridge port (5555)"
+                                    "  * HTTP/2/gRPC connections should use the Celenium node port (26110), not the bridge port (5555)"
                                 );
                                 error!("{} {}", LogColors::error("[ERROR]"), "  * Closing connection immediately");
                                 error!("{}", LogColors::error("========================================"));

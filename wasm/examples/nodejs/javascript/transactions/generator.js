@@ -6,9 +6,9 @@ const {
     PrivateKey,
     RpcClient,
     Generator,
-    kaspaToSompi,
+    kaspaToPradha,
     initConsolePanicHook
-} = require('../../../../nodejs/kaspa');
+} = require('../../../../nodejs/celenium');
 
 initConsolePanicHook();
 
@@ -56,7 +56,7 @@ const { encoding, networkId, address : destinationAddress } = require("../utils"
         // entries: an array of UtxoEntry
         // outputs: an array of [address, amount]
         //
-        // priorityFee: a priodityFee value in Sompi
+        // priorityFee: a priodityFee value in Pradha
         // NOTE: The priorityFee applies only to the final transaction
         //
         // changeAddress: a change address
@@ -74,9 +74,9 @@ const { encoding, networkId, address : destinationAddress } = require("../utils"
         // transaction according to the supplied outputs.
         let generator = new Generator({
             entries,
-            outputs: [{address, amount : kaspaToSompi(0.2)}],
+            outputs: [{address, amount : kaspaToPradha(0.2)}],
             // priorityFee: 1000n,
-            priorityFee: kaspaToSompi(0.0001),
+            priorityFee: kaspaToPradha(0.0001),
             changeAddress: sourceAddress,
         });
 

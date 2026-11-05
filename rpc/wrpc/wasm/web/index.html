@@ -1,10 +1,10 @@
 <html>
     <head>
         <script type="module">
-            import * as kaspa from './kaspa-rpc/kaspa-rpc.js';
+            import * as celenium from './celenium-rpc/celenium-rpc.js';
             (async () => {
-                await kaspa.default('./kaspa-rpc/kaspa-rpc_bg.wasm');
-                console.log(kaspa.version());
+                await celenium.default('./celenium-rpc/celenium-rpc_bg.wasm');
+                console.log(celenium.version());
             })();
         </script>
     </head>

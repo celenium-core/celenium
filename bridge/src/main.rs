@@ -300,7 +300,7 @@ async fn main() -> Result<(), anyhow::Error> {
 
     tracing::info!("Waiting for node to fully sync before starting stratum listeners");
     celenium_api
-        .wait_for_sync_with_shutdown(shutdown_rx.clone())
+        .wait_for_sync_with_shutdown(shutdown_rx.clone(), cli.skip_sync_wait)
         .await
         .map_err(|e| anyhow::anyhow!("Failed while waiting for node sync: {}", e))?;
     tracing::info!("Node is synced, starting stratum listeners");

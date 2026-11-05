@@ -5,7 +5,7 @@ const {
   RpcClient,
   Encoding,
   UtxoEntryReference,
-} = require("../../../../nodejs/kaspa");
+} = require("../../../../nodejs/celenium");
 
 const address = process.argv[2];
 const url = process.argv[3] ?? "127.0.0.1";

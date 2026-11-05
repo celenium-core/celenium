@@ -10,41 +10,41 @@ use workflow_wasm::prelude::*;
 extern "C" {
     #[wasm_bindgen(typescript_type = "bigint | number | HexString")]
     #[derive(Clone, Debug)]
-    pub type ISompiToCelenium;
+    pub type IPradhaToCelenium;
 }
 
-/// Convert a Celenium string to Sompi represented by bigint.
+/// Convert a Celenium string to Pradha represented by bigint.
 /// This function provides correct precision handling and
 /// can be used to parse user input.
 /// @category Wallet SDK
-#[wasm_bindgen(js_name = "celeniumToSompi")]
-pub fn celenium_to_sompi(celenium: String) -> Option<BigInt> {
-    crate::utils::try_celenium_str_to_sompi(celenium).ok().flatten().map(Into::into)
+#[wasm_bindgen(js_name = "celeniumToPradha")]
+pub fn celenium_to_pradha(celenium: String) -> Option<BigInt> {
+    crate::utils::try_celenium_str_to_pradha(celenium).ok().flatten().map(Into::into)
 }
 
 ///
-/// Convert Sompi to a string representation of the amount in Celenium.
+/// Convert Pradha to a string representation of the amount in Celenium.
 ///
 /// @category Wallet SDK
 ///
-#[wasm_bindgen(js_name = "sompiToCeleniumString")]
-pub fn sompi_to_celenium_string(sompi: ISompiToCelenium) -> Result<String> {
-    let sompi = sompi.try_as_u64()?;
-    Ok(crate::utils::sompi_to_celenium_string(sompi))
+#[wasm_bindgen(js_name = "pradhaToCeleniumString")]
+pub fn pradha_to_celenium_string(pradha: IPradhaToCelenium) -> Result<String> {
+    let pradha = pradha.try_as_u64()?;
+    Ok(crate::utils::pradha_to_celenium_string(pradha))
 }
 
 ///
-/// Format a Sompi amount to a string representation of the amount in Celenium with a suffix
-/// based on the network type (e.g. `KAS` for mainnet, `TKAS` for testnet,
+/// Format a Pradha amount to a string representation of the amount in Celenium with a suffix
+/// based on the network type (e.g. `CEN` for mainnet, `TCEN` for testnet,
 /// `SKAS` for simnet, `DKAS` for devnet).
 ///
 /// @category Wallet SDK
 ///
-#[wasm_bindgen(js_name = "sompiToCeleniumStringWithSuffix")]
-pub fn sompi_to_celenium_string_with_suffix(sompi: ISompiToCelenium, network: &NetworkTypeT) -> Result<String> {
-    let sompi = sompi.try_as_u64()?;
+#[wasm_bindgen(js_name = "pradhaToCeleniumStringWithSuffix")]
+pub fn pradha_to_celenium_string_with_suffix(pradha: IPradhaToCelenium, network: &NetworkTypeT) -> Result<String> {
+    let pradha = pradha.try_as_u64()?;
     let network_type = NetworkType::try_from(network)?;
-    Ok(crate::utils::sompi_to_celenium_string_with_suffix(sompi, &network_type))
+    Ok(crate::utils::pradha_to_celenium_string_with_suffix(pradha, &network_type))
 }
 
 #[wasm_bindgen(js_name = "getNetworkParams")]

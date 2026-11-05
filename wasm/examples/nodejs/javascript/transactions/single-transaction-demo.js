@@ -9,7 +9,7 @@ const {
     signTransaction,
     initConsolePanicHook,
     Resolver,
-} = require('../../../../nodejs/kaspa');
+} = require('../../../../nodejs/celenium');
 
 initConsolePanicHook();
 

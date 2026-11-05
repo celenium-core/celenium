@@ -137,7 +137,7 @@ impl UtxoPlurality for TransactionOutput {
 pub struct UtxoCell {
     /// The plurality (number of "storage units") for this UTXO
     pub plurality: u64,
-    /// The amount of KAS (in sompis) locked in this UTXO
+    /// The amount of CEN (in pradhas) locked in this UTXO
     pub amount: u64,
 }
 
@@ -537,7 +537,7 @@ pub fn calc_storage_mass(
 mod tests {
     use super::*;
     use crate::{
-        constants::{SOMPI_PER_CELENIUM, STORAGE_MASS_PARAMETER},
+        constants::{PRADHA_PER_CELENIUM, STORAGE_MASS_PARAMETER},
         network::NetworkType,
         subnets::SubnetworkId,
         tx::*,
@@ -704,10 +704,10 @@ mod tests {
             },
             PluralityTestCase {
                 name: "1:3; output index=1, plurality=2; kas units",
-                inputs_tx1: &[1000 * SOMPI_PER_CELENIUM],
-                outputs_tx1: &[200 * SOMPI_PER_CELENIUM, 200 * SOMPI_PER_CELENIUM, 200 * SOMPI_PER_CELENIUM],
-                inputs_tx2: &[1000 * SOMPI_PER_CELENIUM],
-                outputs_tx2: &[200 * SOMPI_PER_CELENIUM, 400 * SOMPI_PER_CELENIUM],
+                inputs_tx1: &[1000 * PRADHA_PER_CELENIUM],
+                outputs_tx1: &[200 * PRADHA_PER_CELENIUM, 200 * PRADHA_PER_CELENIUM, 200 * PRADHA_PER_CELENIUM],
+                inputs_tx2: &[1000 * PRADHA_PER_CELENIUM],
+                outputs_tx2: &[200 * PRADHA_PER_CELENIUM, 400 * PRADHA_PER_CELENIUM],
                 plurality_index: Some(1),
                 desired_plurality: Some(2),
                 override_output: true,
@@ -715,10 +715,10 @@ mod tests {
             },
             PluralityTestCase {
                 name: "1:2; output index=0, plurality=2; kas units",
-                inputs_tx1: &[1000 * SOMPI_PER_CELENIUM],
-                outputs_tx1: &[200 * SOMPI_PER_CELENIUM, 200 * SOMPI_PER_CELENIUM],
-                inputs_tx2: &[1000 * SOMPI_PER_CELENIUM],
-                outputs_tx2: &[400 * SOMPI_PER_CELENIUM],
+                inputs_tx1: &[1000 * PRADHA_PER_CELENIUM],
+                outputs_tx1: &[200 * PRADHA_PER_CELENIUM, 200 * PRADHA_PER_CELENIUM],
+                inputs_tx2: &[1000 * PRADHA_PER_CELENIUM],
+                outputs_tx2: &[400 * PRADHA_PER_CELENIUM],
                 plurality_index: Some(0),
                 desired_plurality: Some(2),
                 override_output: true,
@@ -726,10 +726,10 @@ mod tests {
             },
             PluralityTestCase {
                 name: "2:2; output index=0, plurality=2; kas units",
-                inputs_tx1: &[350 * SOMPI_PER_CELENIUM, 500 * SOMPI_PER_CELENIUM],
-                outputs_tx1: &[200 * SOMPI_PER_CELENIUM, 200 * SOMPI_PER_CELENIUM],
-                inputs_tx2: &[350 * SOMPI_PER_CELENIUM, 500 * SOMPI_PER_CELENIUM],
-                outputs_tx2: &[400 * SOMPI_PER_CELENIUM],
+                inputs_tx1: &[350 * PRADHA_PER_CELENIUM, 500 * PRADHA_PER_CELENIUM],
+                outputs_tx1: &[200 * PRADHA_PER_CELENIUM, 200 * PRADHA_PER_CELENIUM],
+                inputs_tx2: &[350 * PRADHA_PER_CELENIUM, 500 * PRADHA_PER_CELENIUM],
+                outputs_tx2: &[400 * PRADHA_PER_CELENIUM],
                 plurality_index: Some(0),
                 desired_plurality: Some(2),
                 override_output: true,
@@ -737,17 +737,17 @@ mod tests {
             },
             PluralityTestCase {
                 name: "4:6; output index=0, plurality=3; kas units",
-                inputs_tx1: &[350 * SOMPI_PER_CELENIUM, 500 * SOMPI_PER_CELENIUM, 350 * SOMPI_PER_CELENIUM, 500 * SOMPI_PER_CELENIUM],
+                inputs_tx1: &[350 * PRADHA_PER_CELENIUM, 500 * PRADHA_PER_CELENIUM, 350 * PRADHA_PER_CELENIUM, 500 * PRADHA_PER_CELENIUM],
                 outputs_tx1: &[
-                    200 * SOMPI_PER_CELENIUM,
-                    200 * SOMPI_PER_CELENIUM,
-                    400 * SOMPI_PER_CELENIUM,
-                    250 * SOMPI_PER_CELENIUM,
-                    250 * SOMPI_PER_CELENIUM,
-                    250 * SOMPI_PER_CELENIUM,
+                    200 * PRADHA_PER_CELENIUM,
+                    200 * PRADHA_PER_CELENIUM,
+                    400 * PRADHA_PER_CELENIUM,
+                    250 * PRADHA_PER_CELENIUM,
+                    250 * PRADHA_PER_CELENIUM,
+                    250 * PRADHA_PER_CELENIUM,
                 ],
-                inputs_tx2: &[350 * SOMPI_PER_CELENIUM, 500 * SOMPI_PER_CELENIUM, 350 * SOMPI_PER_CELENIUM, 500 * SOMPI_PER_CELENIUM],
-                outputs_tx2: &[200 * SOMPI_PER_CELENIUM, 200 * SOMPI_PER_CELENIUM, 400 * SOMPI_PER_CELENIUM, 750 * SOMPI_PER_CELENIUM],
+                inputs_tx2: &[350 * PRADHA_PER_CELENIUM, 500 * PRADHA_PER_CELENIUM, 350 * PRADHA_PER_CELENIUM, 500 * PRADHA_PER_CELENIUM],
+                outputs_tx2: &[200 * PRADHA_PER_CELENIUM, 200 * PRADHA_PER_CELENIUM, 400 * PRADHA_PER_CELENIUM, 750 * PRADHA_PER_CELENIUM],
                 plurality_index: Some(3),
                 desired_plurality: Some(3),
                 override_output: true,
@@ -787,14 +787,14 @@ mod tests {
         assert_eq!(storage_mass, storage_mass_parameter / 50 + storage_mass_parameter / 550 - 3 * (storage_mass_parameter / 200));
 
         // Create a tx with more outs than ins
-        let base_value = 10_000 * SOMPI_PER_CELENIUM;
+        let base_value = 10_000 * PRADHA_PER_CELENIUM;
         let mut tx = generate_tx_from_amounts(&[base_value, base_value, base_value * 2], &[base_value; 4]);
         let storage_mass_parameter = STORAGE_MASS_PARAMETER;
         let storage_mass = MassCalculator::new(0, 0, storage_mass_parameter).calc_contextual_masses(&tx.as_verifiable()).unwrap();
         assert_eq!(storage_mass, 4); // Inputs are above C so they don't contribute negative mass, 4 outputs exactly equal C each charge 1
 
         let mut tx2 = tx.clone();
-        tx2.tx.outputs[0].value = 10 * SOMPI_PER_CELENIUM;
+        tx2.tx.outputs[0].value = 10 * PRADHA_PER_CELENIUM;
         let storage_mass = MassCalculator::new(0, 0, storage_mass_parameter).calc_contextual_masses(&tx2.as_verifiable()).unwrap();
         assert_eq!(storage_mass, 1003);
 

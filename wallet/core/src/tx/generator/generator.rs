@@ -557,7 +557,7 @@ impl Generator {
         &self.inner.signer
     }
 
-    /// The total amount of fees in SOMPI consumed during the transaction generation process.
+    /// The total amount of fees in PRADHA consumed during the transaction generation process.
     #[inline(always)]
     pub fn aggregate_fees(&self) -> u64 {
         self.context().aggregate_fees

@@ -46,10 +46,10 @@ Leave this process running. Closing it will stop your node. If you have other fl
 - **Advanced Command-Line Options**:
   - `--disable-upnp` if you don't want your node to be automatically publicly connectable (if your router supports UPnP). Recommended for pools and exchanges.
   - `--rpclisten=0.0.0.0` to listen for RPC connections on all network interfaces (public RPC). Use `--rpclisten=127.0.0.1` if you are running your pool/exchange software on the same machine
-  - `--rpclisten-borsh` for local borsh RPC access from the `kaspa-cli` binary.
+  - `--rpclisten-borsh` for local borsh RPC access from the `celenium` binary.
   - `--unsaferpc` for allowing P2P peer query and management via RPC (recommended to use only if **not** exposing RPC publicly).
-  - `--perf-metrics --loglevel=info,celeniumd_lib::daemon=debug,kaspa_mining::monitor=debug` for detailed performance logs.
-  - `--loglevel=kaspa_grpc_server=warn` for suppressing most RPC connect/disconnect log reports.
+  - `--perf-metrics --loglevel=info,celeniumd_lib::daemon=debug,celenium_mining::monitor=debug` for detailed performance logs.
+  - `--loglevel=celenium_grpc_server=warn` for suppressing most RPC connect/disconnect log reports.
   - `--ram-scale=3.0` for increasing cache size threefold (relevant for utilizing large RAM; can be set between 0.1 and 10).
 
 ## Mining and Preparation for Crescendo

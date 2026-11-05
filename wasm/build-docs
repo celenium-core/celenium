@@ -5,24 +5,24 @@ set -e
 
 if [ "$1" == "--keygen" ]; then
     echo "building keygen"
-    typedoc --name "Kaspa WASM32 SDK - Key Generation" --sourceLinkExternal --readme ./README.md --options ./build/docs/ --out ./docs/kaspa-keygen ./build/docs/kaspa-keygen.ts
+    typedoc --name "Celenium WASM32 SDK - Key Generation" --sourceLinkExternal --readme ./README.md --options ./build/docs/ --out ./docs/celenium-keygen ./build/docs/celenium-keygen.ts
 elif [ "$1" == "--rpc" ]; then
     echo "building rpc"
-    typedoc --name "Kaspa WASM32 SDK - RPC" --sourceLinkExternal --readme ./README.md --options ./build/docs/ --out ./docs/kaspa-rpc ./build/docs/kaspa-rpc.ts
+    typedoc --name "Celenium WASM32 SDK - RPC" --sourceLinkExternal --readme ./README.md --options ./build/docs/ --out ./docs/celenium-rpc ./build/docs/celenium-rpc.ts
 elif [ "$1" == "--core" ]; then
     echo "building core"
-    typedoc --name "Kaspa WASM32 SDK - Core" --sourceLinkExternal --readme ./README.md --options ./build/docs/ --out ./docs/kaspa-core ./build/docs/kaspa-core.ts
+    typedoc --name "Celenium WASM32 SDK - Core" --sourceLinkExternal --readme ./README.md --options ./build/docs/ --out ./docs/celenium-core ./build/docs/celenium-core.ts
 elif [ "$1" == "--sdk" ]; then
     echo "building full"
-    typedoc --name "Kaspa WASM32 SDK" --sourceLinkExternal --readme ./README.md --options ./build/docs/ --out ./docs/kaspa ./build/docs/kaspa.ts
+    typedoc --name "Celenium WASM32 SDK" --sourceLinkExternal --readme ./README.md --options ./build/docs/ --out ./docs/celenium ./build/docs/celenium.ts
 else
     echo "building keygen"
-    typedoc --name "Kaspa WASM32 SDK - Key Generation" --sourceLinkExternal --readme ./README.md --options ./build/docs/ --out ./docs/kaspa-keygen ./build/docs/kaspa-keygen.ts
+    typedoc --name "Celenium WASM32 SDK - Key Generation" --sourceLinkExternal --readme ./README.md --options ./build/docs/ --out ./docs/celenium-keygen ./build/docs/celenium-keygen.ts
     echo "building rpc"
-    typedoc --name "Kaspa WASM32 SDK - RPC" --sourceLinkExternal --readme ./README.md --options ./build/docs/ --out ./docs/kaspa-rpc ./build/docs/kaspa-rpc.ts
+    typedoc --name "Celenium WASM32 SDK - RPC" --sourceLinkExternal --readme ./README.md --options ./build/docs/ --out ./docs/celenium-rpc ./build/docs/celenium-rpc.ts
     echo "building core"
-    typedoc --name "Kaspa WASM32 SDK - Core" --sourceLinkExternal --readme ./README.md --options ./build/docs/ --out ./docs/kaspa-core ./build/docs/kaspa-core.ts
+    typedoc --name "Celenium WASM32 SDK - Core" --sourceLinkExternal --readme ./README.md --options ./build/docs/ --out ./docs/celenium-core ./build/docs/celenium-core.ts
     echo "building full"
-    typedoc --name "Kaspa WASM32 SDK" --sourceLinkExternal --readme ./README.md --options ./build/docs/ --out ./docs/kaspa ./build/docs/kaspa.ts
+    typedoc --name "Celenium WASM32 SDK" --sourceLinkExternal --readme ./README.md --options ./build/docs/ --out ./docs/celenium ./build/docs/celenium.ts
 
 fi

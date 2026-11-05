@@ -6,7 +6,7 @@ const {
     XPrv,
     PrivateKeyGenerator,
     payToAddressScript,
-} = require('../../../../nodejs/kaspa');
+} = require('../../../../nodejs/celenium');
 
 
 (async () => {

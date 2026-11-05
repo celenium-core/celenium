@@ -1,1 +1,1 @@
-export * from "../../web/kaspa-core";
+export * from "../../web/celenium-core";

@@ -4,7 +4,7 @@
 
 Run after changing the timestamp (or the premine outputs) and rebuild:
 
-    cargo test -p cenium-consensus-core print_genesis_regeneration_values \
+    cargo test -p celenium-consensus-core print_genesis_regeneration_values \
         -- --nocapture > /tmp/genesis-values.txt
     python3 scripts/apply-genesis-hashes.py /tmp/genesis-values.txt
 

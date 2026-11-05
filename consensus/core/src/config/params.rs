@@ -244,7 +244,7 @@ pub struct OverrideParams {
     pub block_mass_limits: Option<BlockMassLimits>,
     pub block_lane_limits: Option<BlockLaneLimits>,
 
-    /// The parameter for scaling inverse KAS value to mass units (KIP-0009)
+    /// The parameter for scaling inverse CEN value to mass units (KIP-0009)
     pub storage_mass_parameter: Option<u64>,
 
     /// DAA score after which the pre-deflationary period switches to the deflationary period
@@ -337,7 +337,7 @@ pub struct Params {
     pub block_mass_limits: BlockMassLimits,
     pub block_lane_limits: BlockLaneLimits,
 
-    /// The parameter for scaling inverse KAS value to mass units (KIP-0009)
+    /// The parameter for scaling inverse CEN value to mass units (KIP-0009)
     pub storage_mass_parameter: u64,
 
     /// DAA score after which the pre-deflationary period switches to the deflationary period
@@ -634,7 +634,7 @@ pub const TESTNET_PARAMS: Params = Params {
     // seeding path end to end. Replace with the real public hostname (and its
     // A records) before opening the network; an empty list here is why no
     // outside node can currently discover the network.
-    dns_seeders: &["seed.celium.test"],
+    dns_seeders: &["seed.celenium.test"],
     net: NetworkId::with_suffix(NetworkType::Testnet, 10),
     genesis: TESTNET_GENESIS,
     timestamp_deviation_tolerance: TIMESTAMP_DEVIATION_TOLERANCE,

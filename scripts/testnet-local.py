@@ -31,7 +31,7 @@ import subprocess
 import sys
 import time
 
-BUILD = "/home/dx401/cenium-build"
+BUILD = "/home/dx401/celenium-build"
 BIN_SRC = f"{BUILD}/target/release/celeniumd"
 # The binary lives outside SCRATCH: this script wipes SCRATCH at startup, so
 # keeping the binary there would delete the very file it is about to run.
