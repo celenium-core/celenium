@@ -20,9 +20,10 @@ and does not skip proof of work. A short run therefore produces no blocks and
 the DAA score does not advance. Block production on testnet needs real
 hashrate; that is the intended behaviour, not a defect.
 
-Run from the build dir. Expects a ts-patched copy of target/release/celeniumd
-in the scratch dir (see scripts/regenesis.sh and scripts/patch-genesis-ts.py).
+Expects a ts-patched copy of the celeniumd binary (see scripts/regenesis.sh and
+scripts/patch-genesis-ts.py). Paths are CLI flags with repo-relative defaults.
 """
+import argparse
 import os
 import re
 import shutil
@@ -30,23 +31,34 @@ import signal
 import subprocess
 import sys
 import time
+from pathlib import Path
 
-BUILD = "/home/dx401/celenium-build"
-BIN_SRC = f"{BUILD}/target/release/celeniumd"
-# The binary lives outside SCRATCH: this script wipes SCRATCH at startup, so
-# keeping the binary there would delete the very file it is about to run.
-BIN_DIR = "/home/dx401/.hermes/profiles/devops/cache/scratch/tn-bin"
-SCRATCH = "/home/dx401/.hermes/profiles/devops/cache/scratch/tn"
-BIN = f"{BIN_DIR}/celeniumd-tn"
+REPO = Path(__file__).resolve().parent.parent
 
-# (name, p2p, rpc/gRPC, appdir, peers)
-NODES = [
-    ("node1", "127.0.0.1:16311", "127.0.0.1:16310", f"{SCRATCH}/app1", []),
-    ("node2", "127.0.0.1:16411", "127.0.0.1:16410", f"{SCRATCH}/app2", ["127.0.0.1:16311"]),
-]
 
-RUN_SECONDS = 90
+def parse_args() -> argparse.Namespace:
+    p = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    p.add_argument(
+        "--bin",
+        default=str(REPO / "target" / "tn-bin" / "celeniumd-tn"),
+        help="ts-patched binary (default: <repo>/target/tn-bin/celeniumd-tn)",
+    )
+    p.add_argument(
+        "--scratch",
+        default=str(REPO / "target" / "tn-test"),
+        help="scratch appdir root (default: <repo>/target/tn-test)",
+    )
+    p.add_argument(
+        "--seconds", type=int, default=90, help="run duration in seconds (default: 90)"
+    )
+    return p.parse_args()
 
+
+# The patched binary lives outside SCRATCH: this script wipes SCRATCH at
+# startup, so keeping the binary there would delete the very file it is about
+# to run.
 procs = []
 
 
@@ -64,13 +76,13 @@ def cleanup(*_):
             pass
 
 
-def log_path(name: str) -> str:
-    return f"{SCRATCH}/{name}.log"
+def log_path(scratch: str, name: str) -> str:
+    return f"{scratch}/{name}.log"
 
 
-def read_log(name: str) -> str:
+def read_log(scratch: str, name: str) -> str:
     try:
-        with open(log_path(name)) as f:
+        with open(log_path(scratch, name)) as f:
             return f.read()
     except OSError:
         return ""
@@ -89,7 +101,7 @@ def kill_leftovers() -> None:
     ).stdout
     mine = os.getpid()
     for line in out.splitlines():
-        if "tn-bin/celeniumd-tn" not in line:
+        if "celeniumd-tn" not in line:
             continue
         pid = int(line.split()[0])
         if pid == mine:
@@ -103,21 +115,33 @@ def kill_leftovers() -> None:
 
 
 def main() -> int:
+    args = parse_args()
+    bin_path, scratch = args.bin, args.scratch
+    run_seconds = args.seconds
+
     kill_leftovers()
 
-    if not os.path.exists(BIN):
-        print(f"error: {BIN} missing; copy target/release/celeniumd and patch its timestamp")
+    if not os.path.exists(bin_path):
+        print(f"error: {bin_path} missing; copy target/release/celeniumd, "
+              f"patch its timestamp, and pass --bin")
         return 1
 
-    shutil.rmtree(SCRATCH, ignore_errors=True)
-    os.makedirs(SCRATCH, exist_ok=True)
+    shutil.rmtree(scratch, ignore_errors=True)
+    os.makedirs(scratch, exist_ok=True)
 
     signal.signal(signal.SIGINT, cleanup)
     signal.signal(signal.SIGTERM, cleanup)
 
-    for name, p2p, rpc, appdir, peers in NODES:
+    # (name, p2p, rpc/gRPC, appdir, peers)
+    nodes = [
+        ("node1", "127.0.0.1:16311", "127.0.0.1:16310", f"{scratch}/app1", []),
+        ("node2", "127.0.0.1:16411", "127.0.0.1:16410", f"{scratch}/app2", ["127.0.0.1:16311"]),
+    ]
+
+    for name, p2p, rpc, appdir, peers in nodes:
         cmd = [
-            BIN, "--testnet",
+            bin_path,
+            "--testnet",
             f"--appdir={appdir}",
             f"--listen={p2p}",
             f"--rpclisten={rpc}",
@@ -128,16 +152,16 @@ def main() -> int:
         ]
         for peer in peers:
             cmd.append(f"--connect={peer}")
-        log = open(log_path(name), "w")
-        p = subprocess.Popen(cmd, stdout=log, stderr=subprocess.STDOUT, cwd=SCRATCH)
+        log = open(log_path(scratch, name), "w")
+        p = subprocess.Popen(cmd, stdout=log, stderr=subprocess.STDOUT, cwd=scratch)
         procs.append(p)
         print(f"[{name}] pid {p.pid} p2p={p2p} grpc={rpc} peers={peers or 'none'}")
         time.sleep(6)
 
-    print(f"\n--- running {RUN_SECONDS}s for peering and initial sync ---")
-    time.sleep(RUN_SECONDS)
+    print(f"\n--- running {run_seconds}s for peering and initial sync ---")
+    time.sleep(run_seconds)
 
-    logs = {name: read_log(name) for name, *_ in NODES}
+    logs = {name: read_log(scratch, name) for name, *_ in nodes}
     checks = []
 
     def check(label: str, ok: bool, detail: str = "") -> None:
@@ -145,7 +169,7 @@ def main() -> int:
         print(f"  [{'PASS' if ok else 'FAIL'}] {label}{(': ' + detail) if detail else ''}")
 
     print("\n--- verification ---")
-    for name, _p2p, _rpc, _appdir, peers in NODES:
+    for name, _p2p, _rpc, _appdir, peers in nodes:
         text = logs[name]
         # re.Match is subscriptable by group index, and this pattern has no
         # capture group, so [1] raises IndexError. Capture the version instead.

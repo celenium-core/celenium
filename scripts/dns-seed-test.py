@@ -6,23 +6,51 @@ with no --connect at all. If the second node finds and connects to the seed,
 the whole discovery chain works: params dns_seeders -> system resolver ->
 address manager -> outbound connection.
 
-The seeder hostname resolves through the system resolver, so this run maps it
-to 127.0.0.1 via /etc/hosts. Nothing here proves public reachability, which
+The seeder hostname resolves through the system resolver, so a local run maps
+it to 127.0.0.1 via /etc/hosts. Nothing here proves public reachability, which
 needs a seed node on a public IP.
 
-Run from the build dir after celeniumd is rebuilt with dns_seeders populated.
+Paths are CLI flags with repo-relative defaults, so the script runs from any
+checkout, not just the machine it was written on.
 """
+import argparse
 import os
 import shutil
 import signal
+import socket
 import subprocess
 import sys
 import time
+from pathlib import Path
 
-BUILD = "/home/dx401/celenium-build"
-BIN = f"{BUILD}/target/release/celeniumd"
-SCRATCH = "/home/dx401/.hermes/profiles/devops/cache/scratch/dnsseed"
-SEEDER_HOST = "seed.celenium.test"
+REPO = Path(__file__).resolve().parent.parent
+
+
+def parse_args() -> argparse.Namespace:
+    p = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    p.add_argument(
+        "--bin",
+        default=str(REPO / "target" / "release" / "celeniumd"),
+        help="celeniumd binary (default: <repo>/target/release/celeniumd)",
+    )
+    p.add_argument(
+        "--scratch",
+        default=str(REPO / "target" / "dnsseed-test"),
+        help="scratch workdir (default: <repo>/target/dnsseed-test)",
+    )
+    p.add_argument(
+        "--seeder",
+        default="seed.celenium.test",
+        metavar="HOST",
+        help="DNS seeder hostname (default: seed.celenium.test)",
+    )
+    p.add_argument(
+        "--seconds", type=int, default=60, help="run duration in seconds (default: 60)"
+    )
+    return p.parse_args()
+
 
 # The seed listens on the testnet-10 default port so the seeder hostname,
 # which carries no port, resolves straight to it.
@@ -32,12 +60,6 @@ SEEDER_HOST = "seed.celenium.test"
 # The seed must listen on the network default P2P port. A DNS answer carries
 # no port, so dns_seed_single appends default_port (26211 for testnet-10); a
 # seed on any other port is undiscoverable no matter what DNS returns.
-SEED = ("seed", "0.0.0.0:26211", "127.0.0.1:26210", f"{SCRATCH}/seed")
-# The client uses a different P2P port and no --connect: discovery must come
-# from DNS only.
-CLIENT = ("client", "127.0.0.1:26411", "127.0.0.1:26410", f"{SCRATCH}/client")
-
-RUN_SECONDS = 60
 procs = []
 
 
@@ -55,9 +77,10 @@ def cleanup(*_):
             pass
 
 
-def start(name, p2p, rpc, appdir, disable_dns):
+def start(bin_path, scratch, name, p2p, rpc, appdir, disable_dns):
     cmd = [
-        BIN, "--testnet",
+        bin_path,
+        "--testnet",
         f"--appdir={appdir}",
         f"--listen={p2p}",
         f"--rpclisten={rpc}",
@@ -68,22 +91,31 @@ def start(name, p2p, rpc, appdir, disable_dns):
     ]
     if disable_dns:
         cmd.append("--nodnsseed")
-    log = open(f"{SCRATCH}/{name}.log", "w")
-    p = subprocess.Popen(cmd, stdout=log, stderr=subprocess.STDOUT, cwd=SCRATCH)
+    log = open(f"{scratch}/{name}.log", "w")
+    p = subprocess.Popen(cmd, stdout=log, stderr=subprocess.STDOUT, cwd=scratch)
     procs.append(p)
     print(f"[{name}] pid {p.pid} p2p={p2p} dns_seeding={'off' if disable_dns else 'on'}")
     return p
 
 
-def read(name):
+def read(scratch, name):
     try:
-        with open(f"{SCRATCH}/{name}.log") as f:
+        with open(f"{scratch}/{name}.log") as f:
             return f.read()
     except OSError:
         return ""
 
 
 def main() -> int:
+    args = parse_args()
+    bin_path, scratch = args.bin, args.scratch
+    seeder_host, run_seconds = args.seeder, args.seconds
+
+    seed = ("seed", "0.0.0.0:26211", "127.0.0.1:26210", f"{scratch}/seed")
+    # The client uses a different P2P port and no --connect: discovery must
+    # come from DNS only.
+    client = ("client", "127.0.0.1:26411", "127.0.0.1:26410", f"{scratch}/client")
+
     # A leftover node holds port 16311 and the client then dies with AddrInUse
     # before it ever queries DNS, which reads as a seeding failure.
     out = subprocess.run(["ps", "-eo", "pid,args"], capture_output=True, text=True).stdout
@@ -100,28 +132,27 @@ def main() -> int:
                 pass
     time.sleep(2)
 
-    shutil.rmtree(SCRATCH, ignore_errors=True)
-    os.makedirs(SCRATCH, exist_ok=True)
+    shutil.rmtree(scratch, ignore_errors=True)
+    os.makedirs(scratch, exist_ok=True)
 
     signal.signal(signal.SIGINT, cleanup)
     signal.signal(signal.SIGTERM, cleanup)
 
-    print(f"\nDNS check: {SEEDER_HOST} -> ", end="")
+    print(f"\nDNS check: {seeder_host} -> ", end="")
     try:
-        import socket
-        print(socket.gethostbyname(SEEDER_HOST))
+        print(socket.gethostbyname(seeder_host))
     except OSError as e:
         print(f"UNRESOLVED ({e}); the client cannot discover anything")
         return 1
 
-    start(*SEED, disable_dns=True)
+    start(bin_path, scratch, *seed, disable_dns=True)
     time.sleep(8)
-    start(*CLIENT, disable_dns=False)
+    start(bin_path, scratch, *client, disable_dns=False)
 
-    print(f"\nrunning {RUN_SECONDS}s for DNS discovery and peering...")
-    time.sleep(RUN_SECONDS)
+    print(f"\nrunning {run_seconds}s for DNS discovery and peering...")
+    time.sleep(run_seconds)
 
-    seed_log, client_log = read("seed"), read("client")
+    seed_log, client_log = read(scratch, "seed"), read(scratch, "client")
     checks = []
 
     def check(label, ok, detail=""):
@@ -132,7 +163,7 @@ def main() -> int:
     check("seed node listens without querying DNS itself",
           "P2P Server starting on" in seed_log and "Querying DNS seeder" not in seed_log)
     check("client queried the configured DNS seeder",
-          f"Querying DNS seeder {SEEDER_HOST}" in client_log)
+          f"Querying DNS seeder {seeder_host}" in client_log)
 
     retrieved = "Retrieved 1 addresses" in client_log
     check("client retrieved an address from the seeder", retrieved)
