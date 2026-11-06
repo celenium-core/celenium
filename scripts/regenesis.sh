@@ -68,7 +68,10 @@ python3 scripts/apply-genesis-hashes.py "$VALUES"
 
 echo
 echo "=== 4/5 verifying (test_genesis_hashes) ==="
-cargo test -p celenium-consensus-core test_genesis_hashes 2>&1 | tail -5
+# --lib limits the run to the unit-test binary where test_genesis_hashes lives.
+# Without it, tail -N was grabbing the summary of the LAST integration-test
+# binary (e.g. "0 passed; 4 filtered out"), hiding the real "1 passed" result.
+cargo test -p celenium-consensus-core --lib test_genesis_hashes 2>&1 | tail -8
 
 if [[ -n "$BINARY" ]]; then
     echo
