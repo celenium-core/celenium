@@ -19,6 +19,7 @@ celenium-rpc-core = { workspace = true }
 celenium-rpc-service = { workspace = true }
 celenium-grpc-client = { workspace = true }
 celenium-notify = { workspace = true }
+celenium-txscript = { workspace = true }
 celenium-core = { workspace = true }
 celenium-utils = { workspace = true }
 celeniumd = { workspace = true }

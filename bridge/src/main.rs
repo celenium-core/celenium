@@ -290,6 +290,10 @@ async fn main() -> Result<(), anyhow::Error> {
             .map_err(|e| anyhow::anyhow!("Failed to create Celenium API client: {}", e))?;
 
     if !config.global.web_dashboard_port.is_empty() {
+        // Expose the shared API client to the dashboard so it can serve account
+        // balances (`GET /api/balance`) over the existing HTTP channel instead of
+        // opening a second node RPC connection from the app.
+        prom::set_node_api(Arc::clone(&celenium_api));
         let web_dashboard_port = config.global.web_dashboard_port.clone();
         tokio::spawn(async move {
             if let Err(e) = prom::start_web_server_all(&web_dashboard_port).await {

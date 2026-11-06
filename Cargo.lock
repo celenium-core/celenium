@@ -1992,6 +1992,7 @@ dependencies = [
  "celenium-pow",
  "celenium-rpc-core",
  "celenium-rpc-service",
+ "celenium-txscript",
  "celenium-utils",
  "celeniumd",
  "chrono",

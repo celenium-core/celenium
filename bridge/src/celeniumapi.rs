@@ -802,6 +802,135 @@ impl CeleniumApi {
         Ok(balances)
     }
 
+    /// Build, sign, and submit a transfer of `amount_pradha` from `from_address`
+    /// to `to_address`, signing with the caller-supplied 32-byte secret. This
+    /// mirrors the proven end-to-end path in
+    /// `rpc/grpc/examples/simple_client/examples/tx_e2e.rs` (P2PK script -> UTXO
+    /// selection -> sign_with_multiple_v2 -> mempool). The secret is supplied per
+    /// request because the wallet signer lives outside the bridge, exactly like
+    /// the wallet CLI's `--privkey-file` flow; it is never logged or persisted.
+    pub async fn send_coins(
+        &self,
+        from_address: &str,
+        to_address: &str,
+        amount_pradha: u64,
+        fee_pradha: u64,
+        private_key_hex: &str,
+    ) -> Result<String> {
+        use celenium_consensus_core::constants::{MAX_TX_IN_SEQUENCE_NUM, TX_VERSION};
+        use celenium_consensus_core::sign;
+        use celenium_consensus_core::subnets::SUBNETWORK_ID_NATIVE;
+        use celenium_consensus_core::tx::{
+            SignableTransaction, Transaction, TransactionInput, TransactionOutput, TransactionOutpoint, UtxoEntry,
+        };
+        use celenium_txscript::standard::pay_to_address_script;
+
+        // Node consensus value: `coinbase_maturity = BPS * COINBASE_MATURITY_SECONDS`
+        // (100 s constant). Simnet is 10 BPS, so 10 * 100 = 1000 DAA. The previous
+        // 200 let the bridge spend 200..999-DAA-old coinbase and get rejected by
+        // the node as immature.
+        const COINBASE_MATURITY_DAA: u64 = 1000;
+
+        let secret = hex::decode(private_key_hex.trim().trim_start_matches("0x")).context("secret is not valid hex")?;
+        let secret: [u8; 32] =
+            secret.try_into().map_err(|v: Vec<u8>| anyhow::anyhow!("secret must be 32 bytes, got {}", v.len()))?;
+
+        let source = Address::try_from(from_address).map_err(|e| anyhow::anyhow!("bad from-address: {e}"))?;
+        let dest = Address::try_from(to_address).map_err(|e| anyhow::anyhow!("bad to-address: {e}"))?;
+
+        // Change returns to the source's own script. `pay_to_address_script`
+        // handles every standard address version (PubKey / PubKeyECDSA / ScriptHash).
+        let source_script = pay_to_address_script(&source);
+        let dest_script = pay_to_address_script(&dest);
+
+        let dag = self
+            .client
+            .get_block_dag_info_call(None, celenium_rpc_core::GetBlockDagInfoRequest {})
+            .await
+            .context("get_block_dag_info failed")?;
+        let daa = dag.virtual_daa_score;
+
+        let utxos = self
+            .client
+            .get_utxos_by_addresses_call(None, celenium_rpc_core::GetUtxosByAddressesRequest::new(vec![source.clone()]))
+            .await
+            .context("get_utxos_by_addresses failed")?;
+
+        // Aggregate mature UTXOs until they cover amount + fee. Single-input
+        // selection is not enough here: the per-block subsidy (~1.37 M pradha)
+        // sits far below the KIP-0009 storage-mass break-even, so a one-input
+        // spend always exceeds the 500 k storage-mass limit. Multiple inputs
+        // drive the storage mass to zero because the consumed plurality
+        // outweighs the two created outputs.
+        let mut selected_inputs: Vec<(TransactionOutpoint, UtxoEntry)> = Vec::new();
+        let mut selected_total = 0u64;
+        for u in &utxos.entries {
+            if selected_total >= amount_pradha.saturating_add(fee_pradha) {
+                break;
+            }
+            let entry: UtxoEntry = u.utxo_entry.clone().into();
+            let mature = if entry.is_coinbase {
+                entry.block_daa_score.saturating_add(COINBASE_MATURITY_DAA) <= daa
+            } else {
+                true
+            };
+            if mature {
+                selected_total = selected_total.saturating_add(entry.amount);
+                selected_inputs.push((u.outpoint.into(), entry));
+            }
+        }
+
+        if selected_total < amount_pradha.saturating_add(fee_pradha) {
+            anyhow::bail!("no mature UTXOs with enough total value for this transfer");
+        }
+
+        let change = selected_total.saturating_sub(amount_pradha).saturating_sub(fee_pradha);
+
+        let mut inputs = Vec::with_capacity(selected_inputs.len());
+        let mut entries = Vec::with_capacity(selected_inputs.len());
+        for (outpoint, entry) in selected_inputs {
+            inputs.push(TransactionInput::new(outpoint, vec![], MAX_TX_IN_SEQUENCE_NUM, 1));
+            entries.push(entry);
+        }
+
+        let payment_output = TransactionOutput::new(amount_pradha, dest_script);
+        let change_output = TransactionOutput::new(change, source_script);
+        let tx = Transaction::new(
+            TX_VERSION,
+            inputs,
+            vec![payment_output, change_output],
+            0,
+            SUBNETWORK_ID_NATIVE,
+            0,
+            vec![],
+        );
+
+        let signable = SignableTransaction::with_entries(tx, entries);
+        let signed = match sign::sign_with_multiple_v2(signable, &[secret]) {
+            sign::Signed::Fully(t) => t,
+            sign::Signed::Partially(_) => return Err(anyhow::anyhow!("transaction is only partially signed")),
+        };
+        sign::verify(&signed.as_verifiable()).map_err(|e| anyhow::anyhow!("local signature verification failed: {e}"))?;
+
+        let tx = signed.tx;
+        let txid = tx.id().to_string();
+
+        let rpc_tx: celenium_rpc_core::RpcTransaction = (&tx).into();
+        let submitted = self
+            .client
+            .submit_transaction_call(None, celenium_rpc_core::SubmitTransactionRequest::new(rpc_tx, false))
+            .await
+            .context("submit_transaction rejected")?
+            .transaction_id
+            .to_string();
+
+        if submitted != txid {
+            return Err(anyhow::anyhow!("node returned transaction id {submitted} does not match the sent tx {txid}"));
+        }
+
+        Ok(submitted)
+    }
+
     pub async fn get_current_block_color(&self, block_hash: &str) -> Result<bool> {
         let hash = RpcHash::from_str(block_hash).context("Failed to parse block hash")?;
         let resp = self

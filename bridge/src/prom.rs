@@ -392,6 +392,15 @@ async fn write_response(
     Ok(())
 }
 
+/// Shared celenium API handle, set once during `main` startup so the web dashboard
+/// can answer `GET /api/balance`. `None` until startup completes.
+static NODE_API: OnceLock<std::sync::Arc<crate::celeniumapi::CeleniumApi>> = OnceLock::new();
+
+/// Store the shared API client for the `/api/balance` dashboard route.
+pub fn set_node_api(api: std::sync::Arc<crate::celeniumapi::CeleniumApi>) {
+    let _ = NODE_API.set(api);
+}
+
 async fn send_response(
     mut stream: tokio::net::TcpStream,
     response: impl AsRef<[u8]>,
@@ -458,6 +467,79 @@ async fn handle_http_request(
             "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nConnection: close\r\nAccess-Control-Allow-Origin: *\r\nContent-Length: {}\r\n\r\n{}",
             json.len(),
             json
+        );
+        send_response(stream, response).await?;
+        return Ok(());
+    }
+
+    if request.starts_with("GET /api/balance") {
+        // Query params live in `path` (already parsed from the request line).
+        // Addresses are bech32 + a `celenium:` HRP, i.e. URL-safe, so no decoding.
+        let address = path.split('?').nth(1).and_then(|qs| {
+            qs.split('&').filter_map(|kv| kv.split_once('=')).find_map(|(k, v)| (k == "address").then(|| v.to_string()))
+        });
+
+        let body = match address.as_deref() {
+            Some(addr) if !addr.is_empty() => match NODE_API.get() {
+                None => r#"{"error":"node api not ready"}"#.to_string(),
+                Some(api) => match api.get_balances_by_addresses(&[addr.to_string()]).await {
+                    Ok(entries) => {
+                        let pradha = entries.iter().find(|(a, _)| a == addr).map(|(_, s)| *s).unwrap_or(0);
+                        format!(r#"{{"address":"{addr}","balancePradha":{pradha}}}"#)
+                    }
+                    Err(e) => {
+                        tracing::warn!("balance query failed for {addr}: {e:#}");
+                        format!(r#"{{"error":"balance query failed","address":"{addr}"}}"#)
+                    }
+                },
+            },
+            _ => r#"{"error":"missing address query parameter"}"#.to_string(),
+        };
+
+        let response = format!(
+            "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nConnection: close\r\nAccess-Control-Allow-Origin: *\r\nContent-Length: {}\r\n\r\n{}",
+            body.len(),
+            body
+        );
+        send_response(stream, response).await?;
+        return Ok(());
+    }
+
+    if request.starts_with("POST /api/send") {
+        let body_start = request.find("\r\n\r\n").unwrap_or(request.len());
+        #[allow(clippy::arithmetic_side_effects, reason = "ARITH-SAFETY(LENGTH)")]
+        let body = &request[body_start + 4..];
+
+        let resp_json = match NODE_API.get() {
+            None => r#"{"error":"node api not ready"}"#.to_string(),
+            Some(api) => match serde_json::from_str::<serde_json::Value>(body) {
+                Err(e) => serde_json::json!({ "error": format!("invalid json: {e}") }).to_string(),
+                Ok(v) => {
+                    let from = v.get("from").and_then(|x| x.as_str()).unwrap_or("");
+                    let to = v.get("to").and_then(|x| x.as_str()).unwrap_or("");
+                    let amount = v.get("amountPradha").and_then(|x| x.as_u64()).unwrap_or(0);
+                    let fee = v.get("feePradha").and_then(|x| x.as_u64()).unwrap_or(0);
+                    let privkey = v.get("privateKeyHex").and_then(|x| x.as_str()).unwrap_or("");
+
+                    if from.is_empty() || to.is_empty() || privkey.is_empty() || amount == 0 {
+                        serde_json::json!({ "error": "missing from/to/amountPradha/privateKeyHex" }).to_string()
+                    } else {
+                        match api.send_coins(from, to, amount, fee, privkey).await {
+                            Ok(txid) => serde_json::json!({ "txid": txid }).to_string(),
+                            Err(e) => {
+                                tracing::warn!("send_coins failed: {e:#}");
+                                serde_json::json!({ "error": format!("{e:#}") }).to_string()
+                            }
+                        }
+                    }
+                }
+            },
+        };
+
+        let response = format!(
+            "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nConnection: close\r\nAccess-Control-Allow-Origin: *\r\nContent-Length: {}\r\n\r\n{}",
+            resp_json.len(),
+            resp_json
         );
         send_response(stream, response).await?;
         return Ok(());
