@@ -29,8 +29,12 @@ use celenium_txscript::standard::pay_to_address_script;
 use secp256k1::{Keypair, SECP256K1};
 use std::process::ExitCode;
 
-/// Coinbase outputs are spendable only after this many DAA blocks (10 BPS params).
-const COINBASE_MATURITY_DAA: u64 = 200;
+/// Coinbase outputs are spendable only after this many DAA blocks. The node
+/// enforces `coinbase_maturity = BPS * COINBASE_MATURITY_SECONDS` (constant
+/// 100 s); simnet runs at 10 BPS, so 10 * 100 = 1000 DAA. Hardcoding 200 here
+/// made single-input spends pick 200..999-DAA-old coinbase and get rejected as
+/// immature, so this must match the consensus value.
+const COINBASE_MATURITY_DAA: u64 = 1000;
 
 struct Args {
     url: String,
