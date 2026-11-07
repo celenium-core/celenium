@@ -12,6 +12,9 @@ repository.workspace = true
 [[example]]
 name = "kip-10"
 
+[[example]]
+name = "verify_premine_multisig"
+
 [features]
 wasm32-core = ["dep:js-sys", "dep:celenium-wasm-core"]
 wasm32-sdk = ["wasm32-core", "celenium-consensus-core/wasm32-sdk"]

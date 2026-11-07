@@ -54,7 +54,7 @@ rate 0.13665592 CEN/detik, reward 0.0136656 CEN/blok, total era
 
 | # | File | Yang diubah | Status |
 |---|---|---|---|
-| 18 | `consensus/core/src/config/genesis.rs` | `build_genesis_transactions` sekarang membuat coinbase dengan 2 output premine: 22,200,000 CEN (dev) + 12,300,000 CEN (owner) = 34,500,000 CEN | sudah; pubkey asli (a438515), payload coinbase direbrand 1 Nov |
+| 18 | `consensus/core/src/config/genesis.rs` | `build_genesis_transactions` membuat coinbase dengan 1 output premine 34,500,000 CEN di P2SH multisig 2-of-3 (migrasi 7 Nov 2026 dari 2 output P2PK dev+owner) | sudah; payload direbrand 1 Nov, premine di-multisig 7 Nov 2026 |
 | 19 | `consensus/src/consensus/utxo_set_override.rs` | Fungsi baru `genesis_premine_utxos()`: mengubah output genesis coinbase jadi initial UTXO set, karena rusty-kaspa commit UTXO state genesis kosong (premine lewat output saja tidak akan bisa di-spend) | sudah |
 | 20 | `consensus/src/consensus/factory.rs` | Panggil `set_genesis_utxo_commitment_from_config` dan `set_initial_utxo_set` tanpa feature gate (sebelumnya hanya devnet) | sudah |
 | 21 | `celeniumd/src/args.rs`, `celeniumd/src/daemon.rs`, `consensus/core/src/errors/config.rs` | Hapus pembatasan devnet-only untuk prealloc UTXO | sudah |
@@ -66,8 +66,10 @@ Catatan penting soal premine:
   Lock-nya adalah jadwal vesting off-chain (multisig), seperti didokumentasikan
   di `docs/tokenomics.md`, karena bahasa script Kaspa tidak punya opcode
   time-lock.
-- Pubkey premine sudah asli (komit a438515); private key-nya disimpan offline
-  di vault pemilik di luar repository ini. Jangan pernah commit material kunci.
+- Pubkey premine sudah asli (migrasi ke multisig 2-of-3, 7 Nov 2026); ketiga
+  private key disimpan terenkripsi di vault pemilik di luar repository ini dan
+  dipegang operator (self-custody, tersimpan terpisah). Ini komitmen operator,
+  bukan time-lock teknis. Jangan pernah commit material kunci.
 
 ## Yang tetap (tidak diubah)
 
@@ -106,14 +108,14 @@ node/bridge/**                               port default, nama folder
 ## Verifikasi genesis (premine)
 
 Genesis constants (hash, hash_merkle_root, utxo_commitment) untuk keempat
-network (mainnet, testnet, simnet, devnet) diregenerasi 2 November 2026 setelah
-payload coinbase direbrand; nonce PoW segar di-mine untuk simnet/testnet/devnet
-(mine_genesis.rs), mainnet mempertahankan nonce warisan karena target genesis
-mainnet membuat pencarian naive tidak feasible dan pow genesis di-exempt oleh
-konsensus (paritas dengan rusty-kaspa):
+network (mainnet, testnet, simnet, devnet) diregenerasi ulang 7 November 2026
+setelah premine dimigrasikan ke multisig 2-of-3; nonce PoW segar di-mine untuk
+simnet/testnet/devnet (mine_genesis.rs), mainnet mempertahankan nonce warisan
+karena target genesis mainnet membuat pencarian naive tidak feasible dan pow
+genesis di-exempt oleh konsensus (paritas dengan rusty-kaspa):
 
 - `hash_merkle_root`: dihitung dari transaksi genesis (termasuk output premine)
-- `utxo_commitment`: MuHash atas UTXO premine (dev 22.2M + owner 12.3M)
+- `utxo_commitment`: MuHash atas UTXO premine (1 output 34.5M di P2SH multisig 2-of-3)
 - Verifikasi: `cargo test --lib print_genesis_regeneration_values` di
   `consensus/core` mencetak nilai terhitung; dibandingkan dengan constant di
   `genesis.rs` -> **semua cocok untuk 4 network**
