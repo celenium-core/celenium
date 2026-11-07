@@ -5,6 +5,7 @@ use prometheus::{CounterVec, Gauge, GaugeVec, register_counter_vec, register_gau
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::sync::OnceLock;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{Duration, Instant};
 use tokio::time::timeout;
 
@@ -109,6 +110,36 @@ static INTERNAL_CPU_MINING_ADDRESS: OnceLock<String> = OnceLock::new();
 static INTERNAL_CPU_RECENT_BLOCKS: OnceLock<parking_lot::Mutex<VecDeque<InternalCpuBlock>>> = OnceLock::new();
 #[cfg(feature = "rkstratum_cpu_miner")]
 const INTERNAL_CPU_RECENT_BLOCKS_LIMIT: usize = 256;
+
+/// Runtime mining switch shared by the web dashboard and the internal CPU
+/// miner's worker threads. Defaults to true so spawning the miner hashes at
+/// once; `POST /api/mining` flips it to pause/resume without tearing the
+/// workers down. With the feature off the flag stays true but nothing reads
+/// it, so `/api/stats` reports `miningEnabled: false` regardless.
+pub static INTERNAL_MINER_ENABLED: AtomicBool = AtomicBool::new(true);
+
+/// True when the bridge has an internal CPU miner to start and stop. The mining
+/// address is stored just before the miner spawns, so its presence doubles as
+/// the availability signal.
+fn internal_cpu_available() -> bool {
+    #[cfg(feature = "rkstratum_cpu_miner")]
+    {
+        INTERNAL_CPU_MINING_ADDRESS.get().is_some()
+    }
+    #[cfg(not(feature = "rkstratum_cpu_miner"))]
+    {
+        false
+    }
+}
+
+/// Whether the internal CPU miner is switched on (present and not paused).
+fn internal_miner_enabled() -> bool {
+    INTERNAL_MINER_ENABLED.load(Ordering::Acquire) && internal_cpu_available()
+}
+
+fn set_internal_miner_enabled(enabled: bool) {
+    INTERNAL_MINER_ENABLED.store(enabled, Ordering::Release);
+}
 
 /// Initialize Prometheus metrics
 pub fn init_metrics() {
@@ -500,6 +531,46 @@ async fn handle_http_request(
             "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nConnection: close\r\nAccess-Control-Allow-Origin: *\r\nContent-Length: {}\r\n\r\n{}",
             body.len(),
             body
+        );
+        send_response(stream, response).await?;
+        return Ok(());
+    }
+
+    if request.starts_with("GET /api/mining") {
+        let body = serde_json::json!({
+            "enabled": internal_miner_enabled(),
+            "available": internal_cpu_available(),
+        })
+        .to_string();
+        let response = format!(
+            "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nConnection: close\r\nAccess-Control-Allow-Origin: *\r\nContent-Length: {}\r\n\r\n{}",
+            body.len(),
+            body
+        );
+        send_response(stream, response).await?;
+        return Ok(());
+    }
+
+    if request.starts_with("POST /api/mining") {
+        let body_start = request.find("\r\n\r\n").unwrap_or(request.len());
+        #[allow(clippy::arithmetic_side_effects, reason = "ARITH-SAFETY(LENGTH)")]
+        let body = &request[body_start + 4..];
+
+        if let Ok(v) = serde_json::from_str::<serde_json::Value>(body)
+            && let Some(enabled) = v.get("enabled").and_then(|x| x.as_bool())
+        {
+            set_internal_miner_enabled(enabled);
+        }
+
+        let resp = serde_json::json!({
+            "enabled": internal_miner_enabled(),
+            "available": internal_cpu_available(),
+        })
+        .to_string();
+        let response = format!(
+            "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nConnection: close\r\nAccess-Control-Allow-Origin: *\r\nContent-Length: {}\r\n\r\n{}",
+            resp.len(),
+            resp
         );
         send_response(stream, response).await?;
         return Ok(());
@@ -1066,6 +1137,7 @@ struct StatsResponse {
     networkBlockCount: u64,
     activeWorkers: usize,
     internalCpu: Option<InternalCpuStats>,
+    miningEnabled: bool,
     blocks: Vec<BlockInfo>,
     workers: Vec<WorkerInfo>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1157,6 +1229,7 @@ async fn get_stats_json_filtered(instance_id: Option<&str>) -> StatsResponse {
         networkBlockCount: 0,
         activeWorkers: 0,
         internalCpu: None,
+        miningEnabled: false,
         blocks: Vec::new(),
         workers: Vec::new(),
         bridgeUptime: None,
@@ -1257,6 +1330,7 @@ async fn get_stats_json_filtered(instance_id: Option<&str>) -> StatsResponse {
                 wallet,
             });
         }
+        stats.miningEnabled = internal_miner_enabled();
     }
 
     for family in families_for_workers_and_blocks {

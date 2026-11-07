@@ -230,6 +230,20 @@ pub fn spawn_internal_cpu_miner(
                         return;
                     }
 
+                    // Park here while mining is toggled off at runtime. The
+                    // hash counters stay frozen so the dashboard reads a zero
+                    // hashrate, but the thread lives on and resumes the moment
+                    // mining is switched back on. Shutdown stays checked so a
+                    // Ctrl+C still exits promptly.
+                    while !crate::prom::INTERNAL_MINER_ENABLED.load(Ordering::Acquire)
+                        && !shutdown_flag.load(Ordering::Acquire)
+                    {
+                        std::thread::sleep(Duration::from_millis(100));
+                    }
+                    if shutdown_flag.load(Ordering::Acquire) {
+                        return;
+                    }
+
                     metrics_threads.hashes_tried.fetch_add(1, Ordering::Relaxed);
                     let (passed, _) = w.pow_state.check_pow(nonce);
                     if passed {
