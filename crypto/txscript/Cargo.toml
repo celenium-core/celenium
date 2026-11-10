@@ -15,6 +15,9 @@ name = "kip-10"
 [[example]]
 name = "verify_premine_multisig"
 
+[[example]]
+name = "gen_premine_cltv"
+
 [features]
 wasm32-core = ["dep:js-sys", "dep:celenium-wasm-core"]
 wasm32-sdk = ["wasm32-core", "celenium-consensus-core/wasm32-sdk"]
@@ -72,6 +75,7 @@ risc0-zkvm-platform = { workspace = true, features = ["export-syscalls"] }
 
 [dev-dependencies]
 bytemuck.workspace = true
+chrono.workspace = true
 criterion.workspace = true
 rayon.workspace = true
 celenium-core.workspace = true

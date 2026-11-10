@@ -7,7 +7,7 @@ the per-second reward rate. The node derives the per-block reward as
 table[month] / BPS.
 
 CEN parameters: 10 BPS, halving every 4 years (48 months), 17 eras,
-deflationary phase from genesis, 34,500,000 CEN mineable.
+deflationary phase from genesis, 52,500,000 CEN mineable.
 
 Usage:
     python3 scripts/calculate-emission.py              print both tables
@@ -22,9 +22,9 @@ import csv
 from pathlib import Path
 
 TOTAL_SUPPLY = 69_000_000
-MINING_SUPPLY = 34_500_000
-PREMINE_DEV = 22_200_000
-PREMINE_OWNER = 12_300_000
+MINING_SUPPLY = 52_500_000
+PREMINE_DEV = 9_600_000
+PREMINE_OWNER = 6_900_000
 PREMINE_TOTAL = PREMINE_DEV + PREMINE_OWNER
 BASE_UNITS = 100_000_000
 
@@ -34,9 +34,11 @@ ERA_MONTHS = 48
 NUM_ERAS = 17
 TABLE_MONTHS = NUM_ERAS * ERA_MONTHS
 
-# Fixed monthly unlock: 0.345% of each allocation's original size.
-VESTING_RATE_PER_MILLE = 345
-VESTING_DENOMINATOR = 100_000
+# Premine unlocks on-chain via CLTV every 5th of the month, linear over
+# 132 months (11 years), no cliff. Each tranche is a P2SH of
+# OP_CHECKLOCKTIMEVERIFY + 2-of-3 multisig; the last tranche carries the
+# remainder — mirroring gen_premine_cltv and the genesis PREMINE_OUTPUTS table.
+VESTING_MONTHS = 132
 
 
 def subsidy_table() -> list[int]:
@@ -66,39 +68,26 @@ def era_summary(table: list[int]) -> list[tuple[int, int, int, int]]:
     return rows
 
 
-def vesting_fixed() -> list[tuple[int, int, int, int, int]]:
-    """Monthly unlock at a fixed 0.345% of each original allocation.
+def vesting_linear() -> list[tuple[int, int, int, int, int]]:
+    """Monthly CLTV unlock in pradha: linear over 132 months, no cliff.
 
-    Returns (month, dev_unlocked, owner_unlocked, dev_remaining, owner_remaining).
-    Both allocations empty in the same month; the last month carries the remainder.
+    Returns (month, dev_unlocked, owner_unlocked, dev_remaining, owner_remaining)
+    in pradha; the last month carries the remainder, matching the on-chain
+    genesis outputs exactly.
     """
-    dev_month = PREMINE_DEV * VESTING_RATE_PER_MILLE // VESTING_DENOMINATOR
-    owner_month = PREMINE_OWNER * VESTING_RATE_PER_MILLE // VESTING_DENOMINATOR
+    dev_p = PREMINE_DEV * BASE_UNITS
+    owner_p = PREMINE_OWNER * BASE_UNITS
+    dev_base, dev_rem = divmod(dev_p, VESTING_MONTHS)
+    owner_base, owner_rem = divmod(owner_p, VESTING_MONTHS)
     rows = []
-    dev_left, owner_left = PREMINE_DEV, PREMINE_OWNER
-    month = 0
-    while dev_left > 0 or owner_left > 0:
-        month += 1
-        dev_now = min(dev_month, dev_left)
-        owner_now = min(owner_month, owner_left)
+    dev_left, owner_left = dev_p, owner_p
+    for month in range(1, VESTING_MONTHS + 1):
+        last = month == VESTING_MONTHS
+        dev_now = dev_base + (dev_rem if last else 0)
+        owner_now = owner_base + (owner_rem if last else 0)
         dev_left -= dev_now
         owner_left -= owner_now
         rows.append((month, dev_now, owner_now, dev_left, owner_left))
-    return rows
-
-
-def vesting_decay(months: int = 480) -> list[tuple[int, int, int]]:
-    """Literal spec reading: 0.69% of the still-locked premine per month.
-
-    This schedule asymptotes and never reaches zero, so it cannot be completed.
-    Returns (month, unlocked, remaining).
-    """
-    rows = []
-    left = PREMINE_TOTAL
-    for month in range(1, months + 1):
-        unlocked = left * 69 // 10_000
-        left -= unlocked
-        rows.append((month, unlocked, left))
     return rows
 
 
@@ -123,8 +112,7 @@ def main() -> None:
 
     table = subsidy_table()
     eras = era_summary(table)
-    vesting = vesting_fixed()
-    decay = vesting_decay()
+    vesting = vesting_linear()
 
     initial_rate = table[0]
     initial_block = -(-initial_rate // BPS)
@@ -134,10 +122,10 @@ def main() -> None:
     print("CELENIUM (CEN) TOKENOMICS (rusty-kaspa model)")
     print("=" * 78)
     print(f"Total supply          : {TOTAL_SUPPLY:>15,} CEN")
-    print(f"Mineable (mining)     : {MINING_SUPPLY:>15,} CEN  (50%)")
-    print(f"Premine (locked)      : {PREMINE_TOTAL:>15,} CEN  (50%)")
-    print(f"  development         : {PREMINE_DEV:>15,} CEN")
-    print(f"  owner               : {PREMINE_OWNER:>15,} CEN")
+    print(f"Mineable (mining)     : {MINING_SUPPLY:>15,} CEN  ({100 * MINING_SUPPLY // TOTAL_SUPPLY}%)")
+    print(f"Premine (CLTV-locked) : {PREMINE_TOTAL:>15,} CEN  ({100 * PREMINE_TOTAL // TOTAL_SUPPLY}%)")
+    print(f"  development (K1-K3) : {PREMINE_DEV:>15,} CEN")
+    print(f"  owner       (K4-K6) : {PREMINE_OWNER:>15,} CEN")
     print(f"Block rate            : {BPS} BPS")
     print(f"Halving               : every {ERA_MONTHS} months ({ERA_MONTHS / 12:.0f} years)")
     print(f"Eras                  : {NUM_ERAS} ({NUM_ERAS * ERA_MONTHS / 12:.1f} years)")
@@ -152,41 +140,27 @@ def main() -> None:
         block = -(-rate // BPS)
         print(f"{era:>3} {fmt_cen(rate):>18} {fmt_cen(block):>18} {fmt_cen(era_total):>18} {fmt_cen(cumulative):>18}")
     print()
-
-    print("VESTING SCHEDULE (0.345% of each original allocation per month)")
+    print("PREMIERE VESTING (CLTV 5th-of-month, linear 132 months, no cliff)")
     print("-" * 78)
-    print(f"{'month':>5} {'dev unlocked':>15} {'owner unlocked':>15} {'dev left':>15} {'owner left':>15}")
+    print(f"{'month':>5} {'dev unlocked':>16} {'owner unlocked':>16} {'dev left':>16} {'owner left':>16}")
     for month, dev_now, owner_now, dev_left, owner_left in vesting:
-        if month <= 3 or month % 12 == 0 or month >= len(vesting) - 2:
-            print(f"{month:>5} {dev_now:>15,} {owner_now:>15,} {dev_left:>15,} {owner_left:>15,}")
-    dev_month = PREMINE_DEV * VESTING_RATE_PER_MILLE // VESTING_DENOMINATOR
-    owner_month = PREMINE_OWNER * VESTING_RATE_PER_MILLE // VESTING_DENOMINATOR
-    print(f"  steady monthly unlock: dev {dev_month:,} CEN + owner {owner_month:,} CEN "
-          f"= {dev_month + owner_month:,} CEN/month")
-    print(f"  full unlock at month {len(vesting)} ({len(vesting) / 12:.2f} years)")
+        if month <= 3 or month % 12 == 0 or month >= len(vesting) - 1:
+            print(f"{month:>5} {fmt_cen(dev_now):>16} {fmt_cen(owner_now):>16} {fmt_cen(dev_left):>16} {fmt_cen(owner_left):>16}")
+    dev_base_p = (PREMINE_DEV * BASE_UNITS) // VESTING_MONTHS
+    owner_base_p = (PREMINE_OWNER * BASE_UNITS) // VESTING_MONTHS
+    print(f"  steady monthly unlock: dev ~{fmt_cen(dev_base_p)} CEN + owner ~{fmt_cen(owner_base_p)} CEN")
+    print(f"  full unlock at month {VESTING_MONTHS} ({VESTING_MONTHS / 12:.2f} years)")
     print()
-
-    print("DECAY MODEL COMPARISON (0.69% of remaining locked per month, literal spec text)")
-    print("-" * 78)
-    for month, unlocked, left in decay:
-        if month in (1, 12, 60, 120, 290, len(decay)):
-            pct = 100 * (PREMINE_TOTAL - left) / PREMINE_TOTAL
-            print(f"  month {month:>3}: unlocked {unlocked:>10,} CEN, "
-                  f"remaining {left:>12,} CEN ({pct:.2f}% unlocked)")
-    print("  this model never reaches zero and cannot be completed")
-    print()
-
     print("VERIFICATION")
     print("-" * 78)
     dust = abs(mined_base - MINING_SUPPLY * BASE_UNITS)
     assert dust < 10**11, f"emission dust too large: {fmt_cen(dust)} CEN"
-    assert sum(r[1] for r in vesting) == PREMINE_DEV, "dev vesting total mismatch"
-    assert sum(r[2] for r in vesting) == PREMINE_OWNER, "owner vesting total mismatch"
+    assert sum(r[1] for r in vesting) == PREMINE_DEV * BASE_UNITS, "dev vesting total mismatch"
+    assert sum(r[2] for r in vesting) == PREMINE_OWNER * BASE_UNITS, "owner vesting total mismatch"
     assert MINING_SUPPLY + PREMINE_TOTAL == TOTAL_SUPPLY, "supply split mismatch"
     assert table[-1] == 0, "table must end with a zero entry"
     assert NUM_ERAS * ERA_MONTHS / 12 <= 69, "emission exceeds 69 years"
-    print(f"PASS  emission total {fmt_cen(mined_base)} CEN "
-          f"(dust {fmt_cen(dust)} CEN from per-second rounding)")
+    print(f"PASS  emission total {fmt_cen(mined_base)} CEN (dust {fmt_cen(dust)} CEN)")
     print(f"PASS  dev vesting sums to exactly {PREMINE_DEV:,} CEN")
     print(f"PASS  owner vesting sums to exactly {PREMINE_OWNER:,} CEN")
     print(f"PASS  mining + premine = {TOTAL_SUPPLY:,} CEN")
@@ -214,7 +188,7 @@ def main() -> None:
                 writer.writerow([month, rate, -(-rate // BPS) if rate else 0])
         with open(out / "vesting_monthly.csv", "w", newline="") as f:
             writer = csv.writer(f)
-            writer.writerow(["month", "dev_unlocked", "owner_unlocked", "dev_remaining", "owner_remaining"])
+            writer.writerow(["month", "dev_unlocked_pradha", "owner_unlocked_pradha", "dev_remaining_pradha", "owner_remaining_pradha"])
             writer.writerows(vesting)
         print(f"CSV tables written to {out.resolve()}")
 

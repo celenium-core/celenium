@@ -9,8 +9,8 @@ diverifikasi ulang):
 | Detik per bulan | 2,629,800 (sama seperti konstanta rusty-kaspa) |
 | Panjang era halving | 48 bulan (4 tahun) |
 | Jumlah era | 17 |
-| Rate awal | 0.13665592 CEN/detik |
-| Block reward awal | 0.0136656 CEN/blok |
+| Rate awal | 0.20795466 CEN/detik |
+| Block reward awal | 0.02079547 CEN/blok |
 | Model | Geometric halving |
 
 ## Cara kerja emisi di rusty-kaspa
@@ -28,31 +28,35 @@ Untuk CEN: `deflationary_phase_daa_score = 0` (tabel aktif sejak genesis) dan
 tabel diganti dengan tabel CEN 817 entri dari
 `scripts/data/subsidy_table.rs`. Entri terakhir bernilai 0 supaya emisi
 berhenti setelah bulan ke-816, karena kode memasang index bulan ke entri
-terakhir tabel kalau bulan melewati batas.
+terakhir tabel kalau bulan melewati batas. Nilai
+`pre_deflationary_phase_base_subsidy = 2,079,547` pradha dijaga agar konsisten
+dengan block reward era 0 (`rate[0] / 10` dibulatkan ke atas).
 
 ## Tabel reward per era
 
 | Era | Bulan | Rate/detik (CEN) | Reward/blok (CEN) | Total era (CEN) | Kumulatif (CEN) |
 |---|---|---|---|---|---|
-| 0 | 0-47 | 0.13665592 | 0.0136656 | 17,250,131.443968 | 17,250,131.443968 |
-| 1 | 48-95 | 0.06832796 | 0.0068328 | 8,625,065.721984 | 25,875,197.165952 |
-| 2 | 96-143 | 0.03416398 | 0.0034164 | 4,312,532.860992 | 30,187,730.026944 |
-| 3 | 144-191 | 0.01708199 | 0.0017082 | 2,156,266.430496 | 32,343,996.457440 |
-| 4 | 192-239 | 0.00854100 | 0.0008541 | 1,078,133.846400 | 33,422,130.303840 |
-| 5 | 240-287 | 0.00427050 | 0.00042705 | 539,066.923200 | 33,961,197.227040 |
-| 6 | 288-335 | 0.00213525 | 0.00021353 | 269,533.461600 | 34,230,730.688640 |
-| 7 | 336-383 | 0.00106762 | 0.00010677 | 134,766.099648 | 34,365,496.788288 |
-| 8 | 384-431 | 0.00053381 | 0.00005339 | 67,383.049824 | 34,432,879.838112 |
-| 9 | 432-479 | 0.00026691 | 0.00002670 | 33,692.156064 | 34,466,571.994176 |
-| 10 | 480-527 | 0.00013345 | 0.00001335 | 16,845.446880 | 34,483,417.441056 |
-| 11 | 528-575 | 0.00006673 | 0.00000668 | 8,423.354592 | 34,491,840.795648 |
-| 12 | 576-623 | 0.00003336 | 0.00000334 | 4,211.046144 | 34,496,051.841792 |
-| 13 | 624-671 | 0.00001668 | 0.00000167 | 2,105.523072 | 34,498,157.364864 |
-| 14 | 672-719 | 0.00000834 | 0.00000084 | 1,052.761536 | 34,499,210.126400 |
-| 15 | 720-767 | 0.00000417 | 0.00000042 | 526.380768 | 34,499,736.507168 |
-| 16 | 768-815 | 0.00000209 | 0.00000021 | 263.821536 | 34,500,000.328704 |
+| 0 | 0-47 | 0.20795466 | 0.02079547 | 26,250,199.913664 | 26,250,199.913664 |
+| 1 | 48-95 | 0.10397733 | 0.01039774 | 13,125,099.956832 | 39,375,299.870496 |
+| 2 | 96-143 | 0.05198867 | 0.00519887 | 6,562,550.609568 | 45,937,850.480064 |
+| 3 | 144-191 | 0.02599433 | 0.00259944 | 3,281,274.673632 | 49,219,125.153696 |
+| 4 | 192-239 | 0.01299717 | 0.00129972 | 1,640,637.967968 | 50,859,763.121664 |
+| 5 | 240-287 | 0.00649858 | 0.00064986 | 820,318.352832 | 51,680,081.474496 |
+| 6 | 288-335 | 0.00324929 | 0.00032493 | 410,159.176416 | 52,090,240.650912 |
+| 7 | 336-383 | 0.00162465 | 0.00016247 | 205,080.219360 | 52,295,320.870272 |
+| 8 | 384-431 | 0.00081232 | 0.00008124 | 102,539.478528 | 52,397,860.348800 |
+| 9 | 432-479 | 0.00040616 | 0.00004062 | 51,269.739264 | 52,449,130.088064 |
+| 10 | 480-527 | 0.00020308 | 0.00002031 | 25,634.869632 | 52,474,764.957696 |
+| 11 | 528-575 | 0.00010154 | 0.00001016 | 12,817.434816 | 52,487,582.392512 |
+| 12 | 576-623 | 0.00005077 | 0.00000508 | 6,408.717408 | 52,493,991.109920 |
+| 13 | 624-671 | 0.00002539 | 0.00000254 | 3,204.989856 | 52,497,196.099776 |
+| 14 | 672-719 | 0.00001269 | 0.00000127 | 1,601.863776 | 52,498,797.963552 |
+| 15 | 720-767 | 0.00000635 | 0.00000064 | 801.563040 | 52,499,599.526592 |
+| 16 | 768-815 | 0.00000317 | 0.00000032 | 400.150368 | 52,499,999.676960 |
 
-Setelah bulan ke-816 subsidy = 0 (entri terakhir tabel).
+Setelah bulan ke-816 subsidy = 0 (entri terakhir tabel). Total emisi
+52,499,999.68 CEN (0.32 CEN di bawah target 52,500,000 karena pembulatan rate
+per detik ke pradha — satuan waktu terkecil 1 detik).
 
 ## Jadwal halving
 
@@ -61,8 +65,11 @@ setiap 4 tahun sesuai spesifikasi. 17 era selesai pada tahun ke-68.
 
 ## Catatan teknis
 
-- Rate per detik dibulatkan ke pradha, jadi total emisi 34,500,000.33 CEN,
-  0.33 CEN di atas target 34,500,000. Selisih ini muncul dari pembulatan dan
+- Rate per detik dibulatkan ke pradha, jadi total emisi 52,499,999.68 CEN,
+  0.32 CEN di bawah target 52,500,000. Selisih ini muncul dari pembulatan dan
   tidak bisa dihilangkan selama satuan waktu terkecil adalah 1 detik.
 - Tabel lengkap per bulan (817 baris): `scripts/data/subsidy_by_month.csv`.
 - Siap salin ke kode: `scripts/data/subsidy_table.rs` (array Rust).
+- Tabel di `consensus/src/processes/coinbase.rs` dan
+  `scripts/data/subsidy_table.rs` harus identik; diverifikasi oleh test
+  `coinbase_tests`.

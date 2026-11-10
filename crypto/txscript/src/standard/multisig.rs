@@ -297,4 +297,80 @@ mod tests {
             true,
         );
     }
+
+    fn check_cltv_multisig_scenario(lock_time: u64, is_ok: bool) {
+        // CLTV-locked 2-of-3 multisig P2SH: the CEN premine structure.
+        // redeem = <locktime> OP_CHECKLOCKTIMEVERIFY OP_2 <K> OP_3 OP_CHECKMULTISIG
+        let [kp1, kp2, kp3] = kp();
+        let keys = [
+            kp1.x_only_public_key().0.serialize(),
+            kp2.x_only_public_key().0.serialize(),
+            kp3.x_only_public_key().0.serialize(),
+        ];
+        let lock_time_ms = 500_000_000_000 + 60_000; // ms timestamp (> LOCK_TIME_THRESHOLD)
+        let mut builder = ScriptBuilder::new();
+        builder.add_lock_time(lock_time_ms).unwrap();
+        builder.add_op(crate::opcodes::codes::OpCheckLockTimeVerify).unwrap();
+        let multisig = multisig_redeem_script(keys.iter().copied(), 2).unwrap();
+        builder.add_ops(&multisig).unwrap();
+        let script = builder.drain();
+
+        let prev_tx_id = TransactionId::from_str("63020db736215f8b1105a9281f7bcbb6473d965ecc45bb2fb5da59bd35e6ff84").unwrap();
+
+        let tx = Transaction::new(
+            0,
+            vec![TransactionInput {
+                previous_outpoint: TransactionOutpoint { transaction_id: prev_tx_id, index: 0 },
+                signature_script: vec![],
+                sequence: 0,
+                compute_commit: ComputeCommit::SigopCount(4.into()),
+            }],
+            vec![],
+            lock_time,
+            SubnetworkId::from_bytes([0; 20]),
+            0,
+            vec![],
+        );
+
+        let entries = vec![UtxoEntry {
+            amount: 12793000000000,
+            script_public_key: pay_to_script_hash_script(&script),
+            block_daa_score: 0,
+            is_coinbase: false,
+            covenant_id: None,
+        }];
+        let mut tx = MutableTransaction::with_entries(tx, entries);
+
+        let reused_values = SigHashReusedValuesUnsync::new();
+        let sig_hash = calc_schnorr_signature_hash(&tx.as_verifiable(), 0, SIG_HASH_ALL, &reused_values);
+        let msg = secp256k1::Message::from_digest_slice(sig_hash.as_bytes().as_slice()).unwrap();
+        let signatures: Vec<_> = [&kp1, &kp2]
+            .iter()
+            .flat_map(|kp| {
+                let sig = *kp.sign_schnorr(msg).as_ref();
+                iter::once(OpData65).chain(sig).chain([SIG_HASH_ALL.to_u8()])
+            })
+            .collect();
+
+        tx.tx.inputs[0].signature_script =
+            signatures.into_iter().chain(ScriptBuilder::new().add_data(&script).unwrap().drain()).collect();
+
+        let tx = tx.as_verifiable();
+        let (input, entry) = tx.populated_inputs().next().unwrap();
+
+        let cache = Cache::new(10_000);
+        let ctx = EngineContext::new(&cache).with_reused(&reused_values);
+        let mut engine = TxScriptEngine::from_transaction_input(&tx, input, 0, entry, ctx, Default::default());
+        assert_eq!(engine.execute().is_ok(), is_ok);
+    }
+
+    #[test]
+    fn test_cltv_multisig_spend_after_lock_time() {
+        check_cltv_multisig_scenario(500_000_000_000 + 60_000, true);
+    }
+
+    #[test]
+    fn test_cltv_multisig_rejected_before_lock_time() {
+        check_cltv_multisig_scenario(500_000_000_000 + 59_000, false);
+    }
 }

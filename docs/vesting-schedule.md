@@ -1,69 +1,53 @@
-# Vesting Schedule CEN
+# Vesting Schedule CEN (CLTV on-chain)
 
-Aturan unlock premine Celenium (Model A):
+Jadwal unlock premine Celenium kini di-*enforce* on-chain lewat opcode
+`OP_CHECKLOCKTIMEVERIFY` (CLTV) digabung multisig 2-of-3 — bukan sekadar
+komitmen off-chain seperti dokumen lama.
 
-- Pengembangan: 0.345% dari 22,200,000 CEN per bulan = **76,590 CEN/bulan**.
-- Pemilik: 0.345% dari 12,300,000 CEN per bulan = **42,435 CEN/bulan**.
-- Total: **119,025 CEN/bulan**.
-- Durasi: **290 bulan (24.17 tahun)**. Bulan ke-290 membayar sisa
-  (65,490 CEN dev, 36,285 CEN owner) agar total tepat.
+## Ringkasan
 
-Bulan 1 dihitung dari genesis mainnet (atau dari deployment kalau genesis
-diganti, sesuai keputusan di `generate-genesis.md`).
+| Vault | Kunci | Alokasi (CEN) | Per bulan (CEN) | Tranche |
+|---|---|---|---|---|
+| Pengembangan | K1/K2/K3 (2-of-3) | 9,600,000 | 72,727.27 | 132 |
+| Pemilik | K4/K5/K6 (2-of-3) | 6,900,000 | 52,272.73 | 132 |
+| **Total** | | **16,500,000** | **125,000** | **264** |
 
-## Ringkasan per tahun
+- Unlock otomatis **setiap tanggal 5 bulan** (00:00 UTC), linear, **tanpa cliff**.
+- Tranche pertama **5 Desember 2026**, tranche ke-132 **5 November 2037**.
+- Durasi 132 bulan (11 tahun).
+- Template redeem script per output:
+  `<locktime_ms> OP_CHECKLOCKTIMEVERIFY OP_DROP <2> <pubkey_x3> <3> OP_CHECKMULTISIG`
 
-| Bulan | Dev unlocked (kumulatif) | Owner unlocked (kumulatif) | Total terkunci (CEN) |
-|---|---|---|---|
-| 12 | 919,080 | 509,220 | 33,071,700 |
-| 24 | 1,838,160 | 1,018,440 | 31,643,400 |
-| 36 | 2,757,240 | 1,527,660 | 30,215,100 |
-| 48 | 3,676,320 | 2,036,880 | 28,786,800 |
-| 60 | 4,595,400 | 2,546,100 | 27,358,500 |
-| 72 | 5,514,480 | 3,055,320 | 25,930,200 |
-| 84 | 6,433,560 | 3,564,540 | 24,501,900 |
-| 96 | 7,352,640 | 4,073,760 | 23,073,600 |
-| 108 | 8,271,720 | 4,582,980 | 21,645,300 |
-| 120 | 9,190,800 | 5,092,200 | 20,217,000 |
-| 132 | 10,109,880 | 5,601,420 | 18,788,700 |
-| 144 | 11,028,960 | 6,110,640 | 17,360,400 |
-| 156 | 11,948,040 | 6,619,860 | 15,932,100 |
-| 168 | 12,867,120 | 7,129,080 | 14,503,800 |
-| 180 | 13,786,200 | 7,638,300 | 13,075,500 |
-| 192 | 14,705,280 | 8,147,520 | 11,647,200 |
-| 204 | 15,624,360 | 8,656,740 | 10,218,900 |
-| 216 | 16,543,440 | 9,165,960 | 8,790,600 |
-| 228 | 17,462,520 | 9,675,180 | 7,362,300 |
-| 240 | 18,381,600 | 10,184,400 | 5,934,000 |
-| 252 | 19,300,680 | 10,693,620 | 4,505,700 |
-| 264 | 20,219,760 | 11,202,840 | 3,077,400 |
-| 276 | 21,138,840 | 11,712,060 | 1,649,100 |
-| 288 | 22,057,920 | 12,221,280 | 220,800 |
-| 290 | 22,200,000 | 12,300,000 | 0 |
+## Kunci publik vault
 
-Tabel bulanan lengkap (290 baris): `scripts/data/vesting_monthly.csv`.
+**Dev vault (2-of-3):**
 
-## Perbandingan dengan model peluruhan (Model B)
+- K1 = `1b37ab3e285f75fcbbfbd589cb67f1eba0c73256ad2c988c6e332b302b2a3b8c`
+- K2 = `67d8ce2167a91cbabdc7b69a34c03b41afd3d020797dce8681c8b2bb3c30d434`
+- K3 = `fc5cec1121da28ba647338cd68ad63fc245b45c6c2ff46e4c68e47594dbb5ed5`
 
-Bacaan literal spesifikasi: 0.69% dari saldo terkunci yang masih ada, per
-bulan. Hasil hitung:
+**Owner vault (2-of-3):**
 
-| Bulan | Unlocked bulan itu (CEN) | Sisa terkunci (CEN) | Persentase unlocked |
-|---|---|---|---|
-| 1 | 238,050 | 34,261,950 | 0.69% |
-| 12 | 220,592 | 31,749,358 | 7.97% |
-| 60 | 158,217 | 22,771,861 | 33.99% |
-| 120 | 104,432 | 15,030,665 | 56.43% |
-| 290 | 32,184 | 4,632,230 | 86.57% |
-| 480 | 8,636 | 1,243,012 | 96.40% |
+- K4 = `289c5f5a473b0547ecd89ff5be7d2dedb66a1655077bd34e00b8a2afe847ecdf`
+- K5 = `d92d526cd3827d2478ad95d688af5157e6ac92064a22619b34f8dbaa2bc2e2ad`
+- K6 = `111b443c9b2510dbe3d3f59a135fbcab376ec1f60f2f8bea97989f3ba4cda21e`
 
-Model ini tidak pernah mencapai nol, jadi tidak memenuhi syarat "sampai
-habis". Karena itu dokumen ini memakai Model A. Kalau pemilik project ingin
-Model B, angka di atas adalah konsekuensinya: sebagian coin (sekitar 1.24 juta
-CEN setelah 40 tahun) praktis tidak pernah beredar.
+## Alamat wallet (P2SH)
 
-## Implementasi
+Tiap tranche punya address P2SH sendiri (hash dari redeem script yang berisi
+locktime unik). Contoh:
 
-Pilihan mekanisme lock ada di `tokenomics.md` (multisig + off-chain,
-OP_CHECKLOCKTIMEVERIFY per milestone, atau kontrak vesting). Belum ada yang
-diterapkan di kode.
+- Dev tranche 1 (5 Des 2026): `cen69:pqz7ztxl8rgkxjlxs893jada33jtwmedd3gmzmpadasrd5gz5namjalz8se46`
+- Dev tranche 132 (5 Nov 2037): `cen69:pqpznvfyncptqu9shsee4j84m7nkhyaw7u9f9lf8cphwdrtrxe6v7wt74m69p`
+- Owner tranche 1 (5 Des 2026): `cen69:pr3aw5c6vd4jw58a0ae0r5x0k00k6a4s6wu4mzkxqptxwpv2vhy4y8xsn0zpv`
+- Owner tranche 132 (5 Nov 2037): `cen69:pr28tfggdpr7tpku5nsypah73s43a7n3mu6m9vrw86c3kcxjse0mj6zmnn7jj`
+
+Tabel lengkap 264 baris (tanggal, timestamp ms, jumlah pradha, jumlah CEN,
+address) ada di `docs/premine-cltv-schedule.md`.
+
+## Catatan migrasi
+
+Dokumen ini menggantikan "Model A" (0.345%/bulan, 290 bulan, off-chain) yang
+sebelumnya tercatat di sini. Model lama tidak lagi berlaku sejak premine
+dipecah menjadi 264 output genesis terkunci CLTV + multisig 2-of-3 — sekarang
+jaminan waktunya teknis (konsensus), bukan komitmen operator.

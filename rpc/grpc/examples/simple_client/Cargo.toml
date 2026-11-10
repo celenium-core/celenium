@@ -17,6 +17,7 @@ celenium-consensus-core.workspace = true
 celenium-rpc-core.workspace = true
 celenium-grpc-client.workspace = true
 celenium-txscript.workspace = true
+celenium-wallet-pskt.workspace = true
 tokio.workspace = true
 secp256k1 = { workspace = true, features = ["std", "global-context", "rand-std", "serde"] }
 hex.workspace = true

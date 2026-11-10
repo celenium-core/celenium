@@ -86,13 +86,13 @@ perlu, jangan hardcode dari dokumen ini).
 ## 5. Verifikasi emisi
 
 Setelah node jalan, reward blok harus sesuai `docs/emission-schedule.md`:
-rate awal 0.13665592 CEN/detik, reward per blok 0.0136656 CEN pada 10 BPS.
-Era 0 total 17,250,131.44 CEN.
+rate awal 0.20795466 CEN/detik, reward per blok 2.079.547 pradha
+(0.02079547 CEN) pada 10 BPS. Era 0 total 26,250,199.91 CEN.
 
 ## 6. Genesis baru
 
-Genesis constants di `consensus/core/src/config/genesis.rs` belum
-diregenerasi. Alur kerjanya:
+Genesis constants di `consensus/core/src/config/genesis.rs` sudah diregenerasi
+(payload 264 output premine CLTV). Kalau diubah lagi, alur regenerasinya:
 
 1. Set hash sementara ke nol, isi field lain.
 2. `cargo test --package kaspa-consensus-core genesis`
@@ -108,12 +108,14 @@ Hash harus sama dengan nilai di genesis.rs. Detail prosedur ada di
 
 ## 7. Verifikasi premine
 
-Premine 34,500,000 CEN (22.2M dev + 12.3M owner) harus muncul sebagai UTXO di
-genesis lewat mekanisme initial UTXO set (lihat `network-params.md` bagian
-Genesis). Cek saldo alamat premine setelah node sync genesis.
+Premine 16,500,000 CEN (9.6M dev + 6.9M owner) harus muncul sebagai 264 UTXO
+terkunci CLTV di genesis lewat mekanisme initial UTXO set (lihat
+`network-params.md` dan `premine-cltv-schedule.md`). Cek saldo alamat premine
+setelah node sync genesis.
 
-Catatan: pubkey premine sudah asli (a438515); private key-nya offline di
-vault pemilik, di luar repo.
+Catatan: pubkey premine ada 6 (3 dev + 3 owner, lihat
+`premine-cltv-schedule.md`); private key-nya offline di vault pemilik, di luar
+repo. Unlock on-chain tiap tanggal 5 (CLTV) + 2-of-3 multisig.
 
 ## Catatan environment
 

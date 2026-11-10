@@ -21,7 +21,7 @@ pub struct BridgeConfig {
     pub log_to_file: bool,
     pub health_check_port: String,
     pub block_wait_time: Duration,
-    pub min_share_diff: u32,
+    pub min_share_diff: f64,
     pub var_diff: bool,
     pub shares_per_min: u32,
     pub var_diff_stats: bool,
@@ -79,7 +79,7 @@ async fn listen_and_serve_impl<T: CeleniumApiTrait + Send + Sync + 'static>(
     shutdown_rx: Option<watch::Receiver<bool>>,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     // Calculate min diff with pow2 clamp if needed
-    let mut min_diff = config.min_share_diff as f64;
+    let mut min_diff = config.min_share_diff;
     if config.pow2_clamp && min_diff > 0.0 {
         min_diff = 2_f64.powi((min_diff.log2().floor()) as i32);
     }

@@ -87,8 +87,8 @@ pub mod consensus {
     // ~~~~~~~~~~~~~~~~~~~ Coinbase ~~~~~~~~~~~~~~~~~~~
     //
 
-    /// Coinbase maturity in seconds
-    pub const COINBASE_MATURITY_SECONDS: u64 = 100;
+    /// Coinbase maturity in seconds (0 = instant maturity for the premine/fresh test chain)
+    pub const COINBASE_MATURITY_SECONDS: u64 = 0;
 
     //
     // ~~~~~~~~~~~~~~~~~~~ Toccata lane limits ~~~~~~~~~~~~~~~~~~~

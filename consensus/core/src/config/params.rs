@@ -615,7 +615,7 @@ pub const MAINNET_PARAMS: Params = Params {
     // Celenium starts in the deflationary phase at genesis, so the subsidy
     // table in coinbase.rs applies from block 0.
     deflationary_phase_daa_score: 0,
-    pre_deflationary_phase_base_subsidy: 1366560,
+    pre_deflationary_phase_base_subsidy: 2079547,
     skip_proof_of_work: false,
     max_block_level: 225,
     pruning_proof_m: 1000,
@@ -665,7 +665,7 @@ pub const TESTNET_PARAMS: Params = Params {
     // Celenium starts in the deflationary phase at genesis, so the subsidy
     // table in coinbase.rs applies from block 0.
     deflationary_phase_daa_score: 0,
-    pre_deflationary_phase_base_subsidy: 1366560,
+    pre_deflationary_phase_base_subsidy: 2079547,
     skip_proof_of_work: false,
     max_block_level: 250,
     pruning_proof_m: 1000,
@@ -690,7 +690,7 @@ pub const SIMNET_PARAMS: Params = Params {
     min_difficulty_window_size: MIN_DIFFICULTY_WINDOW_SIZE,
 
     deflationary_phase_daa_score: 0,
-    pre_deflationary_phase_base_subsidy: 1366560,
+    pre_deflationary_phase_base_subsidy: 2079547,
     coinbase_payload_script_public_key_max_len: 150,
     max_coinbase_payload_len: 204,
 
@@ -749,7 +749,7 @@ pub const DEVNET_PARAMS: Params = Params {
     storage_mass_parameter: STORAGE_MASS_PARAMETER,
 
     deflationary_phase_daa_score: 0,
-    pre_deflationary_phase_base_subsidy: 1366560,
+    pre_deflationary_phase_base_subsidy: 2079547,
     skip_proof_of_work: false,
     max_block_level: 250,
     pruning_proof_m: 1000,
