@@ -4,7 +4,7 @@
 
 Welcome to the Rust-based implementation of the Celenium full-node and its ancillary libraries. The contained node release serves as a drop-in replacement to the established Golang node and to date is the recommended node software for the Celenium network, introducing developers to the possibilities of Rust in the Celenium network's context.
 
-This project is a fork of [rusty-kaspa](https://github.com/kaspanet/rusty-kaspa), the official Rust implementation of the Kaspa full node. We thank the Kaspa development team for their outstanding work, which forms the foundation of this project.
+This project is a fork of [rusty-kaspa] https://github.com/kaspanet/rusty-kaspa, the official Rust implementation of the Kaspa full node. We thank the Kaspa development team for their outstanding work, which forms the foundation of this project.
 
 We invite developers and blockchain enthusiasts to collaborate, test, and optimize our Rust implementation. Each line of code here is an opportunity to contribute to the open-source blockchain movement, shaping a platform designed for scalability and speed without compromising on security and decentralization.
 
