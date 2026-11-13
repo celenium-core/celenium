@@ -8,6 +8,7 @@ pub mod celeniumapi;
 pub mod log_colors;
 pub mod mining_state;
 pub mod net_utils;
+pub mod pplns;
 pub mod pow_diagnostic;
 pub mod prom;
 #[cfg(feature = "rkstratum_cpu_miner")]
@@ -26,6 +27,7 @@ pub use hasher::*;
 pub use jsonrpc_event::*;
 pub use celeniumapi::*;
 pub use mining_state::*;
+pub use pplns::*;
 pub use prom::{WorkerContext, *};
 #[cfg(feature = "rkstratum_cpu_miner")]
 pub use rkstratum_cpu_miner::*;
