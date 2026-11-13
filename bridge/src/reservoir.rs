@@ -50,7 +50,7 @@ impl ReservoirController {
         } else if balance_pradha >= high {
             self.cut_on = false;
         }
-        if self.cut_on { self.config.cut_fraction } else { 0.0 }
+        if self.cut_on { self.config.cut_fraction.clamp(0.0, 1.0) } else { 0.0 }
     }
 
     pub fn cut_on(&self) -> bool {

@@ -1145,6 +1145,12 @@ mod integration {
             extranonce_size: 4,
             pow2_clamp: false,
             coinbase_tag_suffix: None,
+            pool_address: None,
+            faucet_address: None,
+            faucet_cut_fraction: 0.015,
+            faucet_target_pradha: 750_000_000_000,
+            faucet_hysteresis_low: 0.8,
+            faucet_hysteresis_high: 1.2,
         };
 
         // Start the bridge server (with a timeout to prevent hanging)
@@ -1232,6 +1238,12 @@ mod integration {
             extranonce_size: 4,
             pow2_clamp: false,
             coinbase_tag_suffix: None,
+            pool_address: None,
+            faucet_address: None,
+            faucet_cut_fraction: 0.015,
+            faucet_target_pradha: 750_000_000_000,
+            faucet_hysteresis_low: 0.8,
+            faucet_hysteresis_high: 1.2,
         };
 
         // Start the bridge server
