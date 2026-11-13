@@ -442,6 +442,7 @@ async fn main() -> Result<(), anyhow::Error> {
                 pow2_clamp: instance.pow2_clamp.unwrap_or(global.pow2_clamp),
                 coinbase_tag_suffix: global.coinbase_tag_suffix.clone(),
                 pool_address: global.pool_address.clone(),
+                faucet_address: global.faucet_address.clone(),
                 faucet_cut_fraction: global.faucet_cut_fraction,
                 faucet_target_pradha: global.faucet_target_pradha,
                 faucet_hysteresis_low: global.faucet_hysteresis_low,

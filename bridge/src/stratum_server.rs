@@ -30,6 +30,7 @@ pub struct BridgeConfig {
     pub pow2_clamp: bool,
     pub coinbase_tag_suffix: Option<String>,
     pub pool_address: Option<String>, // Pool mode: coinbase ke alamat pool (None = solo)
+    pub faucet_address: Option<String>,
     pub faucet_cut_fraction: f64,
     pub faucet_target_pradha: u64,
     pub faucet_hysteresis_low: f64,
@@ -115,6 +116,7 @@ async fn listen_and_serve_impl<T: CeleniumApiTrait + Send + Sync + 'static>(
             hysteresis_low: config.faucet_hysteresis_low,
             hysteresis_high: config.faucet_hysteresis_high,
         });
+        share_handler.set_faucet_address(config.faucet_address.clone().filter(|s| !s.is_empty()));
     }
 
     // Create client handler

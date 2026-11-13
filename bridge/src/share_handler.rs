@@ -246,6 +246,7 @@ pub struct ShareHandler {
     duplicate_submit_guard: Arc<Mutex<DuplicateSubmitGuard>>,
     pplns: Arc<Mutex<PplnsTracker>>,
     reservoir: Arc<Mutex<Option<ReservoirController>>>,
+    faucet_address: Arc<Mutex<Option<String>>>,
 }
 
 impl ShareHandler {
@@ -258,12 +259,18 @@ impl ShareHandler {
             duplicate_submit_guard: Arc::new(Mutex::new(DuplicateSubmitGuard::new(Duration::from_secs(180), 50_000))),
             pplns: Arc::new(Mutex::new(PplnsTracker::new(DEFAULT_PPLNS_WINDOW))),
             reservoir: Arc::new(Mutex::new(None)),
+            faucet_address: Arc::new(Mutex::new(None)),
         }
     }
 
     /// Konfigurasi reservoir faucet (aktif bila diset). None berarti faucet mati.
     pub fn set_reservoir_config(&self, config: ReservoirConfig) {
         *self.reservoir.lock() = Some(ReservoirController::new(config));
+    }
+
+    /// Alamat wallet reservoir (tujuan potongan reward blok). None = faucet mati.
+    pub fn set_faucet_address(&self, addr: Option<String>) {
+        *self.faucet_address.lock() = addr;
     }
 
     fn log_prefix(&self) -> String {
@@ -766,6 +773,12 @@ impl ShareHandler {
                 let transactions_vec = current_job.block.transactions.iter().cloned().collect();
                 let block = Block::from_arcs(Arc::new(header_clone), Arc::new(transactions_vec));
                 let blue_score = block.header.blue_score;
+                // Total subsidi blok = jumlah output coinbase (subsidy + fees), dalam pradha.
+                let coinbase_pradha = block
+                    .transactions
+                    .first()
+                    .map(|tx| tx.outputs.iter().map(|o| o.value).sum::<u64>())
+                    .unwrap_or(0);
 
                 // Calculate block hash immediately after block creation
                 // Use celenium_consensus_core::hashing::header::hash() for block hash calculation
@@ -860,6 +873,9 @@ impl ShareHandler {
 
                         let celenium_api = Arc::clone(&celenium_api);
                         let block_hash_for_confirm = block_hash.clone();
+                        let pplns = Arc::clone(&self.pplns);
+                        let reservoir = Arc::clone(&self.reservoir);
+                        let faucet_address = Arc::clone(&self.faucet_address);
 
                         tokio::spawn(async move {
                             for _ in 0..BLOCK_CONFIRM_MAX_ATTEMPTS {
@@ -882,6 +898,33 @@ impl ShareHandler {
                                                 "Block confirmed BLUE in DAG! Hash: {}",
                                                 block_hash_for_confirm
                                             ))
+                                        );
+
+                                        // Payout engine (compute): potongan faucet + distribusi PPLNS.
+                                        // Pengiriman transaksi disusul (butuh kunci wallet pool).
+                                        let mut faucet_cut_pradha = 0u64;
+                                        let faucet_addr = faucet_address.lock().clone();
+                                        if let Some(addr) = faucet_addr {
+                                            let balance = match celenium_api
+                                                .get_balances_by_addresses(&[addr.clone()])
+                                                .await
+                                            {
+                                                Ok(v) => v.first().map(|(_, b)| *b).unwrap_or(0),
+                                                Err(_) => 0,
+                                            };
+                                            if let Some(ctrl) = reservoir.lock().as_mut() {
+                                                let cut = ctrl.update_and_cut_fraction(balance);
+                                                faucet_cut_pradha = ((coinbase_pradha as f64) * cut) as u64;
+                                            }
+                                        }
+                                        let miner_share = coinbase_pradha.saturating_sub(faucet_cut_pradha);
+                                        let payouts = pplns.lock().distribute(miner_share);
+                                        info!(
+                                            "[{}] [PAYOUT] reward={} pradha faucet_cut={} workers={}",
+                                            instance_id,
+                                            coinbase_pradha,
+                                            faucet_cut_pradha,
+                                            payouts.len()
                                         );
                                         return;
                                     }
