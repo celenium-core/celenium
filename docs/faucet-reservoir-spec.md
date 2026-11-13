@@ -107,9 +107,13 @@ Komponen (semua di sisi pool/miner, TANPA ubah konsensus):
 |---|---|
 | Spesifikasi (dokumen ini) | selesai |
 | Revisi whitepaper §5.1 | selesai |
-| Backend pool + payout engine | belum |
-| Controller reservoir | belum |
-| Ledger + API faucet | belum |
+| Config pool-mode + faucet | selesai |
+| Coinbase routing → alamat pool | selesai |
+| Controller reservoir (hysteresis) | selesai (4 unit test) |
+| PPLNS tracker | selesai (6 unit test) |
+| Payout compute (subsidi → cut → PPLNS → log) | selesai |
+| Payout execution (kirim tx ke worker) | belum — butuh kunci pool + ledger akumulasi |
+| Ledger + API faucet (claim/balance/withdraw) | belum |
 | UI "Klaim harian" di app miner | belum |
 | Bootstrap miner (operator) | belum (bergantung deployment) |
 
