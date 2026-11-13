@@ -161,6 +161,24 @@ pub struct Cli {
     #[arg(long)]
     pub coinbase_tag_suffix: Option<String>,
 
+    #[arg(long, help = "Pool coinbase address (enables pool mode)")]
+    pub pool_address: Option<String>,
+
+    #[arg(long, help = "Faucet reservoir address")]
+    pub faucet_address: Option<String>,
+
+    #[arg(long, help = "Fraction of block reward routed to faucet (0..=0.015)")]
+    pub faucet_cut_fraction: Option<f64>,
+
+    #[arg(long, help = "Faucet reservoir target level in pradha")]
+    pub faucet_target_pradha: Option<u64>,
+
+    #[arg(long, help = "Faucet cut ON below this fraction of target")]
+    pub faucet_hysteresis_low: Option<f64>,
+
+    #[arg(long, help = "Faucet cut OFF above this fraction of target")]
+    pub faucet_hysteresis_high: Option<f64>,
+
     #[arg(long)]
     pub stratum_port: Option<String>,
 
@@ -260,6 +278,26 @@ pub fn apply_cli_overrides(config: &mut BridgeConfig, cli: &Cli) -> Result<(), a
     if let Some(s) = cli.coinbase_tag_suffix.as_deref() {
         let s = s.trim();
         config.global.coinbase_tag_suffix = if s.is_empty() { None } else { Some(s.to_string()) };
+    }
+    if let Some(v) = cli.pool_address.as_deref() {
+        let v = v.trim();
+        config.global.pool_address = if v.is_empty() { None } else { Some(v.to_string()) };
+    }
+    if let Some(v) = cli.faucet_address.as_deref() {
+        let v = v.trim();
+        config.global.faucet_address = if v.is_empty() { None } else { Some(v.to_string()) };
+    }
+    if let Some(v) = cli.faucet_cut_fraction {
+        config.global.faucet_cut_fraction = v;
+    }
+    if let Some(v) = cli.faucet_target_pradha {
+        config.global.faucet_target_pradha = v;
+    }
+    if let Some(v) = cli.faucet_hysteresis_low {
+        config.global.faucet_hysteresis_low = v;
+    }
+    if let Some(v) = cli.faucet_hysteresis_high {
+        config.global.faucet_hysteresis_high = v;
     }
 
     if !cli.instances.is_empty() {

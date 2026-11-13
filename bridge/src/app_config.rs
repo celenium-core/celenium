@@ -42,6 +42,13 @@ pub struct GlobalConfig {
     pub pow2_clamp: bool,
     #[serde(deserialize_with = "deserialize_coinbase_tag_suffix")]
     pub coinbase_tag_suffix: Option<String>,
+    // Pool mode (opsional): arahkan coinbase ke alamat pool & aktifkan reservoir faucet.
+    pub pool_address: Option<String>,
+    pub faucet_address: Option<String>,
+    pub faucet_cut_fraction: f64,
+    pub faucet_target_pradha: u64,
+    pub faucet_hysteresis_low: f64,
+    pub faucet_hysteresis_high: f64,
 }
 
 /// Bridge configuration (supports both single and multi-instance modes)
@@ -199,6 +206,13 @@ impl Default for GlobalConfig {
             extranonce_size: 0,
             pow2_clamp: false,
             coinbase_tag_suffix: None,
+            pool_address: None,
+            faucet_address: None,
+            faucet_cut_fraction: 0.015,
+            // 7500 CEN = 30 hari × cap 250 CEN/hari, dalam pradha (1 CEN = 1e8 pradha).
+            faucet_target_pradha: 750_000_000_000,
+            faucet_hysteresis_low: 0.8,
+            faucet_hysteresis_high: 1.2,
         }
     }
 }
