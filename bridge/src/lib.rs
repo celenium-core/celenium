@@ -12,6 +12,7 @@ pub mod pow_diagnostic;
 pub mod prom;
 #[cfg(feature = "rkstratum_cpu_miner")]
 pub mod rkstratum_cpu_miner;
+pub mod reservoir;
 pub mod share_handler;
 pub mod stratum_context;
 pub mod stratum_listener;
@@ -28,6 +29,7 @@ pub use mining_state::*;
 pub use prom::{WorkerContext, *};
 #[cfg(feature = "rkstratum_cpu_miner")]
 pub use rkstratum_cpu_miner::*;
+pub use reservoir::*;
 pub use share_handler::*;
 pub use stratum_context::*;
 pub use stratum_listener::*;
