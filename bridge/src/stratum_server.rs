@@ -3,6 +3,7 @@ use crate::{
     default_client::{default_handlers, handle_authorize, handle_subscribe},
     jsonrpc_event::JsonRpcEvent,
     celeniumapi::CeleniumApi,
+    reservoir::ReservoirConfig,
     share_handler::{CeleniumApiTrait, ShareHandler},
     stratum_context::StratumContext,
     stratum_listener::{StratumListener, StratumListenerConfig},
@@ -29,6 +30,10 @@ pub struct BridgeConfig {
     pub pow2_clamp: bool,
     pub coinbase_tag_suffix: Option<String>,
     pub pool_address: Option<String>, // Pool mode: coinbase ke alamat pool (None = solo)
+    pub faucet_cut_fraction: f64,
+    pub faucet_target_pradha: u64,
+    pub faucet_hysteresis_low: f64,
+    pub faucet_hysteresis_high: f64,
 }
 
 /// Start block template listener with concrete CeleniumApi
@@ -101,6 +106,16 @@ async fn listen_and_serve_impl<T: CeleniumApiTrait + Send + Sync + 'static>(
     // Create share handler with instance identifier
     let instance_id = config.instance_id.clone();
     let share_handler = Arc::new(ShareHandler::new(instance_id.clone()));
+
+    // Konfigurasi reservoir faucet hanya pada pool mode dengan cut > 0.
+    if config.pool_address.is_some() && config.faucet_cut_fraction > 0.0 {
+        share_handler.set_reservoir_config(ReservoirConfig {
+            cut_fraction: config.faucet_cut_fraction,
+            target_pradha: config.faucet_target_pradha,
+            hysteresis_low: config.faucet_hysteresis_low,
+            hysteresis_high: config.faucet_hysteresis_high,
+        });
+    }
 
     // Create client handler
     // Note: extranonce_size parameter is now only used for backward compatibility

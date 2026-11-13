@@ -4,7 +4,9 @@ use crate::{
     celeniumapi::NODE_STATUS,
     log_colors::LogColors,
     mining_state::GetMiningState,
+    pplns::PplnsTracker,
     prom::*,
+    reservoir::{ReservoirConfig, ReservoirController},
     stratum_context::StratumContext,
 };
 
@@ -33,6 +35,7 @@ const STATS_PRUNE_INTERVAL: Duration = Duration::from_secs(60);
 const STATS_PRINT_INTERVAL: Duration = Duration::from_secs(10);
 const BLOCK_CONFIRM_RETRY_DELAY: Duration = Duration::from_secs(2);
 const BLOCK_CONFIRM_MAX_ATTEMPTS: usize = 30;
+const DEFAULT_PPLNS_WINDOW: usize = 5000;
 
 // VarDiff tunables
 const VARDIFF_MIN_ELAPSED_SECS: f64 = 30.0;
@@ -241,6 +244,8 @@ pub struct ShareHandler {
     overall: Arc<WorkStats>,
     instance_id: String, // Instance identifier for logging
     duplicate_submit_guard: Arc<Mutex<DuplicateSubmitGuard>>,
+    pplns: Arc<Mutex<PplnsTracker>>,
+    reservoir: Arc<Mutex<Option<ReservoirController>>>,
 }
 
 impl ShareHandler {
@@ -251,7 +256,14 @@ impl ShareHandler {
             overall: Arc::new(WorkStats::new("overall".to_string())),
             instance_id,
             duplicate_submit_guard: Arc::new(Mutex::new(DuplicateSubmitGuard::new(Duration::from_secs(180), 50_000))),
+            pplns: Arc::new(Mutex::new(PplnsTracker::new(DEFAULT_PPLNS_WINDOW))),
+            reservoir: Arc::new(Mutex::new(None)),
         }
+    }
+
+    /// Konfigurasi reservoir faucet (aktif bila diset). None berarti faucet mati.
+    pub fn set_reservoir_config(&self, config: ReservoirConfig) {
+        *self.reservoir.lock() = Some(ReservoirController::new(config));
     }
 
     fn log_prefix(&self) -> String {
@@ -1138,6 +1150,9 @@ impl ShareHandler {
         }
 
         record_share_found(&self.worker_prom_context(&ctx, ""), hash_value);
+
+        // Catat share valid ke jendela PPLNS (bobot = hash_value difficulty-weighted).
+        self.pplns.lock().record_share(&ctx.effective_worker_name(), hash_value);
 
         {
             let now = Instant::now();
