@@ -617,7 +617,11 @@ async fn handle_http_request(
                 Ok(v) => {
                     let address = v.get("address").and_then(|x| x.as_str()).unwrap_or("");
                     let mut s = state.lock().unwrap();
-                    match s.claim(address) {
+                    let result = s.claim(address);
+                    if result.is_ok() {
+                        let _ = s.save(std::path::Path::new(crate::faucet::FAUCET_LEDGER_PATH));
+                    }
+                    match result {
                         Ok(entry) => serde_json::json!({
                             "ok": true,
                             "address": address,

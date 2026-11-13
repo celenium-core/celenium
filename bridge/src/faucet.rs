@@ -15,6 +15,9 @@ pub const FAUCET_REWARD_PRADHA: u64 = 1_000;
 /// Cap anggaran harian total: 250 CEN = 25_000_000_000 pradha.
 pub const FAUCET_DAILY_CAP_PRADHA: u64 = 25_000_000_000;
 
+/// File tempat ledger faucet disimpan (relatif ke working directory bridge).
+pub const FAUCET_LEDGER_PATH: &str = "faucet_ledger.json";
+
 /// Detik per hari (hari Unix untuk throttling klaim).
 const DAY_SECS: u64 = 86_400;
 
