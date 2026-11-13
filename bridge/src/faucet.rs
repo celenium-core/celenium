@@ -6,7 +6,7 @@
 //!
 //! Akuntansi memakai pradha (1 CEN = 1e8 pradha) agar integer, tanpa float.
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::path::Path;
 
 /// Reward per klaim: 1000 pradha = 0.00001 CEN.
@@ -17,6 +17,9 @@ pub const FAUCET_DAILY_CAP_PRADHA: u64 = 25_000_000_000;
 
 /// File tempat ledger faucet disimpan (relatif ke working directory bridge).
 pub const FAUCET_LEDGER_PATH: &str = "faucet_ledger.json";
+
+/// Maksimal address wallet berbeda per device (Android ID) — anti-sybil lunak.
+pub const FAUCET_MAX_ACCOUNTS_PER_DEVICE: usize = 5;
 
 /// Detik per hari (hari Unix untuk throttling klaim).
 const DAY_SECS: u64 = 86_400;
@@ -31,6 +34,8 @@ pub struct FaucetEntry {
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct FaucetState {
     ledger: HashMap<String, FaucetEntry>,
+    /// device_id (Android ID) → set address wallet yang pernah klaim.
+    devices: HashMap<String, HashSet<String>>,
     /// Total pradha dikeluarkan pada hari Unix `claim_day`.
     claimed_today: u64,
     /// Hari Unix yang sedang dihitung untuk `claimed_today`.
@@ -42,6 +47,7 @@ pub enum ClaimError {
     AlreadyClaimed,
     DailyCapReached,
     EmptyAddress,
+    TooManyAccounts,
 }
 
 impl std::fmt::Display for ClaimError {
@@ -50,6 +56,7 @@ impl std::fmt::Display for ClaimError {
             ClaimError::AlreadyClaimed => "already claimed today",
             ClaimError::DailyCapReached => "daily faucet cap reached",
             ClaimError::EmptyAddress => "address is empty",
+            ClaimError::TooManyAccounts => "device has too many accounts",
         };
         f.write_str(s)
     }
@@ -74,9 +81,19 @@ impl FaucetState {
     }
 
     /// Klaim harian untuk `address`. Kembalikan saldo baru bila berhasil.
-    pub fn claim(&mut self, address: &str) -> Result<FaucetEntry, ClaimError> {
+    pub fn claim(&mut self, address: &str, device_id: &str) -> Result<FaucetEntry, ClaimError> {
         if address.trim().is_empty() {
             return Err(ClaimError::EmptyAddress);
+        }
+        // Anti-sybil lunak: batasi address wallet per device (Android ID). Kosong
+        // = tak terlacak (backward-compat, hanya dibatasi per-address).
+        let did = device_id.trim();
+        if !did.is_empty() {
+            let set = self.devices.entry(did.to_string()).or_default();
+            if !set.contains(address) && set.len() >= FAUCET_MAX_ACCOUNTS_PER_DEVICE {
+                return Err(ClaimError::TooManyAccounts);
+            }
+            set.insert(address.to_string());
         }
         self.roll_day();
         let day = self.claim_day;
@@ -170,15 +187,15 @@ mod tests {
             },
         );
 
-        assert_eq!(s.claim(ADDR).unwrap().balance_pradha, FAUCET_REWARD_PRADHA);
-        assert_eq!(s.claim(ADDR), Err(ClaimError::AlreadyClaimed));
+        assert_eq!(s.claim(ADDR, "").unwrap().balance_pradha, FAUCET_REWARD_PRADHA);
+        assert_eq!(s.claim(ADDR, ""), Err(ClaimError::AlreadyClaimed));
     }
 
     #[test]
     fn rejects_empty_address() {
         let mut s = FaucetState::default();
-        assert_eq!(s.claim(""), Err(ClaimError::EmptyAddress));
-        assert_eq!(s.claim("   "), Err(ClaimError::EmptyAddress));
+        assert_eq!(s.claim("", ""), Err(ClaimError::EmptyAddress));
+        assert_eq!(s.claim("   ", ""), Err(ClaimError::EmptyAddress));
     }
 
     #[test]
@@ -224,7 +241,26 @@ mod tests {
         let mut s = FaucetState::default();
         s.claim_day = FaucetState::current_day();
         s.claimed_today = FAUCET_DAILY_CAP_PRADHA;
-        assert_eq!(s.claim(ADDR), Err(ClaimError::DailyCapReached));
+        assert_eq!(s.claim(ADDR, ""), Err(ClaimError::DailyCapReached));
+    }
+
+    #[test]
+    fn device_cap_limits_accounts() {
+        let mut s = FaucetState::default();
+        // Daftarkan 5 address berbeda pada device yang sama.
+        for i in 0..FAUCET_MAX_ACCOUNTS_PER_DEVICE {
+            let a = format!("cen69:test{i:042}");
+            s.ledger.insert(
+                a.clone(),
+                FaucetEntry { balance_pradha: 0, last_claim_day: 0, total_claimed_pradha: 0 },
+            );
+            s.devices.entry("dev-1".to_string()).or_default().insert(a);
+        }
+        // Address ke-6 ditolak.
+        let sixth = "cen69:test9999999999999999999999999999999999999999";
+        assert_eq!(s.claim(sixth, "dev-1"), Err(ClaimError::TooManyAccounts));
+        // Device lain masih diizinkan.
+        assert!(s.claim(sixth, "dev-2").is_ok());
     }
 
     #[test]

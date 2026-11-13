@@ -616,8 +616,9 @@ async fn handle_http_request(
                 Err(e) => serde_json::json!({ "error": format!("invalid json: {e}") }).to_string(),
                 Ok(v) => {
                     let address = v.get("address").and_then(|x| x.as_str()).unwrap_or("");
+                    let device_id = v.get("deviceId").and_then(|x| x.as_str()).unwrap_or("");
                     let mut s = state.lock().unwrap();
-                    let result = s.claim(address);
+                    let result = s.claim(address, device_id);
                     if result.is_ok() {
                         let _ = s.save(std::path::Path::new(crate::faucet::FAUCET_LEDGER_PATH));
                     }
