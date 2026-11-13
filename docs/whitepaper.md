@@ -143,17 +143,35 @@ blok langsung masuk ke coinbase atas alamat wallet yang dipasang.
 - Desktop: `stratum-bridge --internal-cpu-miner --internal-cpu-miner-address
   cen69sim:... --internal-cpu-miner-threads N --web-dashboard-port :3030`
 - Dashboard web menampilkan hashrate, share, dan status koneksi node.
-- Pool: bridge dapat berjalan sebagai stratum server untuk miner eksternal
-  (Android/pool client), dengan penerapan aturan: reward sesi Android dibatasi
-  maksimal 40% dari reward desktop pada hashrate yang sama, dan satu alamat IP
-  hanya boleh memegang satu sesi mining Android aktif.
+- Pool: bridge berjalan sebagai stratum server untuk miner eksternal (desktop
+  dan Android). Reward blok dibagi ke worker proporsional terhadap bobot share
+  (PPLNS); sesi Android tunduk pada aturan 1 IP = 1 sesi mining aktif.
 
-Batasan yang diakui terbuka: CPU (desktop maupun ponsel) tidak kompetitif
-melawan ASIC/GPU di mainnet. Mining ponsel diposisikan sebagai pool client
-ringan dan sarana partisipasi, bukan sumber profit. Alasan bobot 40%: cukup
-berarti agar mining ponsel menarik untuk adopsi, tetapi tetap di bawah paritas
-(50%) sehingga mining serius tetap di desktop, dan tetap tunduk pada 1 IP = 1
-sesi.
+### 5.1 Faucet partisipasi (reservoir dinamis)
+
+CPU (desktop maupun ponsel) tidak kompetitif melawan ASIC/GPU di mainnet,
+sehingga mining ponsel tidak dapat menjadi sumber penghasilan yang berarti.
+Untuk menjaga partisipasi tetap hidup, Celenium menyalurkan "rewards
+partisipasi" — pembayaran harian kecil (dasar 1000 pradha/hari/perangkat ≈
+0,00001 CEN) yang didanai dari **potongan reward blok**, bukan dari premine,
+lewat reservoir dinamis yang menyeimbangkan diri:
+
+- Bootstrap: miner inisial operator mengarahkan coinbase ke wallet reservoir,
+  sehingga reservoir terisi sejak blok pertama di masa awal jaringan.
+- Potongan variabel 0–1,5%: sebagian reward blok dialirkan ke reservoir hanya
+  saat cadangan di bawah target (default 30 hari pembayaran = 7.500 CEN); saat
+  cadangan melebihi ambang atas, potongan menjadi 0% sehingga kelebihan
+  otomatis kembali ke miner (nol pemborosan).
+- Hysteresis 80%–120% target mencegah potongan berosilasi antar blok.
+- Klaim 1×/hari/perangkat dengan cap anggaran 250 CEN/hari yang dipecah rata
+  bila jumlah klaim melebihi cap; anti-sybil via atestasi perangkat + 1
+  klaim/hari.
+- Settlement: saldo klaim tercatat di ledger off-chain dan ditarik ke on-chain
+  saat mencapai ambang minimum.
+
+Seluruh mekanisme adalah kebijakan pool/miner, bukan konsensus: emisi tidak
+berubah, tidak butuh hardfork, dan premine tetap utuh untuk peruntukannya.
+Spesifikasi teknis lengkap: `docs/faucet-reservoir-spec.md`.
 
 ## 6. Wallet dan ekosistem
 
