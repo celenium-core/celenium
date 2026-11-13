@@ -294,6 +294,12 @@ async fn main() -> Result<(), anyhow::Error> {
         // balances (`GET /api/balance`) over the existing HTTP channel instead of
         // opening a second node RPC connection from the app.
         prom::set_node_api(Arc::clone(&celenium_api));
+        // Off-chain faucet ledger (participation balances). In-memory for now;
+        // persistence + on-chain settlement are separate pending work.
+        let faucet_state = Arc::new(std::sync::Mutex::new(
+            celenium_stratum_bridge::FaucetState::default(),
+        ));
+        prom::set_faucet_state(faucet_state);
         let web_dashboard_port = config.global.web_dashboard_port.clone();
         tokio::spawn(async move {
             if let Err(e) = prom::start_web_server_all(&web_dashboard_port).await {

@@ -432,6 +432,16 @@ pub fn set_node_api(api: std::sync::Arc<crate::celeniumapi::CeleniumApi>) {
     let _ = NODE_API.set(api);
 }
 
+/// Shared faucet ledger, set once during `main` startup so the dashboard can
+/// answer `GET /api/faucet/balance` and `POST /api/faucet/claim`.
+static FAUCET_STATE: OnceLock<std::sync::Arc<std::sync::Mutex<crate::faucet::FaucetState>>> =
+    OnceLock::new();
+
+/// Store the shared faucet ledger handle.
+pub fn set_faucet_state(state: std::sync::Arc<std::sync::Mutex<crate::faucet::FaucetState>>) {
+    let _ = FAUCET_STATE.set(state);
+}
+
 async fn send_response(
     mut stream: tokio::net::TcpStream,
     response: impl AsRef<[u8]>,
@@ -551,6 +561,79 @@ async fn handle_http_request(
             "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nConnection: close\r\nAccess-Control-Allow-Origin: *\r\nContent-Length: {}\r\n\r\n{}",
             body.len(),
             body
+        );
+        send_response(stream, response).await?;
+        return Ok(());
+    }
+
+    if request.starts_with("GET /api/faucet/balance") {
+        // Query params live in `path` (already parsed from the request line).
+        let address = path.split('?').nth(1).and_then(|qs| {
+            qs.split('&').filter_map(|kv| kv.split_once('=')).find_map(|(k, v)| (k == "address").then(|| v.to_string()))
+        });
+
+        let body = match address.as_deref() {
+            Some(addr) if !addr.is_empty() => match FAUCET_STATE.get() {
+                None => r#"{"error":"faucet not ready"}"#.to_string(),
+                Some(state) => {
+                    let s = state.lock().unwrap();
+                    let (balance, total) = match s.balance(addr) {
+                        Some(e) => (e.balance_pradha, e.total_claimed_pradha),
+                        None => (0u64, 0u64),
+                    };
+                    let can_claim = match s.balance(addr) {
+                        Some(e) => e.last_claim_day != crate::faucet::FaucetState::current_day(),
+                        None => true,
+                    };
+                    serde_json::json!({
+                        "address": addr,
+                        "balancePradha": balance,
+                        "totalClaimedPradha": total,
+                        "canClaimToday": can_claim,
+                    }).to_string()
+                }
+            },
+            _ => r#"{"error":"missing address query parameter"}"#.to_string(),
+        };
+
+        let response = format!(
+            "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nConnection: close\r\nAccess-Control-Allow-Origin: *\r\nContent-Length: {}\r\n\r\n{}",
+            body.len(),
+            body
+        );
+        send_response(stream, response).await?;
+        return Ok(());
+    }
+
+    if request.starts_with("POST /api/faucet/claim") {
+        let body_start = request.find("\r\n\r\n").unwrap_or(request.len());
+        #[allow(clippy::arithmetic_side_effects, reason = "ARITH-SAFETY(LENGTH)")]
+        let body = &request[body_start + 4..];
+
+        let resp = match FAUCET_STATE.get() {
+            None => r#"{"error":"faucet not ready"}"#.to_string(),
+            Some(state) => match serde_json::from_str::<serde_json::Value>(body) {
+                Err(e) => serde_json::json!({ "error": format!("invalid json: {e}") }).to_string(),
+                Ok(v) => {
+                    let address = v.get("address").and_then(|x| x.as_str()).unwrap_or("");
+                    let mut s = state.lock().unwrap();
+                    match s.claim(address) {
+                        Ok(entry) => serde_json::json!({
+                            "ok": true,
+                            "address": address,
+                            "balancePradha": entry.balance_pradha,
+                            "rewardPradha": crate::faucet::FAUCET_REWARD_PRADHA,
+                        }).to_string(),
+                        Err(e) => serde_json::json!({ "error": e.to_string() }).to_string(),
+                    }
+                }
+            },
+        };
+
+        let response = format!(
+            "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nConnection: close\r\nAccess-Control-Allow-Origin: *\r\nContent-Length: {}\r\n\r\n{}",
+            resp.len(),
+            resp
         );
         send_response(stream, response).await?;
         return Ok(());
