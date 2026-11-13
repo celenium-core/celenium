@@ -34,6 +34,7 @@ pub struct ClientHandler {
     last_balance_check: Arc<Mutex<Instant>>,
     share_handler: Arc<ShareHandler>,
     instance_id: String, // Instance identifier for logging
+    pool_address: Option<String>, // Pool mode: coinbase ke alamat pool (None = solo)
 }
 
 impl ClientHandler {
@@ -51,7 +52,13 @@ impl ClientHandler {
             last_balance_check: Arc::new(Mutex::new(Instant::now())),
             share_handler,
             instance_id,
+            pool_address: None,
         }
+    }
+
+    /// Set the pool coinbase address (enables pool mode). Defaults to None (solo).
+    pub fn set_pool_address(&mut self, addr: Option<String>) {
+        self.pool_address = addr;
     }
 
     pub fn on_connect(&self, ctx: Arc<StratumContext>) {
@@ -203,6 +210,7 @@ impl ClientHandler {
         let share_handler = Arc::clone(&self.share_handler);
         let min_diff = self.min_share_diff;
         let instance_id = self.instance_id.clone();
+        let pool_address = self.pool_address.clone();
 
         tokio::spawn(async move {
             // Get per-client mining state from context
@@ -218,8 +226,9 @@ impl ClientHandler {
 
             debug!("send_immediate_job: fetching block template for client {} (wallet: {})", client_clone.remote_addr, wallet_addr);
 
-            // Get block template
-            let template_result = celenium_api_clone.get_block_template(&wallet_addr, &remote_app, &canxium_addr).await;
+            // Get block template (pool mode: coinbase ke alamat pool)
+            let coinbase_addr = pool_address.as_deref().unwrap_or(&wallet_addr);
+            let template_result = celenium_api_clone.get_block_template(coinbase_addr, &remote_app, &canxium_addr).await;
 
             let block = match template_result {
                 Ok(block) => {
@@ -512,6 +521,7 @@ impl ClientHandler {
             let share_handler = Arc::clone(&self.share_handler);
             let min_diff = self.min_share_diff;
             let instance_id = self.instance_id.clone();
+            let pool_address = self.pool_address.clone();
 
             tokio::spawn(async move {
                 // Get per-client mining state from context
@@ -550,7 +560,8 @@ impl ClientHandler {
                     (wallet, app, canx)
                 };
 
-                let template_result = celenium_api_clone.get_block_template(&wallet_addr, &remote_app, &canxium_addr).await;
+                let coinbase_addr = pool_address.as_deref().unwrap_or(&wallet_addr);
+                let template_result = celenium_api_clone.get_block_template(coinbase_addr, &remote_app, &canxium_addr).await;
 
                 let block = match template_result {
                     Ok(block) => {

@@ -28,6 +28,7 @@ pub struct BridgeConfig {
     pub extranonce_size: u8,
     pub pow2_clamp: bool,
     pub coinbase_tag_suffix: Option<String>,
+    pub pool_address: Option<String>, // Pool mode: coinbase ke alamat pool (None = solo)
 }
 
 /// Start block template listener with concrete CeleniumApi
@@ -104,7 +105,9 @@ async fn listen_and_serve_impl<T: CeleniumApiTrait + Send + Sync + 'static>(
     // Create client handler
     // Note: extranonce_size parameter is now only used for backward compatibility
     // Actual extranonce assignment happens per-client in handle_subscribe based on detected miner type
-    let client_handler = Arc::new(ClientHandler::new(Arc::clone(&share_handler), min_diff, extranonce_size, instance_id.clone()));
+    let mut client_handler = ClientHandler::new(Arc::clone(&share_handler), min_diff, extranonce_size, instance_id.clone());
+    client_handler.set_pool_address(config.pool_address.clone());
+    let client_handler = Arc::new(client_handler);
 
     let shutdown_rx_for_bg = shutdown_rx.clone();
 
