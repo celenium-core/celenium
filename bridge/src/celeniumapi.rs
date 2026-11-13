@@ -7,8 +7,8 @@ use celenium_grpc_client::GrpcClient;
 use celenium_notify::{listener::ListenerId, scope::NewBlockTemplateScope};
 use celenium_rpc_core::notify::mode::NotificationMode;
 use celenium_rpc_core::{
-    GetBlockDagInfoRequest, GetBlockTemplateRequest, GetConnectedPeerInfoRequest, GetCurrentBlockColorRequest, GetInfoRequest,
-    GetServerInfoRequest, Notification, RpcHash, RpcRawBlock, SubmitBlockRequest, SubmitBlockResponse, api::rpc::RpcApi,
+    GetBlockDagInfoRequest, GetBlockTemplateRequest, GetConnectedPeerInfoRequest, GetCurrentBlockColorRequest, GetFeeEstimateRequest,
+    GetInfoRequest, GetServerInfoRequest, Notification, RpcHash, RpcRawBlock, SubmitBlockRequest, SubmitBlockResponse, api::rpc::RpcApi,
 };
 use once_cell::sync::Lazy;
 use parking_lot::Mutex;
@@ -929,6 +929,34 @@ impl CeleniumApi {
         }
 
         Ok(submitted)
+    }
+
+    /// Current minimum fee for a standard transfer, in pradha.
+    ///
+    /// Derived from the node's own fee estimator (low bucket, pradha/gram) so
+    /// the wallet's displayed fee tracks the network's live policy instead of a
+    /// hardcoded constant. The mass factor is a conservative estimate for a
+    /// standard two-output transfer (payment + change); the node still enforces
+    /// the exact minimum at submit, so over-estimating is safe (the excess comes
+    /// back as change) while under-estimating is not.
+    pub async fn estimate_standard_fee(&self) -> Result<u64> {
+        /// Conservative mass for a standard two-output transfer, in grams.
+        const STANDARD_TRANSFER_MASS: f64 = 2500.0;
+        /// Fallback feerate (pradha/gram) when the estimator returns no bucket.
+        const FALLBACK_FEERATE: f64 = 10.0;
+
+        let response = self
+            .client
+            .get_fee_estimate_call(None, GetFeeEstimateRequest {})
+            .await
+            .context("get_fee_estimate failed")?;
+        let feerate = response
+            .estimate
+            .low_buckets
+            .first()
+            .map(|bucket| bucket.feerate)
+            .unwrap_or(FALLBACK_FEERATE);
+        Ok((feerate * STANDARD_TRANSFER_MASS).ceil() as u64)
     }
 
     pub async fn get_current_block_color(&self, block_hash: &str) -> Result<bool> {

@@ -16,8 +16,9 @@ pub(crate) const DEFAULT_MAXIMUM_ORPHAN_TRANSACTION_COUNT: u64 = 500;
 
 /// DEFAULT_MINIMUM_RELAY_TRANSACTION_FEE specifies the minimum transaction fee for a transaction to be accepted to
 /// the mempool and relayed. It is specified in pradha per 1kg (or 1000 grams) of transaction mass.
-/// The default is 100 pradha per gram.
-pub(crate) const DEFAULT_MINIMUM_RELAY_TRANSACTION_FEE: u64 = 100_000;
+/// The default is 10 pradha per gram — the throughput-equivalent of the
+/// pre-Toccata 1 pradha/gram policy now that the network runs at 10 BPS.
+pub(crate) const DEFAULT_MINIMUM_RELAY_TRANSACTION_FEE: u64 = 10_000;
 
 #[derive(Clone, Debug)]
 pub struct Config {

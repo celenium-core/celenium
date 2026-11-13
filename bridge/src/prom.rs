@@ -536,6 +536,26 @@ async fn handle_http_request(
         return Ok(());
     }
 
+    if request.starts_with("GET /api/fee") {
+        let body = match NODE_API.get() {
+            None => r#"{"error":"node api not ready"}"#.to_string(),
+            Some(api) => match api.estimate_standard_fee().await {
+                Ok(fee) => format!(r#"{{"feePradha":{fee}}}"#),
+                Err(e) => {
+                    tracing::warn!("fee estimate failed: {e:#}");
+                    r#"{"error":"fee estimate failed"}"#.to_string()
+                }
+            },
+        };
+        let response = format!(
+            "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nConnection: close\r\nAccess-Control-Allow-Origin: *\r\nContent-Length: {}\r\n\r\n{}",
+            body.len(),
+            body
+        );
+        send_response(stream, response).await?;
+        return Ok(());
+    }
+
     if request.starts_with("GET /api/mining") {
         let body = serde_json::json!({
             "enabled": internal_miner_enabled(),
