@@ -112,3 +112,30 @@ Komponen (semua di sisi pool/miner, TANPA ubah konsensus):
 | Ledger + API faucet | belum |
 | UI "Klaim harian" di app miner | belum |
 | Bootstrap miner (operator) | belum (bergantung deployment) |
+
+## 10. Peta implementasi kode (temuan 13 Nov 2026)
+
+Audit bridge (`bridge/src/`) menunjukkan bridge saat ini berjalan **SOLO**, bukan
+pool: coinbase ditanam ke alamat worker sendiri.
+
+- `share_handler.rs::handle_submit` — titik validasi share → blok ditemukan →
+  `celenium_api.submit_block(...)`. Coinbase worker: `get_block_template(wallet_addr)`
+  memakai `ctx.wallet_addr`, sehingga reward blok masuk ke alamat si penemu.
+  Mode pool harus mengganti alamat ini ke alamat pool.
+- Fondasi bobot share **sudah ada**: `WorkStats.shares_diff` mengakumulasi
+  `hash_value` (nilai difficulty-weighted) tiap share valid — persis "bobot =
+  difficulty" untuk PPLNS. `shares_found` = hitungan share.
+- `mining_state.rs` menyimpan `Job` (template blok) per koneksi.
+
+Perubahan yang diperlukan untuk pool + faucet:
+
+1. Config "pool mode" (pool address, faucet address, cut 0–1,5%, target,
+   hysteresis, ambang penarikan) di `app_config.rs` + `cli.rs`.
+2. Arahkan coinbase ke alamat pool (ubah pemanggilan `get_block_template`).
+3. Jendela share per worker (PPLNS) — perluas `WorkStats`.
+4. Engine payout baru: blok terkonfirmasi → hitung porsi tiap worker + kirim
+   potongan faucet bila reservoir di bawah target (controller baca saldo
+   reservoir via node RPC `get_balances_by_addresses`).
+5. Ledger klaim + route `POST /api/faucet/claim`, `GET /api/faucet/balance`,
+   `POST /api/faucet/withdraw` (di `prom.rs` atau modul HTTP baru).
+6. UI Flutter "Klaim harian".
