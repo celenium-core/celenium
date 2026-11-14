@@ -49,7 +49,7 @@ ikut disesuaikan (26110/27110).
 
 Reward per blok = `table[bulan] / 10` (pembulatan ke atas di kode). Era 0:
 rate 0.20795466 CEN/detik, reward 2.079.547 pradha (0.02079547 CEN)/blok,
-total era 26,250,199.91 CEN. Total emisi 52,500,000 CEN dalam 68 tahun.
+total era 26,250,199.91 CEN. Total emisi 52,500,000 CEN hingga halving selesai.
 
 ## Genesis dan premine (sudah diterapkan)
 

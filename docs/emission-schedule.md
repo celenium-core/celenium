@@ -61,7 +61,7 @@ per detik ke pradha — satuan waktu terkecil 1 detik).
 ## Jadwal halving
 
 Halving terjadi di batas bulan 48, 96, ..., 768 setelah genesis, yaitu sekitar
-setiap 4 tahun sesuai spesifikasi. 17 era selesai pada tahun ke-68.
+setiap 4 tahun sesuai spesifikasi. 17 era selesai hingga halving selesai.
 
 ## Catatan teknis
 
