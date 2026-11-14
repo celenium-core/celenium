@@ -2011,6 +2011,7 @@ dependencies = [
  "prometheus",
  "rand 0.8.6",
  "regex",
+ "secp256k1",
  "serde",
  "serde_json",
  "serde_yaml",

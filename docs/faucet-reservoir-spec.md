@@ -1,7 +1,8 @@
 # Spesifikasi Faucet Reservoir Celenium (CEN)
 
-Status: **RANCANGAN TERKUNCI** (13 Nov 2026) — belum diimplementasi di kode.
-Dokumen ini adalah spesifikasi desain, bukan perubahan yang sudah jalan.
+Status: **diimplementasi di source lokal, belum di-commit dan belum live**
+(14 Nov 2026). Lihat §9 untuk rincian mana yang sudah ada di kode dan mana
+yang masih rancangan.
 
 ## 1. Tujuan
 
@@ -103,21 +104,21 @@ Komponen (semua di sisi pool/miner, TANPA ubah konsensus):
 
 ## 9. Status implementasi
 
-| Item | Status |
-|---|---|
-| Spesifikasi (dokumen ini) | selesai |
-| Revisi whitepaper §5.1 | selesai |
-| Config pool-mode + faucet | selesai |
-| Coinbase routing → alamat pool | selesai |
-| Controller reservoir (hysteresis) | selesai (4 unit test) |
-| PPLNS tracker | selesai (6 unit test) |
-| Payout compute (subsidi → cut → PPLNS → log) | selesai |
-| Payout execution (kirim tx ke worker) | belum — butuh kunci pool + ledger akumulasi |
-| Ledger + API faucet (claim/balance/withdraw) | belum |
-| UI "Klaim harian" di app miner | belum |
-| Bootstrap miner (operator) | belum (bergantung deployment) |
+| Item | Status | Catatan |
+|---|---|---|
+| Desain reward faucet, anti-sybil, ledger off-chain, API claim/balance/withdraw | Ada di source lokal | Belum terbukti berjalan di binary VPS |
+| Kebijakan floor dinamis + pembagian bucket klaim/miner Android | Ada di source lokal (`emission_policy.rs`) | Untracked, belum commit/push |
+| Reservoir controller + penghitung cut saat block terkonfirmasi | Sebagian ada di source lokal | Menghitung angka cut saja; tidak mengirim transaksi atau mengkredit wallet reservoir |
+| Transfer reward miner melalui PPLNS | Belum | Hasil hanya dihitung dan dicatat; `send_coins` tidak dipanggil pada jalur payout |
+| Reward Bootstrap diarahkan ke floor | Belum | Tidak ada kode Bootstrap ekonomi; temuan `bootstrapFromCache()` hanya UI/cache |
+| Refund/sweep surplus floor ke dana miner | Belum | Saldo di atas floor menghentikan cut baru; tidak memindahkan surplus lama |
+| Withdrawal klaim on-chain | Ada jalur di source lokal | Bergantung konfigurasi alamat + signing key; belum dibuktikan live |
+| Miners Android menerima subsidi on-chain | Belum | Ada fungsi hitung budget, tapi belum ada penerima, ledger payout, atau pengiriman transaksi |
+| Deploy mainnet | Belum | Binary VPS masih SHA `b5075740c80d41effb7b5774380d1f1ef95690e2b5c7607ef57a68c454785cf9` (mtime 13 Nov); source lokal belum commit/push |
 
-## 10. Peta implementasi kode (temuan 13 Nov 2026)
+Koreksi atas bagian dokumen lama: `share_handler.rs` belum benar-benar membayar PPLNS. Saat ini ia menghitung `faucet_cut_pradha` dan distribusi miner lalu menulis log; komentar kodenya menyatakan transaksi payout menyusul. Juga, saldo reservoir yang sudah mencapai floor hanya mematikan **cut selanjutnya**; klaim/withdraw dapat membuat saldo turun lagi, dan tidak ada transfer ke alamat miner untuk surplus yang telanjur terkumpul.
+
+## 10. Peta implementasi kode (temuan 14 Nov 2026)
 
 Audit bridge (`bridge/src/`) menunjukkan bridge saat ini berjalan **SOLO**, bukan
 pool: coinbase ditanam ke alamat worker sendiri.

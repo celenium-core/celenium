@@ -442,6 +442,31 @@ pub fn set_faucet_state(state: std::sync::Arc<std::sync::Mutex<crate::faucet::Fa
     let _ = FAUCET_STATE.set(state);
 }
 
+/// Akses ke state ledger faucet bersama (bila sudah diinisialisasi).
+pub fn faucet_state_snapshot() -> Option<std::sync::Arc<std::sync::Mutex<crate::faucet::FaucetState>>> {
+    FAUCET_STATE.get().cloned()
+}
+
+/// Operator-side faucet signer (private key for on-chain withdrawals).
+/// `None` means withdrawal is disabled: the bridge can still credit off-chain
+/// participation balances, it just cannot pay them out.
+static FAUCET_SIGNER: OnceLock<Option<std::sync::Arc<crate::faucet_signer::FaucetSigner>>> = OnceLock::new();
+
+/// The `cen69:` address the faucet pays from, mirrored from config so the
+/// withdraw route can report it without touching the parsed config.
+static FAUCET_PAYOUT_ADDRESS: OnceLock<Option<String>> = OnceLock::new();
+
+/// Serialises withdrawals. The ledger is the only record of what the faucet
+/// owes, so two concurrent withdrawals must not both read the same balance and
+/// each send a full payout.
+static FAUCET_WITHDRAW_LOCK: tokio::sync::Mutex<()> = tokio::sync::Mutex::const_new(());
+
+/// Attach the faucet signer + payout address (called once from `main`).
+pub fn set_faucet_signer(signer: Option<std::sync::Arc<crate::faucet_signer::FaucetSigner>>, address: Option<String>) {
+    let _ = FAUCET_SIGNER.set(signer);
+    let _ = FAUCET_PAYOUT_ADDRESS.set(address);
+}
+
 async fn send_response(
     mut stream: tokio::net::TcpStream,
     response: impl AsRef<[u8]>,
@@ -450,6 +475,177 @@ async fn send_response(
     stream.write_all(response.as_ref()).await?;
     let _ = stream.shutdown().await;
     Ok(())
+}
+
+/// `POST /api/faucet/withdraw` — pay a participation balance out on-chain.
+///
+/// Body: `{"address": "cen69:..."}` (whole balance) or with `"amountPradha"`.
+/// The faucet pays the network fee from its own reservoir, so a withdrawal never
+/// eats into the ledger balance. Because that fee is reservoir money regardless
+/// of how small the transfer is, three limits apply: a minimum amount, one
+/// withdrawal per address per hour, and a daily fee budget across all addresses.
+///
+/// Order of operations matters. The ledger is debited only *after* the node
+/// accepts the transaction, so a failed send leaves the balance intact; and the
+/// whole path is serialised by `FAUCET_WITHDRAW_LOCK` so two concurrent
+/// requests cannot both spend the same balance.
+async fn withdraw_response(body: &str) -> String {
+    let _guard = FAUCET_WITHDRAW_LOCK.lock().await;
+
+    let v = match serde_json::from_str::<serde_json::Value>(body) {
+        Ok(v) => v,
+        Err(e) => return serde_json::json!({ "error": format!("invalid json: {e}") }).to_string(),
+    };
+
+    let address = v.get("address").and_then(|x| x.as_str()).unwrap_or("").trim().to_string();
+    if address.is_empty() {
+        return serde_json::json!({ "error": "missing address" }).to_string();
+    }
+    if celenium_addresses::Address::try_from(address.as_str()).is_err() {
+        return serde_json::json!({ "error": "address is not a valid Celenium address" }).to_string();
+    }
+
+    let signer = match FAUCET_SIGNER.get().and_then(|s| s.as_ref()) {
+        Some(s) => s.clone(),
+        None => {
+            return serde_json::json!({
+                "error": "faucet withdrawals are not configured",
+                "detail": "set CELENIUM_FAUCET_PRIVKEY or CELENIUM_FAUCET_KEYFILE on the bridge and restart"
+            })
+            .to_string();
+        }
+    };
+    let payout_address = match FAUCET_PAYOUT_ADDRESS.get().and_then(|a| a.clone()) {
+        Some(a) if !a.trim().is_empty() => a,
+        _ => {
+            return serde_json::json!({
+                "error": "faucet payout address is not configured",
+                "detail": "set faucet_address in the bridge config to the address of the faucet key"
+            })
+            .to_string();
+        }
+    };
+    if let Err(e) = signer.ensure_matches(&payout_address) {
+        tracing::error!("faucet payout address does not match the configured key: {e}");
+        return serde_json::json!({ "error": e.to_string() }).to_string();
+    }
+
+    let state = match FAUCET_STATE.get() {
+        Some(s) => s,
+        None => return serde_json::json!({ "error": "faucet not ready" }).to_string(),
+    };
+
+    let balance = {
+        let s = state.lock().unwrap();
+        s.balance(&address).map(|e| e.balance_pradha).unwrap_or(0)
+    };
+    if balance == 0 {
+        return serde_json::json!({
+            "error": "nothing to withdraw",
+            "detail": "claim the daily participation reward first",
+            "balancePradha": 0
+        })
+        .to_string();
+    }
+
+    // Tahan biaya on-chain sebelum menyentuh node: jeda per alamat + plafon fee
+    // harian. Keduanya dibayar reservoir, jadi ini yang menjaga faucet tidak
+    // terkuras lewat penarikan nominal kecil berulang.
+    {
+        let s = state.lock().unwrap();
+        if let Err(e) = s.check_withdraw(&address) {
+            tracing::warn!("faucet withdraw blocked for {address}: {e}");
+            return serde_json::json!({
+                "error": e.to_string(),
+                "balancePradha": balance,
+            })
+            .to_string();
+        }
+    }
+
+    let requested = v.get("amountPradha").and_then(|x| x.as_u64()).unwrap_or(balance);
+    let amount = requested.min(balance);
+    if amount == 0 {
+        return serde_json::json!({ "error": "amount must be greater than zero" }).to_string();
+    }
+    if amount < crate::faucet::FAUCET_MIN_WITHDRAW_PRADHA {
+        return serde_json::json!({
+            "error": format!(
+                "amount is below the minimum withdrawal of {} pradha",
+                crate::faucet::FAUCET_MIN_WITHDRAW_PRADHA
+            ),
+            "minAmountPradha": crate::faucet::FAUCET_MIN_WITHDRAW_PRADHA,
+            "balancePradha": balance,
+        })
+        .to_string();
+    }
+
+    let api = match NODE_API.get() {
+        Some(a) => a,
+        None => return serde_json::json!({ "error": "node api not ready" }).to_string(),
+    };
+
+    // The fee is paid by the faucet reservoir, not deducted from `amount`, so a
+    // small withdrawal still delivers exactly what the ledger says.
+    let fee = match api.estimate_standard_fee().await {
+        Ok(f) => f,
+        Err(e) => {
+            tracing::warn!("faucet withdraw: fee estimate failed: {e:#}");
+            return serde_json::json!({ "error": "cannot estimate the network fee right now" }).to_string();
+        }
+    };
+
+    let reservoir_balance = match api.get_balances_by_addresses(&[payout_address.clone()]).await {
+        Ok(v) => v.first().map(|(_, b)| *b).unwrap_or(0),
+        Err(e) => {
+            tracing::warn!("faucet withdraw: reservoir balance query failed: {e:#}");
+            return serde_json::json!({ "error": "cannot read the faucet's on-chain balance right now" }).to_string();
+        }
+    };
+
+    if reservoir_balance < amount.saturating_add(fee) {
+        return serde_json::json!({
+            "error": "faucet has no on-chain funds yet",
+            "detail": "mining rewards have not filled the faucet reservoir; the ledger balance stays claimable",
+            "balancePradha": balance,
+            "faucetOnChainPradha": reservoir_balance,
+            "neededPradha": amount.saturating_add(fee)
+        })
+        .to_string();
+    }
+
+    let txid = match api.send_coins(&payout_address, &address, amount, fee, signer.secret_hex()).await {
+        Ok(txid) => txid,
+        Err(e) => {
+            tracing::warn!("faucet withdraw send_coins failed for {address}: {e:#}");
+            return serde_json::json!({ "error": format!("{e:#}"), "balancePradha": balance }).to_string();
+        }
+    };
+
+    // The node accepted the transaction, so the ledger balance is settled.
+    let remaining = {
+        let mut s = state.lock().unwrap();
+        if !s.record_withdraw(&address, amount, fee) {
+            tracing::error!("faucet withdraw: tx {txid} sent but ledger debit failed for {address}");
+            return serde_json::json!({
+                "error": "transaction sent but the ledger could not be debited — contact the operator with this txid",
+                "txid": txid
+            })
+            .to_string();
+        }
+        let _ = s.save(std::path::Path::new(crate::faucet::FAUCET_LEDGER_PATH));
+        s.balance(&address).map(|e| e.balance_pradha).unwrap_or(0)
+    };
+
+    serde_json::json!({
+        "ok": true,
+        "address": address,
+        "txid": txid,
+        "amountPradha": amount,
+        "feePradha": fee,
+        "balancePradha": remaining,
+    })
+    .to_string()
 }
 
 async fn handle_http_request(
@@ -566,6 +762,45 @@ async fn handle_http_request(
         return Ok(());
     }
 
+    if request.starts_with("GET /api/faucet/status") {
+        let body = match FAUCET_STATE.get() {
+            None => r#"{"error":"faucet not ready"}"#.to_string(),
+            Some(state) => {
+                let s = state.lock().unwrap();
+                let claimed = s.claimed_today();
+                let outstanding = s.total_outstanding();
+                let daily_cap = s.daily_cap_now();
+                let outstanding_cap = s.outstanding_cap_now();
+                serde_json::json!({
+                    "rewardPradha": s.reward_pradha_today(),
+                    "maxRewardPradha": crate::faucet::FAUCET_MAX_REWARD_PRADHA,
+                    "claimantsToday": s.claimants_today(),
+                    "expectedClaimants": s.expected_claimants_today(),
+                    "dailyCapPradha": daily_cap,
+                    "claimedTodayPradha": claimed,
+                    "remainingTodayPradha": daily_cap.saturating_sub(claimed),
+                    "maxOutstandingPradha": outstanding_cap,
+                    "outstandingPradha": outstanding,
+                    "remainingOutstandingPradha": outstanding_cap.saturating_sub(outstanding),
+                    "minWithdrawPradha": crate::faucet::FAUCET_MIN_WITHDRAW_PRADHA,
+                    "withdrawCooldownSecs": crate::faucet::FAUCET_WITHDRAW_COOLDOWN_SECS,
+                    "dailyFeeBudgetPradha": crate::faucet::FAUCET_DAILY_FEE_BUDGET_PRADHA,
+                    "feesTodayPradha": s.fees_today(),
+                    "faucetAddress": FAUCET_PAYOUT_ADDRESS.get().and_then(|a| a.clone()),
+                    "withdrawalsEnabled": FAUCET_SIGNER.get().and_then(|s| s.as_ref()).is_some(),
+                })
+                .to_string()
+            }
+        };
+        let response = format!(
+            "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nConnection: close\r\nAccess-Control-Allow-Origin: *\r\nContent-Length: {}\r\n\r\n{}",
+            body.len(),
+            body
+        );
+        send_response(stream, response).await?;
+        return Ok(());
+    }
+
     if request.starts_with("GET /api/faucet/balance") {
         // Query params live in `path` (already parsed from the request line).
         let address = path.split('?').nth(1).and_then(|qs| {
@@ -627,13 +862,29 @@ async fn handle_http_request(
                             "ok": true,
                             "address": address,
                             "balancePradha": entry.balance_pradha,
-                            "rewardPradha": crate::faucet::FAUCET_REWARD_PRADHA,
+                            "rewardPradha": s.claim_reward_for(address),
                         }).to_string(),
                         Err(e) => serde_json::json!({ "error": e.to_string() }).to_string(),
                     }
                 }
             },
         };
+
+        let response = format!(
+            "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nConnection: close\r\nAccess-Control-Allow-Origin: *\r\nContent-Length: {}\r\n\r\n{}",
+            resp.len(),
+            resp
+        );
+        send_response(stream, response).await?;
+        return Ok(());
+    }
+
+    if request.starts_with("POST /api/faucet/withdraw") {
+        let body_start = request.find("\r\n\r\n").unwrap_or(request.len());
+        #[allow(clippy::arithmetic_side_effects, reason = "ARITH-SAFETY(LENGTH)")]
+        let body = &request[body_start + 4..];
+
+        let resp = withdraw_response(body).await;
 
         let response = format!(
             "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nConnection: close\r\nAccess-Control-Allow-Origin: *\r\nContent-Length: {}\r\n\r\n{}",

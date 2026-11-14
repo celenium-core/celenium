@@ -64,7 +64,7 @@ dokumen itu dan di whitepaper; private key disimpan terenkripsi di luar repo.
   **0.02079547 CEN/blok** (2,079,547 pradha) pada 10 BPS.
 - Halving setiap 4 tahun (48 bulan), 17 era, total emisi 52,500,000 CEN
   (dust pembulatan 0.32 CEN di bawah target karena satuan terkecil 1 detik).
-- Mining selesai dalam 68 tahun (816 bulan).
+- Mining selesai hingga halving selesai (816 bulan).
 
 Detail per era ada di `emission-schedule.md`. Tabel siap pakai untuk kode ada
 di `scripts/data/subsidy_table.rs`.

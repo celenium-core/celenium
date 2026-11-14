@@ -109,13 +109,11 @@ async fn listen_and_serve_impl<T: CeleniumApiTrait + Send + Sync + 'static>(
     let share_handler = Arc::new(ShareHandler::new(instance_id.clone()));
 
     // Konfigurasi reservoir faucet hanya pada pool mode dengan cut > 0.
+    // Cut kini dihitung dari defisit reservoir terhadap target kebijakan
+    // (lihat `emission_policy`), jadi satu-satunya saklar adalah
+    // `faucet_cut_fraction`: 0 = mati, >0 = hidup.
     if config.pool_address.is_some() && config.faucet_cut_fraction > 0.0 {
-        share_handler.set_reservoir_config(ReservoirConfig {
-            cut_fraction: config.faucet_cut_fraction,
-            target_pradha: config.faucet_target_pradha,
-            hysteresis_low: config.faucet_hysteresis_low,
-            hysteresis_high: config.faucet_hysteresis_high,
-        });
+        share_handler.set_reservoir_config(ReservoirConfig::default());
         share_handler.set_faucet_address(config.faucet_address.clone().filter(|s| !s.is_empty()));
     }
 

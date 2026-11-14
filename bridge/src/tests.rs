@@ -1148,7 +1148,7 @@ mod integration {
             pool_address: None,
             faucet_address: None,
             faucet_cut_fraction: 0.015,
-            faucet_target_pradha: 750_000_000_000,
+            faucet_target_pradha: 250_000_000_000_000,
             faucet_hysteresis_low: 0.8,
             faucet_hysteresis_high: 1.2,
         };
@@ -1241,7 +1241,7 @@ mod integration {
             pool_address: None,
             faucet_address: None,
             faucet_cut_fraction: 0.015,
-            faucet_target_pradha: 750_000_000_000,
+            faucet_target_pradha: 250_000_000_000_000,
             faucet_hysteresis_low: 0.8,
             faucet_hysteresis_high: 1.2,
         };

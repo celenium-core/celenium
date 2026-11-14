@@ -22,7 +22,7 @@ bulanan yang bisa diverifikasi publik.
 | Mining (publik) | 52.500.000 CEN (76.09%) |
 | Premine | 16.500.000 CEN (23.91%) |
 | Block rate | 10 blok/detik (100 ms) sejak genesis |
-| Halving | setiap 4 tahun, 17 era, horizon ±68 tahun |
+| Halving | setiap 4 tahun, 17 era, hingga halving selesai |
 | Konsensus | GHOSTDAG (k = 124, max 16 parent) |
 | PoW | kHeavyHash |
 | Prefix alamat | `cen69` (mainnet), `cen69test`, `cen69sim`, `cen69dev` |
@@ -36,7 +36,7 @@ Kaspa membuktikan bahwa blockDAG GHOSTDAG mampu memberi throughput tinggi tanpa
 mengorbankan desentralisasi. Celenium mengambil fondasi teknis itu sebagai
 titik awal, lalu mengubah tiga hal: identitas jaringan (nama, prefix, port,
 genesis), model distribusi (23.91% premine terkunci CLTV), dan kurva emisi
-(tabel subsidi 817 entri, emisi total mining 52.5 juta CEN dalam ±68 tahun).
+(tabel subsidi 817 entri, emisi total mining 52.5 juta CEN hingga halving selesai).
 
 Premine 23.91% adalah deviasi sadar dari model fair-launch Kaspa. Dokumen ini
 serta `docs/premine-cltv-schedule.md`, `docs/vesting-schedule.md`, dan
@@ -48,7 +48,7 @@ baik dari source code maupun dari UTXO genesis yang terkunci CLTV.
 
 ### 3.1 Distribusi
 
-- **Mining publik: 52.500.000 CEN (76.09%)** ditambang sepanjang ±68 tahun.
+- **Mining publik: 52.500.000 CEN (76.09%)** ditambang hingga halving selesai.
 - **Premine: 16.500.000 CEN (23.91%)**
   - Pengembangan proyek: 9.600.000 CEN (13.91% dari total supply)
   - Pemilik koin: 6.900.000 CEN (10.00% dari total supply)
